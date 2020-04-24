@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="12dp"
-    tools:context=".presentation.view.MainActivity">
+    tools:context=".presentation.view.GithubReposActivity">
 
     <TextView
         android:id="@+id/errorTextView"

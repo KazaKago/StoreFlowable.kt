@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
-import com.kazakago.cachesample.domain.model.State
-import com.kazakago.cachesample.domain.model.StateContent
+import com.kazakago.cachesample.domain.model.state.State
+import com.kazakago.cachesample.domain.model.state.StateContent
 import com.kazakago.cachesample.domain.usecase.RequestAdditionalGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.RequestGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.SubscribeGithubReposUseCase
@@ -19,7 +19,7 @@ import com.kazakago.cachesample.presentation.viewmodel.livedata.UnitLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class GithubReposViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object {
         private const val USER_NAME = "google"
@@ -104,7 +104,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 is State.Error -> {
                     if (shouldNoticeErrorOnNextState) _strongError.call(it.exception)
-                    shouldNoticeErrorOnNextState = false;
+                    shouldNoticeErrorOnNextState = false
                     when (it.content) {
                         is StateContent.Exist -> {
                             _githubRepos.value = it.content.rawContent

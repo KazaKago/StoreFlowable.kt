@@ -13,4 +13,8 @@ class GithubApi {
     suspend fun getRepos(userName: String, page: Int, perPage: Int): List<GithubRepoResponse> {
         return retrofit.create(GithubService::class.java).getRepos(userName, page, perPage).body()!!
     }
+
+    suspend fun getUser(userName: String): GithubUserResponse {
+        return retrofit.create(GithubService::class.java).getUser(userName).body()!!
+    }
 }

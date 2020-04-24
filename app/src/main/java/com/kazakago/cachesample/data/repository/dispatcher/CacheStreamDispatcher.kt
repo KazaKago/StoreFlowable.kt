@@ -1,8 +1,8 @@
 package com.kazakago.cachesample.data.repository.dispatcher
 
-import com.kazakago.cachesample.data.cache.DataState
-import com.kazakago.cachesample.domain.model.State
-import com.kazakago.cachesample.domain.model.StateContent
+import com.kazakago.cachesample.data.cache.state.DataState
+import com.kazakago.cachesample.domain.model.state.State
+import com.kazakago.cachesample.domain.model.state.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class CacheStreamDispatcher<ENTITY>(
     private val loadState: (() -> Flow<DataState>),
-    private val saveState: ((state: DataState) -> Unit),
+    private val saveState: (suspend (state: DataState) -> Unit),
     private val loadEntity: (suspend () -> (ENTITY?)),
     private val saveEntity: (suspend (entity: ENTITY?) -> Unit),
     private val fetchOrigin: (suspend () -> (ENTITY)),

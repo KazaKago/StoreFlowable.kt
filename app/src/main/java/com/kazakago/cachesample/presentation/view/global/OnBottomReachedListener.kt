@@ -1,4 +1,4 @@
-package com.kazakago.cachesample.presentation.view
+package com.kazakago.cachesample.presentation.view.global
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

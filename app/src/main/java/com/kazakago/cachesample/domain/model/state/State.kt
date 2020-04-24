@@ -1,4 +1,4 @@
-package com.kazakago.cachesample.domain.model
+package com.kazakago.cachesample.domain.model.state
 
 sealed class State<out T>(
     val content: StateContent<T>

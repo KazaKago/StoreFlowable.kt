@@ -1,26 +1,25 @@
-package com.kazakago.cachesample.data.repository.dispatcher
+package com.kazakago.cachesample.data.repository
 
 import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubRepoResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
-import com.kazakago.cachesample.data.cache.GithubRepoEntityMapper
-import com.kazakago.cachesample.data.cache.getOrCreate
-import com.kazakago.cachesample.domain.model.GithubRepo
+import com.kazakago.cachesample.data.cache.GithubRepoEntity
+import com.kazakago.cachesample.data.cache.state.getOrCreate
+import com.kazakago.cachesample.data.repository.dispatcher.PagingCacheStreamDispatcher
 import kotlinx.coroutines.flow.asFlow
 import java.util.*
 
-class GithubDispatcher(
+class GithubReposDispatcher(
     private val githubApi: GithubApi,
     private val githubRepoResponseMapper: GithubRepoResponseMapper,
-    private val githubCache: GithubCache,
-    private val githubRepoEntityMapper: GithubRepoEntityMapper
+    private val githubCache: GithubCache
 ) {
 
     companion object {
         private const val PER_PAGE = 10
     }
 
-    operator fun invoke(userName: String): PagingCacheStreamDispatcher<GithubRepo> = PagingCacheStreamDispatcher(
+    operator fun invoke(userName: String): PagingCacheStreamDispatcher<GithubRepoEntity> = PagingCacheStreamDispatcher(
         loadState = {
             githubCache.reposState.getOrCreate(userName).asFlow()
         },
@@ -28,10 +27,10 @@ class GithubDispatcher(
             githubCache.reposState.getOrCreate(userName).send(it)
         },
         loadEntity = {
-            githubCache.reposCache[userName]?.map { githubRepoEntityMapper.map(it) }
+            githubCache.reposCache[userName]
         },
         saveEntity = { entity, additionalRequest ->
-            githubCache.reposCache[userName] = entity?.map { githubRepoEntityMapper.reverse(it) }
+            githubCache.reposCache[userName] = entity
             if (!additionalRequest) githubCache.reposCreateAdCache[userName] = Calendar.getInstance()
         },
         fetchOrigin = { entity, additionalRequest ->

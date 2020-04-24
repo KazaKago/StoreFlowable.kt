@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:padding="12dp"
-    tools:context=".presentation.view.MainActivity">
+    tools:context=".presentation.view.GithubReposActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"

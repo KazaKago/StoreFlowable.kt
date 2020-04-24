@@ -46,8 +46,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-moshi:2.8.1'
     implementation 'com.squareup.moshi:moshi:1.9.2'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
+    implementation 'io.coil-kt:coil:0.10.0'
     implementation 'com.xwray:groupie:2.7.2'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.7.2'
+    implementation 'com.os.operando.guild.kt:guild_kt:1.0.0'
 
     testImplementation 'junit:junit:4.13'
 

@@ -1,4 +1,4 @@
-package com.kazakago.cachesample.data.cache
+package com.kazakago.cachesample.data.cache.state
 
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 

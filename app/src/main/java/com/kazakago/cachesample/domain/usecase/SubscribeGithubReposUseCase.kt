@@ -2,7 +2,7 @@ package com.kazakago.cachesample.domain.usecase
 
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
-import com.kazakago.cachesample.domain.model.State
+import com.kazakago.cachesample.domain.model.state.State
 import kotlinx.coroutines.flow.Flow
 
 class SubscribeGithubReposUseCase(private val githubRepository: GithubRepository) {

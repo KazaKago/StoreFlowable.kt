@@ -8,4 +8,7 @@ import retrofit2.http.Query
 interface GithubService {
     @GET("users/{user_name}/repos")
     suspend fun getRepos(@Path("user_name") userName: String, @Query("page") page: Int, @Query("per_page") perPage: Int): Response<List<GithubRepoResponse>>
+
+    @GET("users/{user_name}")
+    suspend fun getUser(@Path("user_name") userName: String): Response<GithubUserResponse>
 }
