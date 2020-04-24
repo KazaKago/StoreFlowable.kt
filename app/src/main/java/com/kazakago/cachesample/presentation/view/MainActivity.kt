@@ -10,11 +10,12 @@ import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cachesample.R
 import com.kazakago.cachesample.domain.model.GithubRepo
-import com.kazakago.cachesample.presentation.viewmodel.GithubRepoState
 import com.kazakago.cachesample.presentation.viewmodel.MainViewModel
+import com.kazakago.cachesample.presentation.viewmodel.livedata.compositeLiveDataOf
 import com.kazakago.cachesample.presentation.viewmodel.livedata.observe
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.activity_main.*
 import java.net.URL
 
@@ -37,40 +38,25 @@ class MainActivity : AppCompatActivity() {
         retryButton.setOnClickListener {
             mainViewModel.request()
         }
-        mainViewModel.githubReposState.observe(this) {
-            when (it) {
-                is GithubRepoState.Loading -> {
-                    progressBar.isVisible = true
-                    errorGroup.isVisible = false
-                    githubReposGroupAdapter.clear()
-                }
-                is GithubRepoState.LoadingWithValue -> {
-                    progressBar.isVisible = false
-                    errorGroup.isVisible = false
-                    githubReposGroupAdapter.updateAsync(createGithubRepoItems(it.githubRepos) + createLoadingItem())
-                }
-                is GithubRepoState.Completed -> {
-                    progressBar.isVisible = false
-                    errorGroup.isVisible = false
-                    githubReposGroupAdapter.updateAsync(createGithubRepoItems(it.githubRepos))
-                }
-                is GithubRepoState.Error -> {
-                    progressBar.isVisible = false
-                    errorGroup.isVisible = true
-                    errorTextView.text = it.exception.toString()
-                    githubReposGroupAdapter.clear()
-                }
-                is GithubRepoState.ErrorWithValue -> {
-                    progressBar.isVisible = false
-                    errorGroup.isVisible = false
-                    githubReposGroupAdapter.updateAsync(createGithubRepoItems(it.githubRepos) + createErrorItem(it.exception))
-                }
+        compositeLiveDataOf(mainViewModel.githubRepos, mainViewModel.isAdditionalLoading, mainViewModel.additionalError).observe(this) {
+            val items = mutableListOf<Item>().apply {
+                this += createGithubRepoItems(it.first)
+                it.second.let { if (it) this += createLoadingItem() }
+                it.third.let { if (it != null) this += createErrorItem(it) }
             }
+            githubReposGroupAdapter.updateAsync(items)
+        }
+        mainViewModel.isMainLoading.observe(this) {
+            progressBar.isVisible = it
+        }
+        mainViewModel.mainError.observe(this) {
+            errorGroup.isVisible = (it != null)
+            errorTextView.text = it?.toString()
         }
         mainViewModel.hideSwipeRefresh.observe(this, "") {
             swipeRefreshLayout.isRefreshing = false
         }
-        mainViewModel.exception.observe(this, "") {
+        mainViewModel.strongError.observe(this, "") {
             Snackbar.make(rootView, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
