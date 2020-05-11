@@ -1,6 +1,6 @@
 package com.kazakago.cachesample.data.cache.state
 
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 sealed class PagingDataState {
     data class Fixed(val isReachLast: Boolean) : PagingDataState()
@@ -8,6 +8,6 @@ sealed class PagingDataState {
     data class Error(val exception: Exception) : PagingDataState()
 }
 
-fun HashMap<String, ConflatedBroadcastChannel<PagingDataState>>.getOrCreate(key: String): ConflatedBroadcastChannel<PagingDataState> {
-    return getOrPut(key, { ConflatedBroadcastChannel(PagingDataState.Fixed(false)) })
+fun HashMap<String, MutableStateFlow<PagingDataState>>.getOrCreate(key: String): MutableStateFlow<PagingDataState> {
+    return getOrPut(key, { MutableStateFlow(PagingDataState.Fixed(false)) })
 }

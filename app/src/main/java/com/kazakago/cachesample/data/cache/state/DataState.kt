@@ -1,6 +1,6 @@
 package com.kazakago.cachesample.data.cache.state
 
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 sealed class DataState {
     object Fixed : DataState()
@@ -8,6 +8,6 @@ sealed class DataState {
     data class Error(val exception: Exception) : DataState()
 }
 
-fun HashMap<String, ConflatedBroadcastChannel<DataState>>.getOrCreate(key: String): ConflatedBroadcastChannel<DataState> {
-    return getOrPut(key, { ConflatedBroadcastChannel(DataState.Fixed) })
+fun HashMap<String, MutableStateFlow<DataState>>.getOrCreate(key: String): MutableStateFlow<DataState> {
+    return getOrPut(key, { MutableStateFlow(DataState.Fixed) })
 }

@@ -6,7 +6,6 @@ import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubUserEntity
 import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.data.repository.dispatcher.CacheStreamDispatcher
-import kotlinx.coroutines.flow.asFlow
 import java.util.*
 
 class GithubUserDispatcher(
@@ -17,10 +16,10 @@ class GithubUserDispatcher(
 
     operator fun invoke(userName: String): CacheStreamDispatcher<GithubUserEntity> = CacheStreamDispatcher(
         loadState = {
-            githubCache.userState.getOrCreate(userName).asFlow()
+            githubCache.userState.getOrCreate(userName)
         },
         saveState = {
-            githubCache.userState.getOrCreate(userName).send(it)
+            githubCache.userState.getOrCreate(userName).value = it
         },
         loadEntity = {
             githubCache.userCache[userName]

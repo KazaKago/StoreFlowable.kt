@@ -6,7 +6,6 @@ import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubRepoEntity
 import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.data.repository.dispatcher.PagingCacheStreamDispatcher
-import kotlinx.coroutines.flow.asFlow
 import java.util.*
 
 class GithubReposDispatcher(
@@ -21,10 +20,10 @@ class GithubReposDispatcher(
 
     operator fun invoke(userName: String): PagingCacheStreamDispatcher<GithubRepoEntity> = PagingCacheStreamDispatcher(
         loadState = {
-            githubCache.reposState.getOrCreate(userName).asFlow()
+            githubCache.reposState.getOrCreate(userName)
         },
         saveState = {
-            githubCache.reposState.getOrCreate(userName).send(it)
+            githubCache.reposState.getOrCreate(userName).value = it
         },
         loadEntity = {
             githubCache.reposCache[userName]
