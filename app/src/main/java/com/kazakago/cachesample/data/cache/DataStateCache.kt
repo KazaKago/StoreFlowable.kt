@@ -9,4 +9,3 @@ object DataStateCache {
     val pagingDataState: HashMap<String, MutableStateFlow<PagingDataState>> = hashMapOf()
     val dataState: HashMap<String, MutableStateFlow<DataState>> = hashMapOf()
 }
-
