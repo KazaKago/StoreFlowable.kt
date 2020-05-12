@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-abstract class PagingCacheStreamDispatcher<ENTITY>(private val dataId: String) {
+abstract class PagingCacheStreamDispatcher<ENTITY>(private val entityId: String) {
 
     protected abstract suspend fun loadEntity(): List<ENTITY>?
 
@@ -24,11 +24,11 @@ abstract class PagingCacheStreamDispatcher<ENTITY>(private val dataId: String) {
     protected abstract suspend fun needRefresh(entity: List<ENTITY>): Boolean
 
     protected open fun loadDataStateFlow(): Flow<PagingDataState> {
-        return DataStateCache.pagingDataState.getOrCreate(dataId)
+        return DataStateCache.pagingDataState.getOrCreate(entityId)
     }
 
     protected open suspend fun saveDataState(state: PagingDataState) {
-        DataStateCache.pagingDataState.getOrCreate(dataId).value = state
+        DataStateCache.pagingDataState.getOrCreate(entityId).value = state
     }
 
     fun getFlow(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-abstract class CacheStreamDispatcher<ENTITY>(private val dataId: String) {
+abstract class CacheStreamDispatcher<ENTITY>(private val entityId: String) {
 
     protected abstract suspend fun loadEntity(): ENTITY?
 
@@ -24,11 +24,11 @@ abstract class CacheStreamDispatcher<ENTITY>(private val dataId: String) {
     protected abstract suspend fun needRefresh(entity: ENTITY): Boolean
 
     protected open fun loadDataStateFlow(): Flow<DataState> {
-        return DataStateCache.dataState.getOrCreate(dataId)
+        return DataStateCache.dataState.getOrCreate(entityId)
     }
 
     protected open suspend fun saveDataState(state: DataState) {
-        DataStateCache.dataState.getOrCreate(dataId).value = state
+        DataStateCache.dataState.getOrCreate(entityId).value = state
     }
 
     fun getFlow(forceRefresh: Boolean = false): Flow<State<ENTITY>> {
