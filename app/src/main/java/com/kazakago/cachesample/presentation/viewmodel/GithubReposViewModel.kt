@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
-import com.kazakago.cachesample.domain.model.state.State
-import com.kazakago.cachesample.domain.model.state.StateContent
 import com.kazakago.cachesample.domain.usecase.RequestAdditionalGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.RequestGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.SubscribeGithubReposUseCase
@@ -64,65 +62,65 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun subscribeRepos() = viewModelScope.launch {
         subscribeGithubReposUseCase(USER_NAME).collect {
-            when (it) {
-                is State.Fixed -> {
+            it.separate(
+                fixed = { _ ->
                     shouldNoticeErrorOnNextState = false
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubRepos.value = it.content.rawContent
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubRepos.value = exist.rawContent
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
                             _mainError.value = null
                             _additionalError.value = null
-                        }
-                        is StateContent.NotExist -> {
+                        },
+                        notExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = true
                             _isAdditionalLoading.value = false
                             _mainError.value = null
                             _additionalError.value = null
                         }
-                    }
-                }
-                is State.Loading -> {
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubRepos.value = it.content.rawContent
+                    )
+                },
+                loading = { _ ->
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubRepos.value = exist.rawContent
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = true
                             _mainError.value = null
                             _additionalError.value = null
-                        }
-                        is StateContent.NotExist -> {
+                        },
+                        notExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = true
                             _isAdditionalLoading.value = false
                             _mainError.value = null
                             _additionalError.value = null
                         }
-                    }
-                }
-                is State.Error -> {
-                    if (shouldNoticeErrorOnNextState) _strongError.call(it.exception)
+                    )
+                },
+                error = { error ->
+                    if (shouldNoticeErrorOnNextState) _strongError.call(error.exception)
                     shouldNoticeErrorOnNextState = false
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubRepos.value = it.content.rawContent
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubRepos.value = exist.rawContent
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
                             _mainError.value = null
-                            _additionalError.value = it.exception
-                        }
-                        is StateContent.NotExist -> {
+                            _additionalError.value = error.exception
+                        },
+                        notExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
-                            _mainError.value = it.exception
+                            _mainError.value = error.exception
                             _additionalError.value = null
                         }
-                    }
+                    )
                 }
-            }
+            )
         }
     }
 
