@@ -4,10 +4,8 @@ import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubRepoResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubRepoEntity
-import com.kazakago.cachesample.data.cache.state.PagingDataState
 import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.data.repository.dispatcher.PagingCacheStreamDispatcher
-import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 
 class GithubReposDispatcher(
@@ -15,18 +13,10 @@ class GithubReposDispatcher(
     private val githubRepoResponseMapper: GithubRepoResponseMapper,
     private val githubCache: GithubCache,
     private val userName: String
-) : PagingCacheStreamDispatcher<GithubRepoEntity>() {
+) : PagingCacheStreamDispatcher<GithubRepoEntity>(GithubRepoEntity::class.java.name + userName) {
 
     companion object {
         private const val PER_PAGE = 10
-    }
-
-    override fun loadDataStateFlow(): StateFlow<PagingDataState> {
-        return githubCache.reposState.getOrCreate(userName)
-    }
-
-    override suspend fun saveDataState(state: PagingDataState) {
-        githubCache.reposState.getOrCreate(userName).value = state
     }
 
     override suspend fun loadEntity(): List<GithubRepoEntity>? {

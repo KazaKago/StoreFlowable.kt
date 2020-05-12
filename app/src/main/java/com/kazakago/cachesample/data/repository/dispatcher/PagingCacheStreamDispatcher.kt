@@ -1,18 +1,19 @@
 package com.kazakago.cachesample.data.repository.dispatcher
 
+import com.kazakago.cachesample.data.cache.DataStateCache
 import com.kazakago.cachesample.data.cache.state.PagingDataState
+import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.domain.model.state.State
 import com.kazakago.cachesample.domain.model.state.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-abstract class PagingCacheStreamDispatcher<ENTITY> {
-
-    protected abstract fun loadDataStateFlow(): StateFlow<PagingDataState>
-
-    protected abstract suspend fun saveDataState(state: PagingDataState)
+abstract class PagingCacheStreamDispatcher<ENTITY>(private val dataId: String) {
 
     protected abstract suspend fun loadEntity(): List<ENTITY>?
 
@@ -21,6 +22,14 @@ abstract class PagingCacheStreamDispatcher<ENTITY> {
     protected abstract suspend fun fetchOrigin(entity: List<ENTITY>?, additionalRequest: Boolean): List<ENTITY>
 
     protected abstract suspend fun needRefresh(entity: List<ENTITY>): Boolean
+
+    protected open fun loadDataStateFlow(): Flow<PagingDataState> {
+        return DataStateCache.pagingDataState.getOrCreate(dataId)
+    }
+
+    protected open suspend fun saveDataState(state: PagingDataState) {
+        DataStateCache.pagingDataState.getOrCreate(dataId).value = state
+    }
 
     fun getFlow(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {
         return loadDataStateFlow()
@@ -67,7 +76,7 @@ abstract class PagingCacheStreamDispatcher<ENTITY> {
     }
 
     private suspend fun separateState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean, additionalRequest: Boolean) {
-        val state = loadDataStateFlow().value
+        val state = loadDataStateFlow().first()
         val entity = loadEntity()
         when (state) {
             is PagingDataState.Fixed -> separateEntity(entity, forceRefresh, clearCache, additionalRequest, state.isReachLast)

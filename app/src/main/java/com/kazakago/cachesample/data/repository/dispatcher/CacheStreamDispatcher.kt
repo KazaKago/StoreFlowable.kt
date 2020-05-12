@@ -1,18 +1,19 @@
 package com.kazakago.cachesample.data.repository.dispatcher
 
+import com.kazakago.cachesample.data.cache.DataStateCache
 import com.kazakago.cachesample.data.cache.state.DataState
+import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.domain.model.state.State
 import com.kazakago.cachesample.domain.model.state.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-abstract class CacheStreamDispatcher<ENTITY> {
-
-    protected abstract fun loadDataStateFlow(): StateFlow<DataState>
-
-    protected abstract suspend fun saveDataState(state: DataState)
+abstract class CacheStreamDispatcher<ENTITY>(private val dataId: String) {
 
     protected abstract suspend fun loadEntity(): ENTITY?
 
@@ -21,6 +22,14 @@ abstract class CacheStreamDispatcher<ENTITY> {
     protected abstract suspend fun fetchOrigin(): ENTITY
 
     protected abstract suspend fun needRefresh(entity: ENTITY): Boolean
+
+    protected open fun loadDataStateFlow(): Flow<DataState> {
+        return DataStateCache.dataState.getOrCreate(dataId)
+    }
+
+    protected open suspend fun saveDataState(state: DataState) {
+        DataStateCache.dataState.getOrCreate(dataId).value = state
+    }
 
     fun getFlow(forceRefresh: Boolean = false): Flow<State<ENTITY>> {
         return loadDataStateFlow()
@@ -60,7 +69,7 @@ abstract class CacheStreamDispatcher<ENTITY> {
     }
 
     private suspend fun separateState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean) {
-        when (loadDataStateFlow().value) {
+        when (loadDataStateFlow().first()) {
             is DataState.Fixed -> separateEntity(forceRefresh, clearCache)
             is DataState.Loading -> Unit
             is DataState.Error -> if (fetchOnError) fetchNewEntity(clearCache)

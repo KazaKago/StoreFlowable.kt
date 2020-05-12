@@ -4,10 +4,8 @@ import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubUserResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubUserEntity
-import com.kazakago.cachesample.data.cache.state.DataState
 import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.data.repository.dispatcher.CacheStreamDispatcher
-import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 
 class GithubUserDispatcher(
@@ -15,15 +13,7 @@ class GithubUserDispatcher(
     private val githubUserResponseMapper: GithubUserResponseMapper,
     private val githubCache: GithubCache,
     private val userName: String
-) : CacheStreamDispatcher<GithubUserEntity>() {
-
-    override fun loadDataStateFlow(): StateFlow<DataState> {
-        return githubCache.userState.getOrCreate(userName)
-    }
-
-    override suspend fun saveDataState(state: DataState) {
-        githubCache.userState.getOrCreate(userName).value = state
-    }
+) : CacheStreamDispatcher<GithubUserEntity>(GithubUserEntity::class.java.name + userName) {
 
     override suspend fun loadEntity(): GithubUserEntity? {
         return githubCache.userCache[userName]
