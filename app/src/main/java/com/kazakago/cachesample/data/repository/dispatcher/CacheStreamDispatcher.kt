@@ -5,25 +5,27 @@ import com.kazakago.cachesample.domain.model.state.State
 import com.kazakago.cachesample.domain.model.state.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class CacheStreamDispatcher<ENTITY>(
-    private val loadState: (() -> Flow<DataState>),
-    private val saveState: (suspend (state: DataState) -> Unit),
-    private val loadEntity: (suspend () -> (ENTITY?)),
-    private val saveEntity: (suspend (entity: ENTITY?) -> Unit),
-    private val fetchOrigin: (suspend () -> (ENTITY)),
-    private val needRefresh: (suspend (entity: ENTITY) -> Boolean)
-) {
+abstract class CacheStreamDispatcher<ENTITY> {
 
-    fun subscribe(forceRefresh: Boolean = false): Flow<State<ENTITY>> {
-        return loadState()
+    protected abstract fun loadDataStateFlow(): StateFlow<DataState>
+
+    protected abstract suspend fun saveDataState(state: DataState)
+
+    protected abstract suspend fun loadEntity(): ENTITY?
+
+    protected abstract suspend fun saveEntity(entity: ENTITY?)
+
+    protected abstract suspend fun fetchOrigin(): ENTITY
+
+    protected abstract suspend fun needRefresh(entity: ENTITY): Boolean
+
+    fun getFlow(forceRefresh: Boolean = false): Flow<State<ENTITY>> {
+        return loadDataStateFlow()
             .onStart {
-                CoroutineScope(Dispatchers.IO).launch { checkState(forceRefresh, clearCache = true, fetchOnError = false) }
+                CoroutineScope(Dispatchers.IO).launch { separateState(forceRefresh, clearCache = true, fetchOnError = false) }
             }
             .map {
                 mapState(it)
@@ -31,16 +33,16 @@ class CacheStreamDispatcher<ENTITY>(
     }
 
     suspend fun validate() {
-        return checkState(forceRefresh = false, clearCache = true, fetchOnError = false)
+        return separateState(forceRefresh = false, clearCache = true, fetchOnError = false)
     }
 
     suspend fun request() {
-        return checkState(forceRefresh = true, clearCache = false, fetchOnError = true)
+        return separateState(forceRefresh = true, clearCache = false, fetchOnError = true)
     }
 
     suspend fun update(newEntity: ENTITY?) {
         saveEntity(newEntity)
-        saveState(DataState.Fixed)
+        saveDataState(DataState.Fixed)
     }
 
     private suspend fun mapState(dataState: DataState): State<ENTITY> {
@@ -57,15 +59,15 @@ class CacheStreamDispatcher<ENTITY>(
         }
     }
 
-    private suspend fun checkState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean) {
-        when (loadState().first()) {
-            is DataState.Fixed -> checkEntity(forceRefresh, clearCache)
+    private suspend fun separateState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean) {
+        when (loadDataStateFlow().value) {
+            is DataState.Fixed -> separateEntity(forceRefresh, clearCache)
             is DataState.Loading -> Unit
             is DataState.Error -> if (fetchOnError) fetchNewEntity(clearCache)
         }
     }
 
-    private suspend fun checkEntity(forceRefresh: Boolean, clearCache: Boolean) {
+    private suspend fun separateEntity(forceRefresh: Boolean, clearCache: Boolean) {
         val entity = loadEntity()
         if (entity == null || forceRefresh || needRefresh(entity)) {
             fetchNewEntity(clearCache)
@@ -75,12 +77,12 @@ class CacheStreamDispatcher<ENTITY>(
     private suspend fun fetchNewEntity(clearCache: Boolean) {
         try {
             if (clearCache) saveEntity(null)
-            saveState(DataState.Loading)
+            saveDataState(DataState.Loading)
             val fetchedEntity = fetchOrigin()
             saveEntity(fetchedEntity)
-            saveState(DataState.Fixed)
+            saveDataState(DataState.Fixed)
         } catch (exception: Exception) {
-            saveState(DataState.Error(exception))
+            saveDataState(DataState.Error(exception))
         }
     }
 

@@ -5,25 +5,27 @@ import com.kazakago.cachesample.domain.model.state.State
 import com.kazakago.cachesample.domain.model.state.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class PagingCacheStreamDispatcher<ENTITY>(
-    private val loadState: (() -> Flow<PagingDataState>),
-    private val saveState: (suspend (state: PagingDataState) -> Unit),
-    private val loadEntity: (suspend () -> (List<ENTITY>?)),
-    private val saveEntity: (suspend (entity: List<ENTITY>?, additionalRequest: Boolean) -> Unit),
-    private val fetchOrigin: (suspend (entity: List<ENTITY>?, additionalRequest: Boolean) -> List<ENTITY>),
-    private val needRefresh: (suspend (entity: List<ENTITY>) -> Boolean)
-) {
+abstract class PagingCacheStreamDispatcher<ENTITY> {
 
-    fun subscribe(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {
-        return loadState()
+    protected abstract fun loadDataStateFlow(): StateFlow<PagingDataState>
+
+    protected abstract suspend fun saveDataState(state: PagingDataState)
+
+    protected abstract suspend fun loadEntity(): List<ENTITY>?
+
+    protected abstract suspend fun saveEntity(entity: List<ENTITY>?, additionalRequest: Boolean)
+
+    protected abstract suspend fun fetchOrigin(entity: List<ENTITY>?, additionalRequest: Boolean): List<ENTITY>
+
+    protected abstract suspend fun needRefresh(entity: List<ENTITY>): Boolean
+
+    fun getFlow(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {
+        return loadDataStateFlow()
             .onStart {
-                CoroutineScope(Dispatchers.IO).launch { checkState(forceRefresh, clearCache = true, fetchOnError = false, additionalRequest = false) }
+                CoroutineScope(Dispatchers.IO).launch { separateState(forceRefresh, clearCache = true, fetchOnError = false, additionalRequest = false) }
             }
             .map {
                 mapState(it)
@@ -31,15 +33,15 @@ class PagingCacheStreamDispatcher<ENTITY>(
     }
 
     suspend fun validate() {
-        return checkState(forceRefresh = false, clearCache = true, fetchOnError = false, additionalRequest = false)
+        return separateState(forceRefresh = false, clearCache = true, fetchOnError = false, additionalRequest = false)
     }
 
     suspend fun request() {
-        return checkState(forceRefresh = true, clearCache = false, fetchOnError = true, additionalRequest = false)
+        return separateState(forceRefresh = true, clearCache = false, fetchOnError = true, additionalRequest = false)
     }
 
     suspend fun requestAdditional(fetchOnError: Boolean = true) {
-        return checkState(forceRefresh = false, clearCache = false, fetchOnError = fetchOnError, additionalRequest = true)
+        return separateState(forceRefresh = false, clearCache = false, fetchOnError = fetchOnError, additionalRequest = true)
     }
 
     suspend fun update(newEntity: List<ENTITY>?, additionalRequest: Boolean = false) {
@@ -47,7 +49,7 @@ class PagingCacheStreamDispatcher<ENTITY>(
         val mergedEntity = if (additionalRequest) (entity ?: emptyList()) + (newEntity ?: emptyList()) else (newEntity ?: emptyList())
         saveEntity(mergedEntity, additionalRequest)
         val isReachLast = mergedEntity.isEmpty()
-        saveState(PagingDataState.Fixed(isReachLast))
+        saveDataState(PagingDataState.Fixed(isReachLast))
     }
 
     private suspend fun mapState(dataState: PagingDataState): State<List<ENTITY>> {
@@ -64,17 +66,17 @@ class PagingCacheStreamDispatcher<ENTITY>(
         }
     }
 
-    private suspend fun checkState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean, additionalRequest: Boolean) {
-        val state = loadState().first()
+    private suspend fun separateState(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean, additionalRequest: Boolean) {
+        val state = loadDataStateFlow().value
         val entity = loadEntity()
         when (state) {
-            is PagingDataState.Fixed -> checkEntity(entity, forceRefresh, clearCache, additionalRequest, state.isReachLast)
+            is PagingDataState.Fixed -> separateEntity(entity, forceRefresh, clearCache, additionalRequest, state.isReachLast)
             is PagingDataState.Loading -> Unit
             is PagingDataState.Error -> if (fetchOnError) fetchNewEntity(entity, clearCache, additionalRequest)
         }
     }
 
-    private suspend fun checkEntity(entity: List<ENTITY>?, forceRefresh: Boolean, clearCache: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
+    private suspend fun separateEntity(entity: List<ENTITY>?, forceRefresh: Boolean, clearCache: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
         if (entity == null || forceRefresh || needRefresh(entity) || (additionalRequest && !currentIsReachLast)) {
             fetchNewEntity(entity, clearCache, additionalRequest)
         }
@@ -83,14 +85,14 @@ class PagingCacheStreamDispatcher<ENTITY>(
     private suspend fun fetchNewEntity(entity: List<ENTITY>?, clearCache: Boolean, additionalRequest: Boolean) {
         try {
             if (clearCache) saveEntity(null, additionalRequest)
-            saveState(PagingDataState.Loading)
+            saveDataState(PagingDataState.Loading)
             val fetchedEntity = fetchOrigin(entity, additionalRequest)
             val mergedEntity = if (additionalRequest) (entity ?: emptyList()) + fetchedEntity else fetchedEntity
             saveEntity(mergedEntity, additionalRequest)
             val isReachLast = fetchedEntity.isEmpty()
-            saveState(PagingDataState.Fixed(isReachLast))
+            saveDataState(PagingDataState.Fixed(isReachLast))
         } catch (exception: Exception) {
-            saveState(PagingDataState.Error(exception))
+            saveDataState(PagingDataState.Error(exception))
         }
     }
 
