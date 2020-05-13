@@ -19,30 +19,30 @@ class GithubRepository {
     private val githubRepoEntityMapper = GithubRepoEntityMapper()
     private val githubUserEntityMapper = GithubUserEntityMapper()
 
-    fun subscribeRepos(userName: String): Flow<State<List<GithubRepo>>> {
-        return GithubReposDispatcher(githubApi, githubRepoResponseMapper, GithubCache, userName).getFlow()
+    fun flowRepos(userName: String): Flow<State<List<GithubRepo>>> {
+        return GithubReposFlowable(githubApi, githubRepoResponseMapper, GithubCache, userName).asFlow()
             .mapContent {
                 it.map { githubRepoEntity -> githubRepoEntityMapper.map(githubRepoEntity) }
             }
     }
 
     suspend fun requestRepos(userName: String) {
-        return GithubReposDispatcher(githubApi, githubRepoResponseMapper, GithubCache, userName).request()
+        return GithubReposFlowable(githubApi, githubRepoResponseMapper, GithubCache, userName).request()
     }
 
     suspend fun requestAdditionalRepos(userName: String, fetchOnError: Boolean) {
-        return GithubReposDispatcher(githubApi, githubRepoResponseMapper, GithubCache, userName).requestAdditional(fetchOnError)
+        return GithubReposFlowable(githubApi, githubRepoResponseMapper, GithubCache, userName).requestAdditional(fetchOnError)
     }
 
-    fun subscribeUser(userName: String): Flow<State<GithubUser>> {
-        return GithubUserDispatcher(githubApi, githubUserResponseMapper, GithubCache, userName).getFlow()
+    fun flowUser(userName: String): Flow<State<GithubUser>> {
+        return GithubUserFlowable(githubApi, githubUserResponseMapper, GithubCache, userName).asFlow()
             .mapContent {
                 githubUserEntityMapper.map(it)
             }
     }
 
     suspend fun requestUser(userName: String) {
-        return GithubUserDispatcher(githubApi, githubUserResponseMapper, GithubCache, userName).request()
+        return GithubUserFlowable(githubApi, githubUserResponseMapper, GithubCache, userName).request()
     }
 
 }

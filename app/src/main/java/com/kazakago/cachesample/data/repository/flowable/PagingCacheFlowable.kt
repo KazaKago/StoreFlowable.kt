@@ -1,6 +1,6 @@
-package com.kazakago.cachesample.data.repository.dispatcher
+package com.kazakago.cachesample.data.repository.flowable
 
-import com.kazakago.cachesample.data.cache.DataStateCache
+import com.kazakago.cachesample.data.cache.DefaultDataStateCache
 import com.kazakago.cachesample.data.cache.state.PagingDataState
 import com.kazakago.cachesample.data.cache.state.getOrCreate
 import com.kazakago.cachesample.domain.model.state.State
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-abstract class PagingCacheStreamDispatcher<ENTITY>(private val entityId: String) {
+abstract class PagingCacheFlowable<ENTITY>(private val entityId: String) {
 
     protected abstract suspend fun loadEntity(): List<ENTITY>?
 
@@ -24,14 +24,14 @@ abstract class PagingCacheStreamDispatcher<ENTITY>(private val entityId: String)
     protected abstract suspend fun needRefresh(entity: List<ENTITY>): Boolean
 
     protected open fun loadDataStateFlow(): Flow<PagingDataState> {
-        return DataStateCache.pagingDataState.getOrCreate(entityId)
+        return DefaultDataStateCache.pagingDataState.getOrCreate(entityId)
     }
 
     protected open suspend fun saveDataState(state: PagingDataState) {
-        DataStateCache.pagingDataState.getOrCreate(entityId).value = state
+        DefaultDataStateCache.pagingDataState.getOrCreate(entityId).value = state
     }
 
-    fun getFlow(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {
+    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<ENTITY>>> {
         return loadDataStateFlow()
             .onStart {
                 CoroutineScope(Dispatchers.IO).launch { separateState(forceRefresh, clearCache = true, fetchOnError = false, additionalRequest = false) }

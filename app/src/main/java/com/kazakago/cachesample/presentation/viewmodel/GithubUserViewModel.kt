@@ -7,10 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubUser
-import com.kazakago.cachesample.domain.model.state.State
-import com.kazakago.cachesample.domain.model.state.StateContent
+import com.kazakago.cachesample.domain.usecase.FlowGithubUserUseCase
 import com.kazakago.cachesample.domain.usecase.RequestGithubUserUseCase
-import com.kazakago.cachesample.domain.usecase.SubscribeGithubUserUseCase
 import com.kazakago.cachesample.presentation.viewmodel.livedata.LiveEvent
 import com.kazakago.cachesample.presentation.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
@@ -22,7 +20,7 @@ class GithubUserViewModel(application: Application) : AndroidViewModel(applicati
         private const val USER_NAME = "google"
     }
 
-    private val subscribeGithubUserUseCase = SubscribeGithubUserUseCase(GithubRepository())
+    private val flowGithubUserUseCase = FlowGithubUserUseCase(GithubRepository())
     private val requestGithubUserUseCase = RequestGithubUserUseCase(GithubRepository())
     val githubUser: LiveData<GithubUser?> get() = _githubUser
     private val _githubUser = MutableLiveData<GithubUser?>()
@@ -44,54 +42,52 @@ class GithubUserViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun subscribeRepos() = viewModelScope.launch {
-        subscribeGithubUserUseCase(USER_NAME).collect {
-            when (it) {
-                is State.Fixed -> {
+        flowGithubUserUseCase(USER_NAME).collect {
+            it.separate(
+                fixed = { _ ->
                     shouldNoticeErrorOnNextState = false
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubUser.value = it.content.rawContent
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubUser.value = exist.rawContent
                             _isLoading.value = false
                             _error.value = null
-                        }
-                        is StateContent.NotExist -> {
+                        },
+                        notExist = {
                             _githubUser.value = null
                             _isLoading.value = false
                             _error.value = null
                         }
-                    }
-                }
-                is State.Loading -> {
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubUser.value = it.content.rawContent
+                    )
+                },
+                loading = { _ ->
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubUser.value = exist.rawContent
+                            _isLoading.value = true
+                            _error.value = null
+                        },
+                        notExist = {
+                            _githubUser.value = null
                             _isLoading.value = true
                             _error.value = null
                         }
-                        is StateContent.NotExist -> {
-                            _githubUser.value = null
-                            _isLoading.value = true
-                            _error.value = null
-                        }
-                    }
-                }
-                is State.Error -> {
-                    if (shouldNoticeErrorOnNextState) _strongError.call(it.exception)
-                    shouldNoticeErrorOnNextState = false
-                    when (it.content) {
-                        is StateContent.Exist -> {
-                            _githubUser.value = it.content.rawContent
+                    )
+                },
+                error = { error ->
+                    it.content.separate(
+                        exist = { exist ->
+                            _githubUser.value = exist.rawContent
                             _isLoading.value = false
                             _error.value = null
-                        }
-                        is StateContent.NotExist -> {
+                        },
+                        notExist = {
                             _githubUser.value = null
                             _isLoading.value = false
-                            _error.value = it.exception
+                            _error.value = error.exception
                         }
-                    }
+                    )
                 }
-            }
+            )
         }
     }
 

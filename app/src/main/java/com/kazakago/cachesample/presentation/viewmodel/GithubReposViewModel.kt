@@ -9,7 +9,7 @@ import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
 import com.kazakago.cachesample.domain.usecase.RequestAdditionalGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.RequestGithubReposUseCase
-import com.kazakago.cachesample.domain.usecase.SubscribeGithubReposUseCase
+import com.kazakago.cachesample.domain.usecase.FlowGithubReposUseCase
 import com.kazakago.cachesample.presentation.viewmodel.livedata.LiveEvent
 import com.kazakago.cachesample.presentation.viewmodel.livedata.MutableLiveEvent
 import com.kazakago.cachesample.presentation.viewmodel.livedata.MutableUnitLiveEvent
@@ -23,7 +23,7 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
         private const val USER_NAME = "google"
     }
 
-    private val subscribeGithubReposUseCase = SubscribeGithubReposUseCase(GithubRepository())
+    private val flowGithubReposUseCase = FlowGithubReposUseCase(GithubRepository())
     private val requestGithubReposUseCase = RequestGithubReposUseCase(GithubRepository())
     private val requestAdditionalGithubReposUseCase = RequestAdditionalGithubReposUseCase(GithubRepository())
     val githubRepos: LiveData<List<GithubRepo>> get() = _githubRepos
@@ -61,7 +61,7 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun subscribeRepos() = viewModelScope.launch {
-        subscribeGithubReposUseCase(USER_NAME).collect {
+        flowGithubReposUseCase(USER_NAME).collect {
             it.separate(
                 fixed = { _ ->
                     shouldNoticeErrorOnNextState = false

@@ -5,15 +5,15 @@ import com.kazakago.cachesample.data.api.GithubRepoResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubRepoEntity
 import com.kazakago.cachesample.data.cache.state.getOrCreate
-import com.kazakago.cachesample.data.repository.dispatcher.PagingCacheStreamDispatcher
+import com.kazakago.cachesample.data.repository.flowable.PagingCacheFlowable
 import java.util.*
 
-class GithubReposDispatcher(
+class GithubReposFlowable(
     private val githubApi: GithubApi,
     private val githubRepoResponseMapper: GithubRepoResponseMapper,
     private val githubCache: GithubCache,
     private val userName: String
-) : PagingCacheStreamDispatcher<GithubRepoEntity>(GithubRepoEntity::class.java.name + userName) {
+) : PagingCacheFlowable<GithubRepoEntity>(GithubRepoEntity::class.java.name + userName) {
 
     companion object {
         private const val PER_PAGE = 10

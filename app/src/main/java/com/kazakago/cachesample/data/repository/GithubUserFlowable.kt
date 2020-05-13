@@ -5,15 +5,15 @@ import com.kazakago.cachesample.data.api.GithubUserResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubUserEntity
 import com.kazakago.cachesample.data.cache.state.getOrCreate
-import com.kazakago.cachesample.data.repository.dispatcher.CacheStreamDispatcher
+import com.kazakago.cachesample.data.repository.flowable.CacheFlowable
 import java.util.*
 
-class GithubUserDispatcher(
+class GithubUserFlowable(
     private val githubApi: GithubApi,
     private val githubUserResponseMapper: GithubUserResponseMapper,
     private val githubCache: GithubCache,
     private val userName: String
-) : CacheStreamDispatcher<GithubUserEntity>(GithubUserEntity::class.java.name + userName) {
+) : CacheFlowable<GithubUserEntity>(GithubUserEntity::class.java.name + userName) {
 
     override suspend fun loadEntity(): GithubUserEntity? {
         return githubCache.userCache[userName]

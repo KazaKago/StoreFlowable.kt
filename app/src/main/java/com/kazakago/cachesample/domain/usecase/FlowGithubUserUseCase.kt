@@ -5,10 +5,10 @@ import com.kazakago.cachesample.domain.model.GithubUser
 import com.kazakago.cachesample.domain.model.state.State
 import kotlinx.coroutines.flow.Flow
 
-class SubscribeGithubUserUseCase(private val githubRepository: GithubRepository) {
+class FlowGithubUserUseCase(private val githubRepository: GithubRepository) {
 
     operator fun invoke(userName: String): Flow<State<GithubUser>> {
-        return githubRepository.subscribeUser(userName)
+        return githubRepository.flowUser(userName)
     }
 
 }
