@@ -16,7 +16,7 @@ internal class DataSelector<KEY, DATA>(
 
     suspend fun update(newData: DATA?) {
         cacheDataManager.save(newData)
-        dataStateManager.save(key, DataState.Fixed)
+        dataStateManager.save(key, DataState.Fixed())
     }
 
     suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean) {
@@ -40,7 +40,7 @@ internal class DataSelector<KEY, DATA>(
             dataStateManager.save(key, DataState.Loading)
             val fetchedData = originDataManager.fetch()
             cacheDataManager.save(fetchedData)
-            dataStateManager.save(key, DataState.Fixed)
+            dataStateManager.save(key, DataState.Fixed())
         } catch (exception: Exception) {
             dataStateManager.save(key, DataState.Error(exception))
         }

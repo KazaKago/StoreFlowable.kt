@@ -6,8 +6,8 @@ import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubRepoEntity
 import com.kazakago.cachesample.data.cache.GithubReposStateManager
 import com.kazakago.cachesample.data.cache.state.getOrCreate
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowableDataStateManager
 import com.kazakago.cachesample.data.repository.pagingcacheflowable.AbstractPagingCacheFlowable
-import com.kazakago.cachesample.data.repository.pagingcacheflowable.PagingFlowableDataStateManager
 import java.util.*
 
 internal class GithubReposFlowable(
@@ -21,7 +21,7 @@ internal class GithubReposFlowable(
         private const val PER_PAGE = 10
     }
 
-    override val flowableDataStateManager: PagingFlowableDataStateManager<String> = GithubReposStateManager
+    override val flowableDataStateManager: FlowableDataStateManager<String> = GithubReposStateManager
 
     override suspend fun loadData(): List<GithubRepoEntity>? {
         return githubCache.reposCache[userName]

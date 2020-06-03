@@ -1,5 +1,6 @@
 package com.kazakago.cachesample.data.repository.pagingcacheflowable
 
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowAccessor
 import com.kazakago.cachesample.data.repository.cacheflowable.mapState
 import com.kazakago.cachesample.domain.model.state.State
 import com.kazakago.cachesample.domain.model.state.StateContent
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 
 internal abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
 
-    protected abstract val flowAccessor: PagingFlowAccessor<KEY>
+    protected abstract val flowAccessor: FlowAccessor<KEY>
 
     protected abstract val dataSelector: PagingDataSelector<KEY, DATA>
 

@@ -1,11 +1,14 @@
 package com.kazakago.cachesample.data.repository.pagingcacheflowable
 
-import com.kazakago.cachesample.data.cache.state.PagingDataState
+import com.kazakago.cachesample.data.cache.state.DataState
+import com.kazakago.cachesample.data.repository.cacheflowable.DataStateManager
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowAccessor
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowableDataStateManager
 import kotlinx.coroutines.flow.Flow
 
 internal abstract class AbstractPagingCacheFlowable<KEY, DATA>(key: KEY) : PagingCacheFlowable<KEY, DATA>(key) {
 
-    protected abstract val flowableDataStateManager: PagingFlowableDataStateManager<KEY>
+    protected abstract val flowableDataStateManager: FlowableDataStateManager<KEY>
 
     protected abstract suspend fun loadData(): List<DATA>?
 
@@ -15,15 +18,15 @@ internal abstract class AbstractPagingCacheFlowable<KEY, DATA>(key: KEY) : Pagin
 
     protected abstract suspend fun fetchOrigin(data: List<DATA>?, additionalRequest: Boolean): List<DATA>
 
-    override val flowAccessor: PagingFlowAccessor<KEY> = object : PagingFlowAccessor<KEY> {
-        override fun getFlow(key: KEY): Flow<PagingDataState> = flowableDataStateManager.getFlow(key)
+    override val flowAccessor: FlowAccessor<KEY> = object : FlowAccessor<KEY> {
+        override fun getFlow(key: KEY): Flow<DataState> = flowableDataStateManager.getFlow(key)
     }
 
     override val dataSelector: PagingDataSelector<KEY, DATA> = PagingDataSelector(
         key = key,
-        dataStateManager = object : PagingDataStateManager<KEY> {
-            override fun save(key: KEY, state: PagingDataState) = flowableDataStateManager.save(key, state)
-            override fun load(key: KEY): PagingDataState = flowableDataStateManager.load(key)
+        dataStateManager = object : DataStateManager<KEY> {
+            override fun save(key: KEY, state: DataState) = flowableDataStateManager.save(key, state)
+            override fun load(key: KEY): DataState = flowableDataStateManager.load(key)
         },
         cacheDataManager = object : PagingCacheDataManager<DATA> {
             override suspend fun load(): List<DATA>? = loadData()

@@ -22,7 +22,7 @@ internal abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, F
     }
 
     private fun <KEY> HashMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed) })
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed()) })
     }
 
 }

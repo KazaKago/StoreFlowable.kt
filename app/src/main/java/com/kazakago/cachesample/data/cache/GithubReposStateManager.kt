@@ -1,5 +1,5 @@
 package com.kazakago.cachesample.data.cache
 
-import com.kazakago.cachesample.data.repository.pagingcacheflowable.PagingFlowableDataStateManager
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowableDataStateManager
 
-internal object GithubReposStateManager : PagingFlowableDataStateManager<String>()
+internal object GithubReposStateManager : FlowableDataStateManager<String>()
