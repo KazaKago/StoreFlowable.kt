@@ -1,5 +1,6 @@
 package com.kazakago.cacheflowable
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 abstract class AbstractCacheFlowable<KEY, DATA>(key: KEY) : CacheFlowable<KEY, DATA>(key) {
@@ -14,10 +15,12 @@ abstract class AbstractCacheFlowable<KEY, DATA>(key: KEY) : CacheFlowable<KEY, D
 
     protected abstract suspend fun fetchOrigin(): DATA
 
+    @ExperimentalCoroutinesApi
     override val flowAccessor: FlowAccessor<KEY> = object : FlowAccessor<KEY> {
         override fun getFlow(key: KEY): Flow<DataState> = flowableDataStateManager.getFlow(key)
     }
 
+    @ExperimentalCoroutinesApi
     override val dataSelector: DataSelector<KEY, DATA> = DataSelector(
         key = key,
         dataStateManager = object : DataStateManager<KEY> {

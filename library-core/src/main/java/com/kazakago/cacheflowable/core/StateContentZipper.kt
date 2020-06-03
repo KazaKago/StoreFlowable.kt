@@ -39,7 +39,7 @@ fun <A, B, C, D, E, Z> StateContent<A>.zip(otherStateContent1: StateContent<B>, 
 private fun <A, B, Z> StateContent<A>.zipImpl(otherStateContent: StateContent<B>, transform: (content1: A, content2: B) -> Z): StateContent<Z> {
     return when (this) {
         is StateContent.Exist -> this.zipImpl(otherStateContent, transform)
-        is StateContent.NotExist -> this.zipImpl(otherStateContent, transform)
+        is StateContent.NotExist -> this.zipImpl(otherStateContent)
     }
 }
 
@@ -50,7 +50,7 @@ private fun <A, B, Z> StateContent.Exist<A>.zipImpl(otherStateContent: StateCont
     }
 }
 
-private fun <A, B, Z> StateContent.NotExist<A>.zipImpl(otherStateContent: StateContent<B>, transform: (content1: A, content2: B) -> Z): StateContent<Z> {
+private fun <A, B, Z> StateContent.NotExist<A>.zipImpl(otherStateContent: StateContent<B>): StateContent<Z> {
     return when (otherStateContent) {
         is StateContent.Exist -> StateContent.NotExist()
         is StateContent.NotExist -> StateContent.NotExist()

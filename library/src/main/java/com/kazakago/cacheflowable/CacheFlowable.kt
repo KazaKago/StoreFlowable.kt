@@ -4,6 +4,7 @@ import com.kazakago.cacheflowable.core.State
 import com.kazakago.cacheflowable.core.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -15,6 +16,7 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
 
     protected abstract val dataSelector: DataSelector<KEY, DATA>
 
+    @ExperimentalCoroutinesApi
     fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>> {
         return flowAccessor.getFlow(key)
             .onStart {

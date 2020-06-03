@@ -6,6 +6,7 @@ import com.kazakago.cacheflowable.core.StateContent
 import com.kazakago.cacheflowable.mapState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -17,6 +18,7 @@ abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
 
     protected abstract val dataSelector: PagingDataSelector<KEY, DATA>
 
+    @ExperimentalCoroutinesApi
     fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>> {
         return flowAccessor.getFlow(key)
             .onStart {
