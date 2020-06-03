@@ -9,7 +9,7 @@ import com.kazakago.cacheflowable.sample.data.cache.GithubUserEntity
 import com.kazakago.cacheflowable.sample.data.cache.GithubUserStateManager
 import java.util.*
 
-internal class GithubUserFlowable(
+class GithubUserFlowable(
     private val githubApi: GithubApi,
     private val githubUserResponseMapper: GithubUserResponseMapper,
     private val githubCache: GithubCache,

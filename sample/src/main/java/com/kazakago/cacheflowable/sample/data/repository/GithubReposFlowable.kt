@@ -9,7 +9,7 @@ import com.kazakago.cacheflowable.sample.data.cache.GithubRepoEntity
 import com.kazakago.cacheflowable.sample.data.cache.GithubReposStateManager
 import java.util.*
 
-internal class GithubReposFlowable(
+class GithubReposFlowable(
     private val githubApi: GithubApi,
     private val githubRepoResponseMapper: GithubRepoResponseMapper,
     private val githubCache: GithubCache,
