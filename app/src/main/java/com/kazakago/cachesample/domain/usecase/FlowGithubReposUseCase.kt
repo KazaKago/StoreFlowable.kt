@@ -1,8 +1,8 @@
 package com.kazakago.cachesample.domain.usecase
 
+import com.kazakago.cacheflowable.core.State
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
-import com.kazakago.cachesample.domain.model.state.State
 import kotlinx.coroutines.flow.Flow
 
 class FlowGithubReposUseCase(private val githubRepository: GithubRepository) {

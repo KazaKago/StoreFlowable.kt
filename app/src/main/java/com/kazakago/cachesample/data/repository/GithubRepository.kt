@@ -1,5 +1,7 @@
 package com.kazakago.cachesample.data.repository
 
+import com.kazakago.cacheflowable.core.State
+import com.kazakago.cacheflowable.core.mapContent
 import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubRepoResponseMapper
 import com.kazakago.cachesample.data.api.GithubUserResponseMapper
@@ -8,8 +10,6 @@ import com.kazakago.cachesample.data.cache.GithubRepoEntityMapper
 import com.kazakago.cachesample.data.cache.GithubUserEntityMapper
 import com.kazakago.cachesample.domain.model.GithubRepo
 import com.kazakago.cachesample.domain.model.GithubUser
-import com.kazakago.cachesample.domain.model.state.State
-import com.kazakago.cachesample.domain.model.state.mapContent
 import kotlinx.coroutines.flow.Flow
 
 class GithubRepository {

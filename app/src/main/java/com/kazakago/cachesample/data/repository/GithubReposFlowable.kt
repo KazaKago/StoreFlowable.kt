@@ -1,13 +1,12 @@
 package com.kazakago.cachesample.data.repository
 
+import com.kazakago.cacheflowable.FlowableDataStateManager
+import com.kazakago.cacheflowable.paging.AbstractPagingCacheFlowable
 import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubRepoResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubRepoEntity
 import com.kazakago.cachesample.data.cache.GithubReposStateManager
-import com.kazakago.cachesample.data.cache.state.getOrCreate
-import com.kazakago.cachesample.data.repository.cacheflowable.FlowableDataStateManager
-import com.kazakago.cachesample.data.repository.pagingcacheflowable.AbstractPagingCacheFlowable
 import java.util.*
 
 internal class GithubReposFlowable(
