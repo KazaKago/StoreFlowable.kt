@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.kazakago.cachesample"
+        applicationId "com.kazakago.cacheflowable.sample"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
