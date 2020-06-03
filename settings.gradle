@@ -1,4 +1,4 @@
+rootProject.name='CacheFlowable'
+include ':sample'
 include ':library-core'
 include ':library'
-rootProject.name='CacheSample'
-include ':app'

@@ -50,7 +50,6 @@ dependencies {
     implementation 'io.coil-kt:coil:0.11.0'
     implementation 'com.xwray:groupie:2.8.0'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.8.0'
-    implementation 'com.os.operando.guild.kt:guild_kt:1.0.0'
 
     testImplementation 'junit:junit:4.13'
 
