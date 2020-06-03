@@ -43,47 +43,47 @@ class GithubUserViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun subscribeRepos() = viewModelScope.launch {
         flowGithubUserUseCase(USER_NAME).collect {
-            it.separate(
-                fixed = { _ ->
+            it.doAction(
+                onFixed = {
                     shouldNoticeErrorOnNextState = false
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubUser.value = exist.rawContent
+                    it.content.doAction(
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
                             _isLoading.value = false
                             _error.value = null
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubUser.value = null
                             _isLoading.value = false
                             _error.value = null
                         }
                     )
                 },
-                loading = { _ ->
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubUser.value = exist.rawContent
+                onLoading = {
+                    it.content.doAction(
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
                             _isLoading.value = true
                             _error.value = null
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubUser.value = null
                             _isLoading.value = true
                             _error.value = null
                         }
                     )
                 },
-                error = { error ->
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubUser.value = exist.rawContent
+                onError = { exception ->
+                    it.content.doAction(
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
                             _isLoading.value = false
                             _error.value = null
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubUser.value = null
                             _isLoading.value = false
-                            _error.value = error.exception
+                            _error.value = exception
                         }
                     )
                 }

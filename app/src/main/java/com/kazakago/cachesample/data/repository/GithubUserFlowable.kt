@@ -4,23 +4,27 @@ import com.kazakago.cachesample.data.api.GithubApi
 import com.kazakago.cachesample.data.api.GithubUserResponseMapper
 import com.kazakago.cachesample.data.cache.GithubCache
 import com.kazakago.cachesample.data.cache.GithubUserEntity
+import com.kazakago.cachesample.data.cache.GithubUserStateManager
 import com.kazakago.cachesample.data.cache.state.getOrCreate
-import com.kazakago.cachesample.data.repository.flowable.CacheFlowable
+import com.kazakago.cachesample.data.repository.cacheflowable.AbstractCacheFlowable
+import com.kazakago.cachesample.data.repository.cacheflowable.FlowableDataStateManager
 import java.util.*
 
-class GithubUserFlowable(
+internal class GithubUserFlowable(
     private val githubApi: GithubApi,
     private val githubUserResponseMapper: GithubUserResponseMapper,
     private val githubCache: GithubCache,
     private val userName: String
-) : CacheFlowable<GithubUserEntity>(GithubUserEntity::class.java.name + userName) {
+) : AbstractCacheFlowable<String, GithubUserEntity>(userName) {
 
-    override suspend fun loadEntity(): GithubUserEntity? {
+    override val flowableDataStateManager: FlowableDataStateManager<String> = GithubUserStateManager
+
+    override suspend fun loadData(): GithubUserEntity? {
         return githubCache.userCache[userName]
     }
 
-    override suspend fun saveEntity(entity: GithubUserEntity?) {
-        githubCache.userCache[userName] = entity
+    override suspend fun saveData(data: GithubUserEntity?) {
+        githubCache.userCache[userName] = data
         githubCache.userCreateAdCache[userName] = Calendar.getInstance()
     }
 
@@ -29,7 +33,7 @@ class GithubUserFlowable(
         return githubUserResponseMapper.map(response)
     }
 
-    override suspend fun needRefresh(entity: GithubUserEntity): Boolean {
+    override suspend fun needRefresh(data: GithubUserEntity): Boolean {
         val expiredTime = githubCache.userCreateAdCache.getOrCreate(userName).apply {
             add(Calendar.MINUTE, 3)
         }

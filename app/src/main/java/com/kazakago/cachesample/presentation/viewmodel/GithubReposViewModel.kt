@@ -7,9 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.cachesample.data.repository.GithubRepository
 import com.kazakago.cachesample.domain.model.GithubRepo
+import com.kazakago.cachesample.domain.usecase.FlowGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.RequestAdditionalGithubReposUseCase
 import com.kazakago.cachesample.domain.usecase.RequestGithubReposUseCase
-import com.kazakago.cachesample.domain.usecase.FlowGithubReposUseCase
 import com.kazakago.cachesample.presentation.viewmodel.livedata.LiveEvent
 import com.kazakago.cachesample.presentation.viewmodel.livedata.MutableLiveEvent
 import com.kazakago.cachesample.presentation.viewmodel.livedata.MutableUnitLiveEvent
@@ -62,18 +62,18 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun subscribeRepos() = viewModelScope.launch {
         flowGithubReposUseCase(USER_NAME).collect {
-            it.separate(
-                fixed = { _ ->
+            it.doAction(
+                onFixed = {
                     shouldNoticeErrorOnNextState = false
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubRepos.value = exist.rawContent
+                    it.content.doAction(
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
                             _mainError.value = null
                             _additionalError.value = null
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = true
                             _isAdditionalLoading.value = false
@@ -82,16 +82,16 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
                         }
                     )
                 },
-                loading = { _ ->
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubRepos.value = exist.rawContent
+                onLoading = {
+                    it.content.doAction(
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = true
                             _mainError.value = null
                             _additionalError.value = null
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = true
                             _isAdditionalLoading.value = false
@@ -100,22 +100,22 @@ class GithubReposViewModel(application: Application) : AndroidViewModel(applicat
                         }
                     )
                 },
-                error = { error ->
-                    if (shouldNoticeErrorOnNextState) _strongError.call(error.exception)
+                onError = { exception ->
+                    if (shouldNoticeErrorOnNextState) _strongError.call(exception)
                     shouldNoticeErrorOnNextState = false
-                    it.content.separate(
-                        exist = { exist ->
-                            _githubRepos.value = exist.rawContent
+                    it.content.doAction(
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
                             _mainError.value = null
-                            _additionalError.value = error.exception
+                            _additionalError.value = exception
                         },
-                        notExist = {
+                        onNotExist = {
                             _githubRepos.value = emptyList()
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
-                            _mainError.value = error.exception
+                            _mainError.value = exception
                             _additionalError.value = null
                         }
                     )

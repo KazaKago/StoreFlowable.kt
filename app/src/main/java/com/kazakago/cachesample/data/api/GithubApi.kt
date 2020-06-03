@@ -5,6 +5,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 class GithubApi {
+
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com")
         .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
@@ -17,4 +18,5 @@ class GithubApi {
     suspend fun getUser(userName: String): GithubUserResponse {
         return retrofit.create(GithubService::class.java).getUser(userName).body()!!
     }
+
 }

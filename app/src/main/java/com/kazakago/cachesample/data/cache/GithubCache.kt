@@ -2,7 +2,7 @@ package com.kazakago.cachesample.data.cache
 
 import java.util.*
 
-object GithubCache {
+internal object GithubCache {
     var reposCache: HashMap<String, List<GithubRepoEntity>?> = hashMapOf()
     var reposCreateAdCache: HashMap<String, Calendar> = hashMapOf()
     var userCache: HashMap<String, GithubUserEntity?> = hashMapOf()

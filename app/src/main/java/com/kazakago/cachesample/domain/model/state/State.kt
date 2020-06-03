@@ -7,11 +7,11 @@ sealed class State<out T>(
     class Loading<out T>(content: StateContent<T>) : State<T>(content)
     class Error<out T>(content: StateContent<T>, val exception: Exception) : State<T>(content)
 
-    fun separate(fixed: ((state: Fixed<T>) -> Unit), loading: ((state: Loading<T>) -> Unit), error: ((state: Error<T>) -> Unit)) {
-        when (this) {
-            is Fixed -> fixed(this)
-            is Loading -> loading(this)
-            is Error -> error(this)
+    fun <V> doAction(onFixed: (() -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
+        return when (this) {
+            is Fixed -> onFixed()
+            is Loading -> onLoading()
+            is Error -> onError(exception)
         }
     }
 
