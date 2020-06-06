@@ -30,4 +30,9 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
         return getOrPut(key, { MutableStateFlow(DataState.Fixed()) })
     }
 
+    @ExperimentalCoroutinesApi
+    fun clearAll() {
+        dataState.clear()
+    }
+
 }
