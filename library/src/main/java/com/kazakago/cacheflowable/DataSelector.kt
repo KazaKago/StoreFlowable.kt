@@ -1,6 +1,6 @@
 package com.kazakago.cacheflowable
 
-class DataSelector<KEY, DATA>(
+internal class DataSelector<KEY, DATA>(
     private val key: KEY,
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: CacheDataManager<DATA>,

@@ -3,7 +3,7 @@ package com.kazakago.cacheflowable.paging
 import com.kazakago.cacheflowable.DataState
 import com.kazakago.cacheflowable.DataStateManager
 
-class PagingDataSelector<KEY, DATA>(
+internal class PagingDataSelector<KEY, DATA>(
     private val key: KEY,
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: PagingCacheDataManager<DATA>,

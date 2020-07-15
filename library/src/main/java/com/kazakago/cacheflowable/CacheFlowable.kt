@@ -5,16 +5,14 @@ import com.kazakago.cacheflowable.core.StateContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
 
-    protected abstract val flowAccessor: FlowAccessor<KEY>
+    internal abstract val flowAccessor: FlowAccessor<KEY>
 
-    protected abstract val dataSelector: DataSelector<KEY, DATA>
+    internal abstract val dataSelector: DataSelector<KEY, DATA>
 
     @ExperimentalCoroutinesApi
     fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>> {
@@ -29,6 +27,27 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
                 val stateContent = StateContent.wrap(data)
                 it.mapState(stateContent)
             }
+    }
+
+    @ExperimentalCoroutinesApi
+    suspend fun asData(type: AsDataType = AsDataType.Mix): DATA? {
+        return flowAccessor.getFlow(key)
+            .onStart {
+                when (type) {
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
+                    AsDataType.FromCache -> Unit //do nothing.
+                }
+            }
+            .transform {
+                val data = dataSelector.load()
+                when (it) {
+                    is DataState.Fixed -> emit(data)
+                    is DataState.Loading -> Unit //do nothing.
+                    is DataState.Error -> emit(data)
+                }
+            }
+            .first()
     }
 
     suspend fun validate() {

@@ -1,5 +1,5 @@
 package com.kazakago.cacheflowable
 
-interface OriginDataManager<DATA> {
+internal interface OriginDataManager<DATA> {
     suspend fun fetch(): DATA
 }
