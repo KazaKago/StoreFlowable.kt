@@ -5,27 +5,64 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.GithubReposActivity">
+    tools:context=".view.GithubReposActivity">
 
-    <Button
-        android:id="@+id/reposButton"
+    <TextView
+        android:id="@+id/simpleCacheSampleTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Repos"
-        app:layout_constraintBottom_toTopOf="@id/userButton"
+        android:text="Simple sample"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/perUserCacheSampleTitleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
+    <TextView
+        android:id="@+id/perUserCacheSampleTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Per user sample"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/userNameInputEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/simpleCacheSampleTitleTextView" />
+
+    <EditText
+        android:id="@+id/userNameInputEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Input any Github username"
+        app:layout_constraintBottom_toTopOf="@id/userButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/perUserCacheSampleTitleTextView" />
+
     <Button
         android:id="@+id/userButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User"
+        android:text="User's info\n(Single cache sample)"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/reposButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reposButton" />
+        app:layout_constraintTop_toBottomOf="@id/userNameInputEditText" />
+
+    <Button
+        android:id="@+id/reposButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="User's repos\n(Paging cache sample)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="@id/userButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/userButton"
+        app:layout_constraintTop_toTopOf="@id/userButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

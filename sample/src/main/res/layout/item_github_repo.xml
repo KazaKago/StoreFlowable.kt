@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:padding="12dp"
-    tools:context=".presentation.view.GithubReposActivity">
+    tools:context=".view.GithubReposActivity">
 
     <TextView
         android:id="@+id/idTextView"

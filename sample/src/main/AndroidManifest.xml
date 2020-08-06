@@ -11,15 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presentation.view.MainActivity">
+        <activity android:name="com.kazakago.cacheflowable.sample.view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.view.GithubReposActivity" />
-        <activity android:name=".presentation.view.GithubUserActivity" />
+        <activity android:name="com.kazakago.cacheflowable.sample.view.GithubReposActivity" />
+        <activity android:name="com.kazakago.cacheflowable.sample.view.GithubUserActivity" />
     </application>
 
 </manifest>
