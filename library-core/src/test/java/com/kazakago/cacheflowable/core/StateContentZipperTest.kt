@@ -1,7 +1,6 @@
 package com.kazakago.cacheflowable.core
 
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -18,19 +17,19 @@ class StateContentZipperTest {
         exist1 = StateContent.wrap(30)
         exist2 = StateContent.wrap(70)
         notExist1 = StateContent.wrap(null)
-        notExist2= StateContent.wrap(null)
+        notExist2 = StateContent.wrap(null)
     }
 
     @Test
     fun validateZipExistExistMethod() {
         val zippedContent = exist1.zip(exist2) { value1, value2 ->
-            assertThat(value1, `is`(30))
-            assertThat(value2, `is`(70))
+            value1 shouldBeEqualTo 30
+            value2 shouldBeEqualTo 70
             value1 + value2
         }
         zippedContent.doAction(
             onExist = {
-                assertThat(it, `is`(100))
+                it shouldBeEqualTo 100
             },
             onNotExist = {
                 fail()

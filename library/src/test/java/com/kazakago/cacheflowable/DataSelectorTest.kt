@@ -2,8 +2,8 @@ package com.kazakago.cacheflowable
 
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
+import org.amshove.kluent.shouldBeInstanceOf
+import org.amshove.kluent.shouldBeNull
 import org.junit.Test
 
 class DataSelectorTest {
@@ -48,43 +48,45 @@ class DataSelectorTest {
     fun validateFixedNotExist() = runBlocking {
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataSelector.doStateAction(
+            forceRefresh = false, clearCache = false, fetchOnError = true
+        )
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
     private fun setupValidateFixedNotExist() {
@@ -96,43 +98,43 @@ class DataSelectorTest {
     fun validateLoadingNotExist() = runBlocking {
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
 
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
     }
 
     private fun setupValidateLoadingNotExist() {
@@ -144,43 +146,43 @@ class DataSelectorTest {
     fun validateErrorNotExist() = runBlocking {
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, nullValue())
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
 
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
     private fun setupValidateErrorNotExist() {
@@ -192,43 +194,43 @@ class DataSelectorTest {
     fun validateFixedExist() = runBlocking {
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
     private fun setupValidateFixedExist() {
@@ -240,43 +242,43 @@ class DataSelectorTest {
     fun validateLoadingExist() = runBlocking {
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Loading::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
     }
 
     private fun setupValidateLoadingExist() {
@@ -288,43 +290,43 @@ class DataSelectorTest {
     fun validateErrorExist() = runBlocking {
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Error::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.CachedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.CachedData::class
 
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
     private fun setupValidateErrorExist() {
@@ -336,43 +338,43 @@ class DataSelectorTest {
     fun validateFixedStaleData() = runBlocking {
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
 
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = true)
-        assertThat(dataState, `is`(instanceOf(DataState.Fixed::class.java)))
-        assertThat(dataCache, `is`(instanceOf(TestData.FetchedData::class.java)))
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
     private fun setupValidateFixedStaleData() {

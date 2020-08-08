@@ -2,9 +2,7 @@ package com.kazakago.cacheflowable.core
 
 import io.mockk.MockK
 import io.mockk.mockk
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.instanceOf
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -13,9 +11,9 @@ class StateTest {
     @Test
     fun validateContentField() {
         val state1 = State.Fixed(StateContent.Exist<MockK>(mockk()))
-        assertThat(state1.content, `is`(instanceOf(StateContent.Exist::class.java)))
+        state1.content shouldBeInstanceOf StateContent.Exist::class
         val state2 = State.Fixed(StateContent.NotExist<MockK>())
-        assertThat(state2.content, `is`(instanceOf(StateContent.NotExist::class.java)))
+        state2.content shouldBeInstanceOf StateContent.NotExist::class
     }
 
     @Test
@@ -61,7 +59,7 @@ class StateTest {
                 fail()
             },
             onError = {
-                assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
     }

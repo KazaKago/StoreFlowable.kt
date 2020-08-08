@@ -4,9 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.instanceOf
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -27,10 +26,10 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedLoadingMethod() = runBlocking {
+    fun validateCombineFixedLoadingMethod() = runBlocking<Unit> {
         val combinedFlowState = flowFixedExist.combineState(flowLoadingExist) { value1, value2 ->
-            assertThat(value1, `is`(30))
-            assertThat(value2, `is`(70))
+            value1 shouldBeEqualTo 30
+            value2 shouldBeEqualTo 70
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
@@ -47,7 +46,7 @@ class FlowStateCombinerTest {
         )
         combinedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(100))
+                it shouldBeEqualTo 100
             },
             onNotExist = {
                 fail()
@@ -56,10 +55,10 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedErrorMethod() = runBlocking {
+    fun validateCombineFixedErrorMethod() = runBlocking<Unit> {
         val combinedFlowState = flowFixedExist.combineState(flowErrorExist) { value1, value2 ->
-            assertThat(value1, `is`(30))
-            assertThat(value2, `is`(130))
+            value1 shouldBeEqualTo 30
+            value2 shouldBeEqualTo 130
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
@@ -71,12 +70,12 @@ class FlowStateCombinerTest {
                 fail()
             },
             onError = {
-                assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
         combinedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(160))
+                it shouldBeEqualTo 160
             },
             onNotExist = {
                 fail()
@@ -85,10 +84,10 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineLoadingErrorMethod() = runBlocking {
+    fun validateCombineLoadingErrorMethod() = runBlocking<Unit> {
         val combinedFlowState = flowLoadingExist.combineState(flowErrorExist) { value1, value2 ->
-            assertThat(value1, `is`(70))
-            assertThat(value2, `is`(130))
+            value1 shouldBeEqualTo 70
+            value2 shouldBeEqualTo 130
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
@@ -100,12 +99,12 @@ class FlowStateCombinerTest {
                 fail()
             },
             onError = {
-                assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
         combinedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(200))
+                it shouldBeEqualTo 200
             },
             onNotExist = {
                 fail()

@@ -1,9 +1,8 @@
 package com.kazakago.cacheflowable.core
 
 import io.mockk.MockK
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.instanceOf
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Test
 
@@ -12,17 +11,17 @@ class StateContentTest {
     @Test
     fun validateWrapMethod() {
         val stateContent1 = StateContent.wrap(30)
-        assertThat(stateContent1, `is`(instanceOf(StateContent.Exist::class.java)))
+        stateContent1 shouldBeInstanceOf StateContent.Exist::class
         val stateContent2 = StateContent.wrap(null)
-        assertThat(stateContent2, `is`(instanceOf(StateContent.NotExist::class.java)))
+        stateContent2 shouldBeInstanceOf StateContent.NotExist::class
     }
 
     @Test
     fun validateRawContentField() {
         val stateContent1 = StateContent.Exist(30)
-        assertThat(stateContent1.rawContent, `is`(30))
+        stateContent1.rawContent shouldBeEqualTo 30
         val stateContent2 = StateContent.Exist("Hello World!")
-        assertThat(stateContent2.rawContent, `is`("Hello World!"))
+        stateContent2.rawContent shouldBeEqualTo "Hello World!"
     }
 
     @Test
@@ -30,7 +29,7 @@ class StateContentTest {
         val stateContent = StateContent.Exist(30)
         stateContent.doAction(
             onExist = {
-                assertThat(it, `is`(30))
+                it shouldBeEqualTo 30
             },
             onNotExist = {
                 fail()

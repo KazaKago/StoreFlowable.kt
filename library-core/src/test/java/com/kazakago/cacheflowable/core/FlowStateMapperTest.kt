@@ -4,9 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.instanceOf
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -21,13 +20,13 @@ class FlowStateMapperTest {
     }
 
     @Test
-    fun validateMapContentMethod() = runBlocking {
+    fun validateMapContentMethod() = runBlocking<Unit> {
         val mappedFlowFixedState = flowFixedState.mapContent { it + 70 }
         val mappedFixedState = mappedFlowFixedState.first()
-        assertThat(mappedFixedState, `is`(instanceOf(State.Fixed::class.java)))
+        mappedFixedState shouldBeInstanceOf State.Fixed::class
         mappedFixedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(100))
+                it shouldBeEqualTo 100
             },
             onNotExist = {
                 fail()

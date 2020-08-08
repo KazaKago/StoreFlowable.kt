@@ -1,8 +1,7 @@
 package com.kazakago.cacheflowable.core
 
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.instanceOf
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -25,8 +24,8 @@ class StateZipperTest {
     @Test
     fun validateZipFixedLoadingMethod() {
         val zippedState = fixedExistState.zip(loadingExistState) { value1, value2 ->
-            assertThat(value1, `is`(30))
-            assertThat(value2, `is`(70))
+            value1 shouldBeEqualTo 30
+            value2 shouldBeEqualTo 70
             value1 + value2
         }
         zippedState.doAction(
@@ -42,7 +41,7 @@ class StateZipperTest {
         )
         zippedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(100))
+                it shouldBeEqualTo 100
             },
             onNotExist = {
                 fail()
@@ -53,8 +52,8 @@ class StateZipperTest {
     @Test
     fun validateZipFixedErrorMethod() {
         val zippedState = fixedExistState.zip(errorExistState) { value1, value2 ->
-            assertThat(value1, `is`(30))
-            assertThat(value2, `is`(130))
+            value1 shouldBeEqualTo 30
+            value2 shouldBeEqualTo 130
             value1 + value2
         }
         zippedState.doAction(
@@ -65,12 +64,12 @@ class StateZipperTest {
                 fail()
             },
             onError = {
-                assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
         zippedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(160))
+                it shouldBeEqualTo 160
             },
             onNotExist = {
                 fail()
@@ -81,8 +80,8 @@ class StateZipperTest {
     @Test
     fun validateZipLoadingErrorMethod() {
         val zippedState = loadingExistState.zip(errorExistState) { value1, value2 ->
-            assertThat(value1, `is`(70))
-            assertThat(value2, `is`(130))
+            value1 shouldBeEqualTo 70
+            value2 shouldBeEqualTo 130
             value1 + value2
         }
         zippedState.doAction(
@@ -93,12 +92,12 @@ class StateZipperTest {
                 fail()
             },
             onError = {
-                assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
         zippedState.content.doAction(
             onExist = {
-                assertThat(it, `is`(200))
+                it shouldBeEqualTo 200
             },
             onNotExist = {
                 fail()
