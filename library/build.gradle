@@ -11,7 +11,7 @@ publish {
     publishVersion = versionName
     desc = 'Repository pattern support library for Kotlin with Coroutins & Flow.'
     website = 'https://github.com/KazaKago/CacheFlowable'
-    licences = ['MIT']
+    licences = ['Apache-2.0']
 }
 
 dependencies {
