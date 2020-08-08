@@ -1,7 +1,18 @@
 apply plugin: 'kotlin'
+apply plugin: 'com.novoda.bintray-release'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
+publish {
+    userOrg = 'kazakago'
+    groupId = 'com.kazakago.cacheflowable'
+    artifactId = 'cacheflowable'
+    publishVersion = versionName
+    desc = 'Repository pattern support library for Kotlin with Coroutins & Flow.'
+    website = 'https://github.com/KazaKago/CacheFlowable'
+    licences = ['MIT']
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
