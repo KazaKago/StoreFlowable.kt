@@ -3,7 +3,7 @@ package com.kazakago.cacheflowable.core
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -26,7 +26,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedLoadingMethod() = runBlocking<Unit> {
+    fun validateCombineFixedLoadingMethod() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowLoadingExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -55,7 +55,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedErrorMethod() = runBlocking<Unit> {
+    fun validateCombineFixedErrorMethod() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 130
@@ -84,7 +84,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineLoadingErrorMethod() = runBlocking<Unit> {
+    fun validateCombineLoadingErrorMethod() = runBlockingTest {
         val combinedFlowState = flowLoadingExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 130
@@ -113,7 +113,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateFixedFixedMethod() = runBlocking {
+    fun validateFixedFixedMethod() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowFixedNotExist) { value1, value2 ->
             fail()
             value1 + value2

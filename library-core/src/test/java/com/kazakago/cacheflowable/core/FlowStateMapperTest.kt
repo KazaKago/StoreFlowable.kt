@@ -3,7 +3,7 @@ package com.kazakago.cacheflowable.core
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -20,7 +20,7 @@ class FlowStateMapperTest {
     }
 
     @Test
-    fun validateMapContentMethod() = runBlocking<Unit> {
+    fun validateMapContentMethod() = runBlockingTest {
         val mappedFlowFixedState = flowFixedState.mapContent { it + 70 }
         val mappedFixedState = mappedFlowFixedState.first()
         mappedFixedState shouldBeInstanceOf State.Fixed::class

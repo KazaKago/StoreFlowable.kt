@@ -1,7 +1,7 @@
 package com.kazakago.cacheflowable
 
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeNull
 import org.junit.Test
@@ -45,7 +45,7 @@ class DataSelectorTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun validateFixedNotExist() = runBlocking {
+    fun validateFixedNotExist() = runBlockingTest {
         setupValidateFixedNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Fixed::class
@@ -95,7 +95,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateLoadingNotExist() = runBlocking {
+    fun validateLoadingNotExist() = runBlockingTest {
         setupValidateLoadingNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Loading::class
@@ -143,7 +143,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateErrorNotExist() = runBlocking {
+    fun validateErrorNotExist() = runBlockingTest {
         setupValidateErrorNotExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -191,7 +191,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateFixedExist() = runBlocking {
+    fun validateFixedExist() = runBlockingTest {
         setupValidateFixedExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Fixed::class
@@ -239,7 +239,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateLoadingExist() = runBlocking {
+    fun validateLoadingExist() = runBlockingTest {
         setupValidateLoadingExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Loading::class
@@ -287,7 +287,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateErrorExist() = runBlocking {
+    fun validateErrorExist() = runBlockingTest {
         setupValidateErrorExist()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -335,7 +335,7 @@ class DataSelectorTest {
     }
 
     @Test
-    fun validateFixedStaleData() = runBlocking {
+    fun validateFixedStaleData() = runBlockingTest {
         setupValidateFixedStaleData()
         dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = false)
         dataState shouldBeInstanceOf DataState.Fixed::class
