@@ -34,8 +34,8 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
         return flowAccessor.getFlow(key)
             .onStart {
                 when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
                     AsDataType.FromCache -> Unit //do nothing.
                 }
             }
