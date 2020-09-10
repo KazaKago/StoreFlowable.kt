@@ -35,7 +35,7 @@ internal class DataSelector<KEY, DATA>(
     private suspend fun fetchNewData(clearCache: Boolean) {
         try {
             if (clearCache) cacheDataManager.save(null)
-            dataStateManager.save(key, DataState.Loading)
+            dataStateManager.save(key, DataState.Loading())
             val fetchedData = originDataManager.fetch()
             cacheDataManager.save(fetchedData)
             dataStateManager.save(key, DataState.Fixed())

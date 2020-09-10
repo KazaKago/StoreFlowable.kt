@@ -37,7 +37,7 @@ class FlowableDataStateManagerTest {
                 else -> fail()
             }
         }
-        flowableDataStateManager.save("hoge", DataState.Loading)
+        flowableDataStateManager.save("hoge", DataState.Loading())
         flowableDataStateManager.save("hoge", DataState.Error(mockk()))
     }
 
@@ -52,7 +52,7 @@ class FlowableDataStateManagerTest {
                 else -> fail()
             }
         }
-        flowableDataStateManager.save("hogehoge", DataState.Loading)
+        flowableDataStateManager.save("hogehoge", DataState.Loading())
         flowableDataStateManager.save("hugahuga", DataState.Error(mockk()))
     }
 }

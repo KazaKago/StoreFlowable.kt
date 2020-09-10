@@ -42,7 +42,7 @@ internal class PagingDataSelector<KEY, DATA>(
     private suspend fun fetchNewData(data: List<DATA>?, clearCache: Boolean, additionalRequest: Boolean) {
         try {
             if (clearCache) cacheDataManager.save(null, additionalRequest)
-            dataStateManager.save(key, DataState.Loading)
+            dataStateManager.save(key, DataState.Loading())
             val fetchedData = originDataManager.fetch(data, additionalRequest)
             val mergedData = if (additionalRequest) (data ?: emptyList()) + fetchedData else fetchedData
             cacheDataManager.save(mergedData, additionalRequest)

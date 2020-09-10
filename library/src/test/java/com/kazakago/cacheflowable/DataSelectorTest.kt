@@ -138,7 +138,7 @@ class DataSelectorTest {
     }
 
     private fun setupValidateLoadingNotExist() {
-        dataState = DataState.Loading
+        dataState = DataState.Loading()
         dataCache = null
     }
 
@@ -282,7 +282,7 @@ class DataSelectorTest {
     }
 
     private fun setupValidateLoadingExist() {
-        dataState = DataState.Loading
+        dataState = DataState.Loading()
         dataCache = TestData.CachedData(isStale = false)
     }
 
