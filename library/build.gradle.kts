@@ -34,7 +34,7 @@ dependencies {
 
     testImplementation("junit:junit:4.13")
     testImplementation("org.amshove.kluent:kluent:1.61")
-    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.mockk:mockk:1.10.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.9")
     testImplementation("app.cash.turbine:turbine:0.2.1")
 }

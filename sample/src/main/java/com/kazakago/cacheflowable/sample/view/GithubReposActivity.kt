@@ -7,13 +7,11 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cacheflowable.sample.R
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.viewmodel.GithubReposViewModel
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.compositeLiveDataOf
-import com.kazakago.cacheflowable.sample.viewmodel.livedata.observe
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item

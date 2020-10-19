@@ -9,12 +9,10 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.observe
 import coil.api.load
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cacheflowable.sample.R
 import com.kazakago.cacheflowable.sample.viewmodel.GithubUserViewModel
-import com.kazakago.cacheflowable.sample.viewmodel.livedata.observe
 import kotlinx.android.synthetic.main.activity_github_user.*
 
 class GithubUserActivity : AppCompatActivity() {
