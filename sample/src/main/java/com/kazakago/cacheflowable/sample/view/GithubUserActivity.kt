@@ -9,7 +9,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import coil.api.load
+import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cacheflowable.sample.R
 import com.kazakago.cacheflowable.sample.viewmodel.GithubUserViewModel
