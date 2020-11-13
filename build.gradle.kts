@@ -8,7 +8,7 @@ buildscript {
         maven("https://dl.bintray.com/maranda/maven/")
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
+        classpath("com.android.tools.build:gradle:4.1.1")
         classpath(kotlin("gradle-plugin", "1.4.10"))
         classpath("com.novoda:bintray-release:1.0.3")
 
