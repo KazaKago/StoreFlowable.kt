@@ -13,12 +13,12 @@ class GithubApi {
         .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
         .build()
 
-    suspend fun getRepos(userName: String, page: Int, perPage: Int): List<GithubRepo> {
-        return retrofit.create(GithubService::class.java).getRepos(userName, page, perPage)
-    }
-
     suspend fun getUser(userName: String): GithubUser {
         return retrofit.create(GithubService::class.java).getUser(userName)
+    }
+
+    suspend fun getRepos(userName: String, page: Int, perPage: Int): List<GithubRepo> {
+        return retrofit.create(GithubService::class.java).getRepos(userName, page, perPage)
     }
 
 }

@@ -1,13 +1,23 @@
 package com.kazakago.cacheflowable.sample.repository
 
 import com.kazakago.cacheflowable.core.State
+import com.kazakago.cacheflowable.sample.flowable.GithubReposFlowable
+import com.kazakago.cacheflowable.sample.flowable.GithubUserFlowable
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.model.GithubUser
 import kotlinx.coroutines.flow.Flow
 
 class GithubRepository {
 
-    fun flowRepos(userName: String): Flow<State<List<GithubRepo>>> {
+    fun followUser(userName: String): Flow<State<GithubUser>> {
+        return GithubUserFlowable(userName).asFlow()
+    }
+
+    suspend fun requestUser(userName: String) {
+        return GithubUserFlowable(userName).request()
+    }
+
+    fun followRepos(userName: String): Flow<State<List<GithubRepo>>> {
         return GithubReposFlowable(userName).asFlow()
     }
 
@@ -17,14 +27,6 @@ class GithubRepository {
 
     suspend fun requestAdditionalRepos(userName: String, fetchOnError: Boolean) {
         return GithubReposFlowable(userName).requestAdditional(fetchOnError)
-    }
-
-    fun flowUser(userName: String): Flow<State<GithubUser>> {
-        return GithubUserFlowable(userName).asFlow()
-    }
-
-    suspend fun requestUser(userName: String) {
-        return GithubUserFlowable(userName).request()
     }
 
 }

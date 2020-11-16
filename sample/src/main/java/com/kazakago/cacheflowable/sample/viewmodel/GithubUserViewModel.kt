@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 class GithubUserViewModel(application: Application, private val userName: String) : AndroidViewModel(application) {
 
+    @Suppress("UNCHECKED_CAST")
     class Factory(private val application: Application, private val userName: String) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return GithubUserViewModel(application, userName) as T
@@ -34,7 +35,7 @@ class GithubUserViewModel(application: Application, private val userName: String
     }
 
     private fun subscribeRepos() = viewModelScope.launch {
-        githubRepository.flowUser(userName).collect {
+        githubRepository.followUser(userName).collect {
             it.doAction(
                 onFixed = {
                     shouldNoticeErrorOnNextState = false

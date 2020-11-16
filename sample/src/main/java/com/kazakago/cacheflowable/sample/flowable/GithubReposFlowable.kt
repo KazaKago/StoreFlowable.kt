@@ -1,4 +1,4 @@
-package com.kazakago.cacheflowable.sample.repository
+package com.kazakago.cacheflowable.sample.flowable
 
 import com.kazakago.cacheflowable.FlowableDataStateManager
 import com.kazakago.cacheflowable.paging.AbstractPagingCacheFlowable
@@ -34,10 +34,14 @@ class GithubReposFlowable(private val userName: String) : AbstractPagingCacheFlo
     }
 
     override suspend fun needRefresh(data: List<GithubRepo>): Boolean {
-        val expiredTime = githubCache.reposCreateAdCache.getOrCreate(userName).apply {
+        val expiredTime = githubCache.reposCreateAdCache[userName]?.apply {
             add(Calendar.MINUTE, 3)
         }
-        return expiredTime < Calendar.getInstance()
+        return if (expiredTime != null) {
+            expiredTime < Calendar.getInstance()
+        } else {
+            true
+        }
     }
 
 }
