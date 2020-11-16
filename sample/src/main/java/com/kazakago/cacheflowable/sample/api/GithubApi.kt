@@ -1,5 +1,7 @@
 package com.kazakago.cacheflowable.sample.api
 
+import com.kazakago.cacheflowable.sample.model.GithubMeta
+import com.kazakago.cacheflowable.sample.model.GithubOrg
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.model.GithubUser
 import com.squareup.moshi.Moshi
@@ -12,6 +14,14 @@ class GithubApi {
         .baseUrl("https://api.github.com")
         .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
         .build()
+
+    suspend fun getMeta(): GithubMeta {
+        return retrofit.create(GithubService::class.java).getMeta()
+    }
+
+    suspend fun getOrgs(since: Long?, perPage: Int): List<GithubOrg> {
+        return retrofit.create(GithubService::class.java).getOrgs(since, perPage)
+    }
 
     suspend fun getUser(userName: String): GithubUser {
         return retrofit.create(GithubService::class.java).getUser(userName)

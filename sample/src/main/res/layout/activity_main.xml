@@ -5,7 +5,7 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.GithubReposActivity">
+    tools:context=".view.MainActivity">
 
     <TextView
         android:id="@+id/simpleCacheSampleTitleTextView"
@@ -13,11 +13,35 @@
         android:layout_height="wrap_content"
         android:text="Simple sample"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@id/perUserCacheSampleTitleTextView"
+        app:layout_constraintBottom_toTopOf="@id/metaButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
+
+    <Button
+        android:id="@+id/metaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Github Meta info\n(Single cache sample)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/perUserCacheSampleTitleTextView"
+        app:layout_constraintEnd_toStartOf="@id/orgsButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/simpleCacheSampleTitleTextView" />
+
+    <Button
+        android:id="@+id/orgsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Github Organizations\n(Paging cache sample)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="@id/metaButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/metaButton"
+        app:layout_constraintTop_toTopOf="@id/metaButton" />
 
     <TextView
         android:id="@+id/perUserCacheSampleTitleTextView"
@@ -29,7 +53,7 @@
         app:layout_constraintBottom_toTopOf="@id/userNameInputEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/simpleCacheSampleTitleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/metaButton" />
 
     <EditText
         android:id="@+id/userNameInputEditText"
@@ -45,7 +69,7 @@
         android:id="@+id/userButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User's info\n(Single cache sample)"
+        android:text="Github User's info\n(Single cache sample)"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/reposButton"
@@ -58,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="User's repos\n(Paging cache sample)"
+        android:text="Github User's repos\n(Paging cache sample)"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@id/userButton"
         app:layout_constraintEnd_toEndOf="parent"

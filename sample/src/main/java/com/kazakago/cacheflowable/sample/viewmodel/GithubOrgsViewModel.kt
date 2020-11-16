@@ -1,24 +1,19 @@
 package com.kazakago.cacheflowable.sample.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.kazakago.cacheflowable.sample.model.GithubRepo
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.kazakago.cacheflowable.sample.model.GithubOrg
 import com.kazakago.cacheflowable.sample.repository.GithubRepository
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.MutableLiveEvent
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.MutableUnitLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class GithubReposViewModel(application: Application, private val userName: String) : AndroidViewModel(application) {
+class GithubOrgsViewModel(application: Application) : AndroidViewModel(application) {
 
-    @Suppress("UNCHECKED_CAST")
-    class Factory(private val application: Application, private val userName: String) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return GithubReposViewModel(application, userName) as T
-        }
-    }
-
-    val githubRepos = MutableLiveData<List<GithubRepo>>(emptyList())
+    val githubOrgs = MutableLiveData<List<GithubOrg>>(emptyList())
     val isMainLoading = MutableLiveData(false)
     val isAdditionalLoading = MutableLiveData(false)
     val mainError = MutableLiveData<Exception?>()
@@ -33,34 +28,34 @@ class GithubReposViewModel(application: Application, private val userName: Strin
     }
 
     fun request() = viewModelScope.launch {
-        if (!githubRepos.value.isNullOrEmpty()) shouldNoticeErrorOnNextState = true
-        githubRepository.requestRepos(userName)
+        if (!githubOrgs.value.isNullOrEmpty()) shouldNoticeErrorOnNextState = true
+        githubRepository.requestOrgs()
         hideSwipeRefresh.call()
     }
 
     fun requestAdditional() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, false)
+        githubRepository.requestAdditionalOrgs(false)
     }
 
     fun retryAdditional() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, true)
+        githubRepository.requestAdditionalOrgs(true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followRepos(userName).collect {
+        githubRepository.followOrgs().collect {
             it.doAction(
                 onFixed = {
                     shouldNoticeErrorOnNextState = false
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
+                        onExist = { _githubOrgs ->
+                            githubOrgs.value = _githubOrgs
                             isMainLoading.value = false
                             isAdditionalLoading.value = false
                             mainError.value = null
                             additionalError.value = null
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
+                            githubOrgs.value = emptyList()
                             isMainLoading.value = true
                             isAdditionalLoading.value = false
                             mainError.value = null
@@ -70,15 +65,15 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                 },
                 onLoading = {
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
+                        onExist = { _githubOrgs ->
+                            githubOrgs.value = _githubOrgs
                             isMainLoading.value = false
                             isAdditionalLoading.value = true
                             mainError.value = null
                             additionalError.value = null
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
+                            githubOrgs.value = emptyList()
                             isMainLoading.value = true
                             isAdditionalLoading.value = false
                             mainError.value = null
@@ -90,15 +85,15 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                     if (shouldNoticeErrorOnNextState) strongError.call(exception)
                     shouldNoticeErrorOnNextState = false
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
+                        onExist = { _githubOrgs ->
+                            githubOrgs.value = _githubOrgs
                             isMainLoading.value = false
                             isAdditionalLoading.value = false
                             mainError.value = null
                             additionalError.value = exception
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
+                            githubOrgs.value = emptyList()
                             isMainLoading.value = false
                             isAdditionalLoading.value = false
                             mainError.value = exception

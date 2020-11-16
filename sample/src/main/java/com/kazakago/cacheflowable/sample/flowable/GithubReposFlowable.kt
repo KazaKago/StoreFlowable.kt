@@ -11,7 +11,7 @@ import java.util.*
 class GithubReposFlowable(private val userName: String) : AbstractPagingCacheFlowable<String, GithubRepo>(userName) {
 
     companion object {
-        private const val PER_PAGE = 10
+        private const val PER_PAGE = 20
     }
 
     private val githubApi = GithubApi()

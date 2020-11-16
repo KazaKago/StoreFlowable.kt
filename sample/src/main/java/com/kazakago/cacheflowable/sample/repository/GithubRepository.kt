@@ -1,13 +1,37 @@
 package com.kazakago.cacheflowable.sample.repository
 
 import com.kazakago.cacheflowable.core.State
+import com.kazakago.cacheflowable.sample.flowable.GithubMetaFlowable
+import com.kazakago.cacheflowable.sample.flowable.GithubOrgsFlowable
 import com.kazakago.cacheflowable.sample.flowable.GithubReposFlowable
 import com.kazakago.cacheflowable.sample.flowable.GithubUserFlowable
+import com.kazakago.cacheflowable.sample.model.GithubMeta
+import com.kazakago.cacheflowable.sample.model.GithubOrg
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.model.GithubUser
 import kotlinx.coroutines.flow.Flow
 
 class GithubRepository {
+
+    fun followMeta(): Flow<State<GithubMeta>> {
+        return GithubMetaFlowable().asFlow()
+    }
+
+    suspend fun requestMeta() {
+        return GithubMetaFlowable().request()
+    }
+
+    fun followOrgs(): Flow<State<List<GithubOrg>>> {
+        return GithubOrgsFlowable().asFlow()
+    }
+
+    suspend fun requestOrgs() {
+        return GithubOrgsFlowable().request()
+    }
+
+    suspend fun requestAdditionalOrgs(fetchOnError: Boolean) {
+        return GithubOrgsFlowable().requestAdditional(fetchOnError)
+    }
 
     fun followUser(userName: String): Flow<State<GithubUser>> {
         return GithubUserFlowable(userName).asFlow()

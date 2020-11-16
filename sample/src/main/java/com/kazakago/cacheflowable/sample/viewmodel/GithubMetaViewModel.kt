@@ -1,24 +1,18 @@
 package com.kazakago.cacheflowable.sample.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.kazakago.cacheflowable.sample.model.GithubUser
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.kazakago.cacheflowable.sample.model.GithubMeta
 import com.kazakago.cacheflowable.sample.repository.GithubRepository
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+class GithubMetaViewModel(application: Application) : AndroidViewModel(application) {
 
-class GithubUserViewModel(application: Application, private val userName: String) : AndroidViewModel(application) {
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(private val application: Application, private val userName: String) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return GithubUserViewModel(application, userName) as T
-        }
-    }
-
-    val githubUser = MutableLiveData<GithubUser?>()
+    val githubMeta = MutableLiveData<GithubMeta?>()
     val isLoading = MutableLiveData(false)
     val error = MutableLiveData<Exception?>()
     val strongError = MutableLiveEvent<Exception>()
@@ -30,23 +24,23 @@ class GithubUserViewModel(application: Application, private val userName: String
     }
 
     fun request() = viewModelScope.launch {
-        if (githubUser.value != null) shouldNoticeErrorOnNextState = true
-        githubRepository.requestUser(userName)
+        if (githubMeta.value != null) shouldNoticeErrorOnNextState = true
+        githubRepository.requestMeta()
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followUser(userName).collect {
+        githubRepository.followMeta().collect {
             it.doAction(
                 onFixed = {
                     shouldNoticeErrorOnNextState = false
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
+                        onExist = { _githubMeta ->
+                            githubMeta.value = _githubMeta
                             isLoading.value = false
                             error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
+                            githubMeta.value = null
                             isLoading.value = false
                             error.value = null
                         }
@@ -54,13 +48,13 @@ class GithubUserViewModel(application: Application, private val userName: String
                 },
                 onLoading = {
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
+                        onExist = { _githubMeta ->
+                            githubMeta.value = _githubMeta
                             isLoading.value = true
                             error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
+                            githubMeta.value = null
                             isLoading.value = true
                             error.value = null
                         }
@@ -70,13 +64,13 @@ class GithubUserViewModel(application: Application, private val userName: String
                     if (shouldNoticeErrorOnNextState) strongError.call(exception)
                     shouldNoticeErrorOnNextState = false
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
+                        onExist = { _githubMeta ->
+                            githubMeta.value = _githubMeta
                             isLoading.value = false
                             error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
+                            githubMeta.value = null
                             isLoading.value = false
                             error.value = exception
                         }

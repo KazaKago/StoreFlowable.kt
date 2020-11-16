@@ -10,6 +10,9 @@ import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cacheflowable.sample.R
 import com.kazakago.cacheflowable.sample.model.GithubRepo
+import com.kazakago.cacheflowable.sample.view.items.ErrorItem
+import com.kazakago.cacheflowable.sample.view.items.GithubRepoItem
+import com.kazakago.cacheflowable.sample.view.items.LoadingItem
 import com.kazakago.cacheflowable.sample.viewmodel.GithubReposViewModel
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.compositeLiveDataOf
 import com.xwray.groupie.GroupAdapter
@@ -41,9 +44,9 @@ class GithubReposActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_github_repos)
 
-        githubReposRecyclerView.adapter = githubReposGroupAdapter
-        githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAdditional(false)
+        githubOrgsRecyclerView.adapter = githubReposGroupAdapter
+        githubOrgsRecyclerView.addOnBottomReached {
+            githubReposViewModel.requestAdditional()
         }
         swipeRefreshLayout.setOnRefreshListener {
             githubReposViewModel.request()
@@ -82,12 +85,12 @@ class GithubReposActivity : AppCompatActivity() {
         }
     }
 
-    private fun createLoadingItem(): GithubRepoLoadingItem {
-        return GithubRepoLoadingItem()
+    private fun createLoadingItem(): LoadingItem {
+        return LoadingItem()
     }
 
-    private fun createErrorItem(exception: Exception): GithubRepoErrorItem {
-        return GithubRepoErrorItem(exception).apply {
+    private fun createErrorItem(exception: Exception): ErrorItem {
+        return ErrorItem(exception).apply {
             onRetry = { githubReposViewModel.retryAdditional() }
         }
     }

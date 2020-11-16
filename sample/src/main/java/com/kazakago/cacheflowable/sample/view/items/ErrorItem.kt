@@ -1,16 +1,16 @@
-package com.kazakago.cacheflowable.sample.view
+package com.kazakago.cacheflowable.sample.view.items
 
 import com.kazakago.cacheflowable.sample.R
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.item_github_repo_error.view.*
+import kotlinx.android.synthetic.main.item_error.view.*
 
-data class GithubRepoErrorItem(private val exception: Exception) : Item(exception.hashCode().toLong()) {
+data class ErrorItem(private val exception: Exception) : Item(exception.hashCode().toLong()) {
 
     var onRetry: (() -> Unit) = {}
 
     override fun getLayout(): Int {
-        return R.layout.item_github_repo_error
+        return R.layout.item_error
     }
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {

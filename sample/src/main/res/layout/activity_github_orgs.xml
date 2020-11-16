@@ -5,7 +5,7 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.GithubReposActivity">
+    tools:context=".view.GithubOrgsActivity">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_github_repo" />
+            tools:listitem="@layout/item_github_org" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

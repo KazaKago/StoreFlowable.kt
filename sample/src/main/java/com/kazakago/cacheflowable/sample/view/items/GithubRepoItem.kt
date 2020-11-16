@@ -1,4 +1,4 @@
-package com.kazakago.cacheflowable.sample.view
+package com.kazakago.cacheflowable.sample.view.items
 
 import com.kazakago.cacheflowable.sample.R
 import com.kazakago.cacheflowable.sample.model.GithubRepo

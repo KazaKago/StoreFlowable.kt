@@ -11,6 +11,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        metaButton.setOnClickListener {
+            val intent = GithubMetaActivity.createIntent(this)
+            startActivity(intent)
+        }
+        orgsButton.setOnClickListener {
+            val intent = GithubOrgsActivity.createIntent(this)
+            startActivity(intent)
+        }
         reposButton.setOnClickListener {
             val intent = GithubReposActivity.createIntent(this, userNameInputEditText.text.toString())
             startActivity(intent)

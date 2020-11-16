@@ -4,29 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    tools:context=".view.GithubReposActivity">
+    android:background="?attr/selectableItemBackground"
+    android:padding="12dp">
 
     <TextView
-        android:id="@+id/errorTextView"
+        android:id="@+id/idTextView"
         android:layout_width="wrap_content"
-        android:textColor="@android:color/holo_red_light"
-        android:gravity="center"
         android:layout_height="wrap_content"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Error" />
+        tools:text="Org Id" />
 
-    <Button
-        android:id="@+id/retryButton"
+    <TextView
+        android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:text="Retry"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/errorTextView" />
+        app:layout_constraintTop_toBottomOf="@id/idTextView"
+        tools:text="Org Title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,62 +5,68 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.GithubUserActivity">
+    tools:context=".view.GithubMetaActivity">
 
-    <ImageView
-        android:id="@+id/avatarImageView"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:contentDescription="@null"
-        app:layout_constraintBottom_toTopOf="@id/idTextView"
+    <TextView
+        android:id="@+id/md5RsaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/md5DsaTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="MD5_RSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
     <TextView
-        android:id="@+id/idTextView"
+        android:id="@+id/md5DsaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/nameTextView"
+        android:gravity="center"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/sha256RsaTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/avatarImageView"
-        tools:text="id" />
+        app:layout_constraintTop_toBottomOf="@id/md5RsaTextView"
+        tools:text="MD5_DSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
     <TextView
-        android:id="@+id/nameTextView"
+        android:id="@+id/sha256RsaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@id/linkTextView"
+        android:gravity="center"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/sha256DsaTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/idTextView"
-        tools:text="name" />
+        app:layout_constraintTop_toBottomOf="@id/md5DsaTextView"
+        tools:text="SHA256_RSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
     <TextView
-        android:id="@+id/linkTextView"
+        android:id="@+id/sha256DsaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:textColor="@android:color/holo_blue_light"
-        android:textSize="16sp"
+        android:gravity="center"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nameTextView"
-        tools:text="link" />
+        app:layout_constraintTop_toBottomOf="@id/sha256RsaTextView"
+        tools:text="SHA256_DSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/errorGroup"
