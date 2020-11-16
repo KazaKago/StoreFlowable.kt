@@ -6,10 +6,7 @@ import com.kazakago.cacheflowable.FlowAccessor
 import com.kazakago.cacheflowable.core.State
 import com.kazakago.cacheflowable.core.StateContent
 import com.kazakago.cacheflowable.mapState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
 
@@ -20,9 +17,7 @@ abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
     fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>> {
         return flowAccessor.getFlow(key)
             .onStart {
-                CoroutineScope(Dispatchers.IO).launch {
-                    dataSelector.doStateAction(forceRefresh, clearCache = true, fetchOnError = false, additionalRequest = false)
-                }
+                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCache = true, fetchAtError = false, fetchAsync = true, additionalRequest = false)
             }
             .map {
                 val data = dataSelector.load()
@@ -35,8 +30,8 @@ abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
         return flowAccessor.getFlow(key)
             .onStart {
                 when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false, additionalRequest = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false, additionalRequest = false)
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
                     AsDataType.FromCache -> Unit //do nothing.
                 }
             }
@@ -52,15 +47,15 @@ abstract class PagingCacheFlowable<KEY, DATA>(private val key: KEY) {
     }
 
     suspend fun validate() {
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false, additionalRequest = false)
+        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
     }
 
     suspend fun request() {
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true, additionalRequest = false)
+        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false, additionalRequest = false)
     }
 
-    suspend fun requestAdditional(fetchOnError: Boolean = true) {
-        return dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchOnError = fetchOnError, additionalRequest = true)
+    suspend fun requestAdditional(fetchAtError: Boolean = true) {
+        return dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = fetchAtError, fetchAsync = false, additionalRequest = true)
     }
 
     suspend fun update(newData: List<DATA>?) {

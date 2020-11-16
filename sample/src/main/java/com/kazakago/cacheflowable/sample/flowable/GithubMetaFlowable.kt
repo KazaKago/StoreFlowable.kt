@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class GithubMetaFlowable : AbstractCacheFlowable<Unit, GithubMeta>(Unit) {
 
     companion object {
-        private val EXPIRED_DURATION = Duration.ofMinutes(3)
+        private val EXPIRED_DURATION = Duration.ofMinutes(1)
     }
 
     private val githubApi = GithubApi()

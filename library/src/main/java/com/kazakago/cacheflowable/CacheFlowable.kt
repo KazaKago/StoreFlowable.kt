@@ -2,10 +2,7 @@ package com.kazakago.cacheflowable
 
 import com.kazakago.cacheflowable.core.State
 import com.kazakago.cacheflowable.core.StateContent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
 
@@ -16,9 +13,7 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
     fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>> {
         return flowAccessor.getFlow(key)
             .onStart {
-                CoroutineScope(Dispatchers.IO).launch {
-                    dataSelector.doStateAction(forceRefresh, clearCache = true, fetchOnError = false)
-                }
+                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCache = true, fetchAtError = false, fetchAsync = true)
             }
             .map {
                 val data = dataSelector.load()
@@ -31,8 +26,8 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
         return flowAccessor.getFlow(key)
             .onStart {
                 when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchOnError = false)
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
                     AsDataType.FromCache -> Unit //do nothing.
                 }
             }
@@ -48,11 +43,11 @@ abstract class CacheFlowable<KEY, DATA>(private val key: KEY) {
     }
 
     suspend fun validate() {
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchOnError = false)
+        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
     }
 
     suspend fun request() {
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchOnError = true)
+        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
     }
 
     suspend fun update(newData: DATA?) {

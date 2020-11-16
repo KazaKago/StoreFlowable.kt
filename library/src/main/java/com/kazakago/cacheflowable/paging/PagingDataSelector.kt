@@ -2,6 +2,9 @@ package com.kazakago.cacheflowable.paging
 
 import com.kazakago.cacheflowable.DataState
 import com.kazakago.cacheflowable.DataStateManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 internal class PagingDataSelector<KEY, DATA>(
     private val key: KEY,
@@ -23,26 +26,34 @@ internal class PagingDataSelector<KEY, DATA>(
         dataStateManager.save(key, DataState.Fixed(isReachLast))
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchOnError: Boolean, additionalRequest: Boolean) {
+    suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchAtError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
         val state = dataStateManager.load(key)
         val data = cacheDataManager.load()
         when (state) {
-            is DataState.Fixed -> doDataAction(data, forceRefresh, clearCache, additionalRequest, state.isReachLast)
+            is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
             is DataState.Loading -> Unit
-            is DataState.Error -> if (fetchOnError) fetchNewData(data, clearCache, additionalRequest)
+            is DataState.Error -> if (fetchAtError) prepareFetch(data = data, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCache: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
+    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCache: Boolean, fetchAsync: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
         if (data == null || forceRefresh || needRefresh(data) || (additionalRequest && !currentIsReachLast)) {
-            fetchNewData(data, clearCache, additionalRequest)
+            prepareFetch(data = data, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun fetchNewData(data: List<DATA>?, clearCache: Boolean, additionalRequest: Boolean) {
+    private suspend fun prepareFetch(data: List<DATA>?, clearCache: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
+        if (clearCache) cacheDataManager.save(null, additionalRequest)
+        dataStateManager.save(key, DataState.Loading())
+        if (fetchAsync) {
+            CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, additionalRequest = additionalRequest) }
+        } else {
+            fetchNewData(data = data, additionalRequest = additionalRequest)
+        }
+    }
+
+    private suspend fun fetchNewData(data: List<DATA>?, additionalRequest: Boolean) {
         try {
-            if (clearCache) cacheDataManager.save(null, additionalRequest)
-            dataStateManager.save(key, DataState.Loading())
             val fetchedData = originDataManager.fetch(data, additionalRequest)
             val mergedData = if (additionalRequest) (data ?: emptyList()) + fetchedData else fetchedData
             cacheDataManager.save(mergedData, additionalRequest)
