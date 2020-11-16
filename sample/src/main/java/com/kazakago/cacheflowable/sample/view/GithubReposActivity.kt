@@ -55,10 +55,10 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.request()
         }
         compositeLiveDataOf(githubReposViewModel.githubRepos, githubReposViewModel.isAdditionalLoading, githubReposViewModel.additionalError).observe(this) {
-            val items = mutableListOf<Item>().apply {
-                this += createGithubRepoItems(it.first)
-                it.second.let { if (it) this += createLoadingItem() }
-                it.third.let { if (it != null) this += createErrorItem(it) }
+            val items: List<Item> = mutableListOf<Item>().apply {
+                addAll(createGithubRepoItems(it.first))
+                if (it.second) add(createLoadingItem())
+                if (it.third != null) add(createErrorItem(it.third!!))
             }
             githubReposGroupAdapter.updateAsync(items)
         }
