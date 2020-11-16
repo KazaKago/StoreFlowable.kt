@@ -4,18 +4,19 @@ import com.kazakago.cacheflowable.sample.model.GithubMeta
 import com.kazakago.cacheflowable.sample.model.GithubOrg
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.model.GithubUser
+import java.time.LocalDateTime
 import java.util.*
 
 object GithubInMemoryCache {
     var metaCache: GithubMeta? = null
-    var metaCreatedAtCache: Calendar? = null
+    var metaCacheCreatedAt: LocalDateTime? = null
 
     var orgsCache: List<GithubOrg>? = null
-    var orgsCreatedAtCache: Calendar? = null
+    var orgsCacheCreatedAt: LocalDateTime? = null
 
     var userCache: HashMap<String, GithubUser?> = hashMapOf()
-    var userCreateAdCache: HashMap<String, Calendar> = hashMapOf()
+    var userCacheCreateAt: HashMap<String, LocalDateTime> = hashMapOf()
 
     var reposCache: HashMap<String, List<GithubRepo>?> = hashMapOf()
-    var reposCreateAdCache: HashMap<String, Calendar> = hashMapOf()
+    var reposCacheCreatedAt: HashMap<String, LocalDateTime> = hashMapOf()
 }

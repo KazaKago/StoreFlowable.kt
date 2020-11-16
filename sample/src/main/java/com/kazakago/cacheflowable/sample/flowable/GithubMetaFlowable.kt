@@ -6,9 +6,14 @@ import com.kazakago.cacheflowable.sample.api.GithubApi
 import com.kazakago.cacheflowable.sample.cache.GithubInMemoryCache
 import com.kazakago.cacheflowable.sample.cache.GithubMetaStateManager
 import com.kazakago.cacheflowable.sample.model.GithubMeta
-import java.util.*
+import java.time.Duration
+import java.time.LocalDateTime
 
 class GithubMetaFlowable : AbstractCacheFlowable<Unit, GithubMeta>(Unit) {
+
+    companion object {
+        private val EXPIRED_DURATION = Duration.ofMinutes(3)
+    }
 
     private val githubApi = GithubApi()
     private val githubCache = GithubInMemoryCache
@@ -21,7 +26,7 @@ class GithubMetaFlowable : AbstractCacheFlowable<Unit, GithubMeta>(Unit) {
 
     override suspend fun saveData(data: GithubMeta?) {
         githubCache.metaCache = data
-        githubCache.metaCreatedAtCache = Calendar.getInstance()
+        githubCache.metaCacheCreatedAt = LocalDateTime.now()
     }
 
     override suspend fun fetchOrigin(): GithubMeta {
@@ -29,11 +34,9 @@ class GithubMetaFlowable : AbstractCacheFlowable<Unit, GithubMeta>(Unit) {
     }
 
     override suspend fun needRefresh(data: GithubMeta): Boolean {
-        val expiredTime = githubCache.metaCreatedAtCache?.apply {
-            add(Calendar.MINUTE, 3)
-        }
+        val expiredTime = githubCache.metaCacheCreatedAt?.plus(EXPIRED_DURATION)
         return if (expiredTime != null) {
-            expiredTime < Calendar.getInstance()
+            expiredTime < LocalDateTime.now()
         } else {
             true
         }

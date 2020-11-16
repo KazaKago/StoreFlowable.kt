@@ -6,9 +6,14 @@ import com.kazakago.cacheflowable.sample.api.GithubApi
 import com.kazakago.cacheflowable.sample.cache.GithubInMemoryCache
 import com.kazakago.cacheflowable.sample.cache.GithubUserStateManager
 import com.kazakago.cacheflowable.sample.model.GithubUser
-import java.util.*
+import java.time.Duration
+import java.time.LocalDateTime
 
 class GithubUserFlowable(private val userName: String) : AbstractCacheFlowable<String, GithubUser>(userName) {
+
+    companion object {
+        private val EXPIRED_DURATION = Duration.ofMinutes(3)
+    }
 
     private val githubApi = GithubApi()
     private val githubCache = GithubInMemoryCache
@@ -21,7 +26,7 @@ class GithubUserFlowable(private val userName: String) : AbstractCacheFlowable<S
 
     override suspend fun saveData(data: GithubUser?) {
         githubCache.userCache[userName] = data
-        githubCache.userCreateAdCache[userName] = Calendar.getInstance()
+        githubCache.userCacheCreateAt[userName] = LocalDateTime.now()
     }
 
     override suspend fun fetchOrigin(): GithubUser {
@@ -29,11 +34,9 @@ class GithubUserFlowable(private val userName: String) : AbstractCacheFlowable<S
     }
 
     override suspend fun needRefresh(data: GithubUser): Boolean {
-        val expiredTime = githubCache.userCreateAdCache[userName]?.apply {
-            add(Calendar.MINUTE, 3)
-        }
+        val expiredTime = githubCache.userCacheCreateAt[userName]?.plus(EXPIRED_DURATION)
         return if (expiredTime != null) {
-            expiredTime < Calendar.getInstance()
+            expiredTime < LocalDateTime.now()
         } else {
             true
         }

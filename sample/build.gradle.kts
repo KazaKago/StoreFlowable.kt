@@ -24,6 +24,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -54,6 +55,7 @@ dependencies {
     implementation("io.coil-kt:coil:1.0.0")
     implementation("com.xwray:groupie:2.8.1")
     implementation("com.xwray:groupie-kotlin-android-extensions:2.8.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.1")
 
     testImplementation("junit:junit:4.13.1")
 
