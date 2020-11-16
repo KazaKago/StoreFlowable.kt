@@ -8,17 +8,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
-import com.kazakago.cacheflowable.sample.R
+import com.kazakago.cacheflowable.sample.databinding.ActivityGithubReposBinding
 import com.kazakago.cacheflowable.sample.model.GithubRepo
 import com.kazakago.cacheflowable.sample.view.items.ErrorItem
 import com.kazakago.cacheflowable.sample.view.items.GithubRepoItem
 import com.kazakago.cacheflowable.sample.view.items.LoadingItem
 import com.kazakago.cacheflowable.sample.viewmodel.GithubReposViewModel
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.compositeLiveDataOf
+import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.activity_github_repos.*
 
 class GithubReposActivity : AppCompatActivity() {
 
@@ -34,6 +33,7 @@ class GithubReposActivity : AppCompatActivity() {
         UserName
     }
 
+    private val binding by lazy { ActivityGithubReposBinding.inflate(layoutInflater) }
     private val githubReposGroupAdapter = GroupAdapter<GroupieViewHolder>()
     private val githubReposViewModel by viewModels<GithubReposViewModel> {
         val githubUserName = intent.getStringExtra(ParameterName.UserName.name)!!
@@ -42,20 +42,20 @@ class GithubReposActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_github_repos)
+        setContentView(binding.root)
 
-        githubOrgsRecyclerView.adapter = githubReposGroupAdapter
-        githubOrgsRecyclerView.addOnBottomReached {
+        binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
+        binding.githubReposRecyclerView.addOnBottomReached {
             githubReposViewModel.requestAdditional()
         }
-        swipeRefreshLayout.setOnRefreshListener {
+        binding.swipeRefreshLayout.setOnRefreshListener {
             githubReposViewModel.request()
         }
-        retryButton.setOnClickListener {
+        binding.retryButton.setOnClickListener {
             githubReposViewModel.request()
         }
         compositeLiveDataOf(githubReposViewModel.githubRepos, githubReposViewModel.isAdditionalLoading, githubReposViewModel.additionalError).observe(this) {
-            val items: List<Item> = mutableListOf<Item>().apply {
+            val items: List<Group> = mutableListOf<Group>().apply {
                 addAll(createGithubRepoItems(it.first))
                 if (it.second) add(createLoadingItem())
                 if (it.third != null) add(createErrorItem(it.third!!))
@@ -63,17 +63,17 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposGroupAdapter.updateAsync(items)
         }
         githubReposViewModel.isMainLoading.observe(this) {
-            progressBar.isVisible = it
+            binding.progressBar.isVisible = it
         }
         githubReposViewModel.mainError.observe(this) {
-            errorGroup.isVisible = (it != null)
-            errorTextView.text = it?.toString()
+            binding.errorGroup.isVisible = (it != null)
+            binding.errorTextView.text = it?.toString()
         }
         githubReposViewModel.hideSwipeRefresh.observe(this, "") {
-            swipeRefreshLayout.isRefreshing = false
+            binding.swipeRefreshLayout.isRefreshing = false
         }
         githubReposViewModel.strongError.observe(this, "") {
-            Snackbar.make(rootView, it.toString(), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 

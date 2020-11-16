@@ -1,12 +1,12 @@
 package com.kazakago.cacheflowable.sample.view.items
 
+import android.view.View
 import com.kazakago.cacheflowable.sample.R
+import com.kazakago.cacheflowable.sample.databinding.ItemGithubRepoBinding
 import com.kazakago.cacheflowable.sample.model.GithubRepo
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.item_github_repo.view.*
+import com.xwray.groupie.viewbinding.BindableItem
 
-data class GithubRepoItem(private val githubRepo: GithubRepo) : Item(githubRepo.id) {
+data class GithubRepoItem(private val githubRepo: GithubRepo) : BindableItem<ItemGithubRepoBinding>(githubRepo.id) {
 
     var onClick: ((githubRepo: GithubRepo) -> Unit) = {}
 
@@ -14,11 +14,15 @@ data class GithubRepoItem(private val githubRepo: GithubRepo) : Item(githubRepo.
         return R.layout.item_github_repo
     }
 
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.idTextView.text = "ID: ${githubRepo.id}"
-        viewHolder.itemView.titleTextView.text = githubRepo.fullName
-        viewHolder.itemView.linkTextView.text = githubRepo.htmlUrl
-        viewHolder.itemView.setOnClickListener {
+    override fun initializeViewBinding(view: View): ItemGithubRepoBinding {
+        return ItemGithubRepoBinding.bind(view)
+    }
+
+    override fun bind(viewBinding: ItemGithubRepoBinding, position: Int) {
+        viewBinding.idTextView.text = "ID: ${githubRepo.id}"
+        viewBinding.titleTextView.text = githubRepo.fullName
+        viewBinding.linkTextView.text = githubRepo.htmlUrl
+        viewBinding.root.setOnClickListener {
             onClick(githubRepo)
         }
     }

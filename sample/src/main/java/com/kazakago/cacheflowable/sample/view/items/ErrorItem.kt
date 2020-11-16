@@ -1,11 +1,11 @@
 package com.kazakago.cacheflowable.sample.view.items
 
+import android.view.View
 import com.kazakago.cacheflowable.sample.R
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.item_error.view.*
+import com.kazakago.cacheflowable.sample.databinding.ItemErrorBinding
+import com.xwray.groupie.viewbinding.BindableItem
 
-data class ErrorItem(private val exception: Exception) : Item(exception.hashCode().toLong()) {
+data class ErrorItem(private val exception: Exception) : BindableItem<ItemErrorBinding>(exception.hashCode().toLong()) {
 
     var onRetry: (() -> Unit) = {}
 
@@ -13,9 +13,13 @@ data class ErrorItem(private val exception: Exception) : Item(exception.hashCode
         return R.layout.item_error
     }
 
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.errorTextView.text = exception.toString()
-        viewHolder.itemView.retryButton.setOnClickListener {
+    override fun initializeViewBinding(view: View): ItemErrorBinding {
+        return ItemErrorBinding.bind(view)
+    }
+
+    override fun bind(viewBinding: ItemErrorBinding, position: Int) {
+        viewBinding.errorTextView.text = exception.toString()
+        viewBinding.retryButton.setOnClickListener {
             onRetry()
         }
     }

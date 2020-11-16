@@ -1,21 +1,26 @@
 package com.kazakago.cacheflowable.sample.view.items
 
+import android.view.View
 import com.kazakago.cacheflowable.sample.R
+import com.kazakago.cacheflowable.sample.databinding.ItemGithubOrgBinding
 import com.kazakago.cacheflowable.sample.model.GithubOrg
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.item_github_org.view.*
+import com.xwray.groupie.viewbinding.BindableItem
 
-data class GithubOrgItem(private val githubOrg: GithubOrg) : Item(githubOrg.id) {
+data class GithubOrgItem(private val githubOrg: GithubOrg) : BindableItem<ItemGithubOrgBinding>(githubOrg.id) {
 
     override fun getLayout(): Int {
         return R.layout.item_github_org
     }
 
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.idTextView.text = "ID: ${githubOrg.id}"
-        viewHolder.itemView.titleTextView.text = githubOrg.name
+    override fun initializeViewBinding(view: View): ItemGithubOrgBinding {
+        return ItemGithubOrgBinding.bind(view)
     }
+
+    override fun bind(viewBinding: ItemGithubOrgBinding, position: Int) {
+        viewBinding.idTextView.text = "ID: ${githubOrg.id}"
+        viewBinding.titleTextView.text = githubOrg.name
+    }
+
 
 }
 

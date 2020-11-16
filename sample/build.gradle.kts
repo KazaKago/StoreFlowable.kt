@@ -4,7 +4,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("kotlin-android-extensions")
 }
 
 android {
@@ -31,6 +30,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -54,7 +56,7 @@ dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
     implementation("io.coil-kt:coil:1.0.0")
     implementation("com.xwray:groupie:2.8.1")
-    implementation("com.xwray:groupie-kotlin-android-extensions:2.8.1")
+    implementation("com.xwray:groupie-viewbinding:2.8.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.1")
 
     testImplementation("junit:junit:4.13.1")

@@ -12,8 +12,8 @@ import androidx.core.view.isVisible
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.kazakago.cacheflowable.sample.R
+import com.kazakago.cacheflowable.sample.databinding.ActivityGithubUserBinding
 import com.kazakago.cacheflowable.sample.viewmodel.GithubUserViewModel
-import kotlinx.android.synthetic.main.activity_github_user.*
 
 class GithubUserActivity : AppCompatActivity() {
 
@@ -29,6 +29,7 @@ class GithubUserActivity : AppCompatActivity() {
         UserName
     }
 
+    private val binding by lazy { ActivityGithubUserBinding.inflate(layoutInflater) }
     private val githubUserViewModel by viewModels<GithubUserViewModel> {
         val githubUserName = intent.getStringExtra(ParameterName.UserName.name)!!
         GithubUserViewModel.Factory(application, githubUserName)
@@ -36,29 +37,29 @@ class GithubUserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_github_user)
+        setContentView(binding.root)
 
-        linkTextView.setOnClickListener {
+        binding.linkTextView.setOnClickListener {
             githubUserViewModel.githubUser.value?.let { launch(it.htmlUrl) }
         }
-        retryButton.setOnClickListener {
+        binding.retryButton.setOnClickListener {
             githubUserViewModel.request()
         }
         githubUserViewModel.githubUser.observe(this) {
-            avatarImageView.load(it?.avatarUrl)
-            idTextView.text = it?.id?.let { id -> "ID: $id" }
-            nameTextView.text = it?.name
-            linkTextView.text = it?.htmlUrl
+            binding.avatarImageView.load(it?.avatarUrl)
+            binding.idTextView.text = it?.id?.let { id -> "ID: $id" }
+            binding.nameTextView.text = it?.name
+            binding.linkTextView.text = it?.htmlUrl
         }
         githubUserViewModel.isLoading.observe(this) {
-            progressBar.isVisible = it
+            binding.progressBar.isVisible = it
         }
         githubUserViewModel.error.observe(this) {
-            errorGroup.isVisible = (it != null)
-            errorTextView.text = it?.toString()
+            binding.errorGroup.isVisible = (it != null)
+            binding.errorTextView.text = it?.toString()
         }
         githubUserViewModel.strongError.observe(this, "") {
-            Snackbar.make(rootView, it.toString(), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 

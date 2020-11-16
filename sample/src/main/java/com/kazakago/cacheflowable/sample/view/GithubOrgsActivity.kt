@@ -7,17 +7,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
-import com.kazakago.cacheflowable.sample.R
+import com.kazakago.cacheflowable.sample.databinding.ActivityGithubOrgsBinding
 import com.kazakago.cacheflowable.sample.model.GithubOrg
 import com.kazakago.cacheflowable.sample.view.items.ErrorItem
 import com.kazakago.cacheflowable.sample.view.items.GithubOrgItem
 import com.kazakago.cacheflowable.sample.view.items.LoadingItem
 import com.kazakago.cacheflowable.sample.viewmodel.GithubOrgsViewModel
 import com.kazakago.cacheflowable.sample.viewmodel.livedata.compositeLiveDataOf
+import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.activity_github_orgs.*
 
 class GithubOrgsActivity : AppCompatActivity() {
 
@@ -27,43 +26,44 @@ class GithubOrgsActivity : AppCompatActivity() {
         }
     }
 
+    private val binding by lazy { ActivityGithubOrgsBinding.inflate(layoutInflater) }
     private val githubOrgsGroupAdapter = GroupAdapter<GroupieViewHolder>()
     private val githubOrgsViewModel by viewModels<GithubOrgsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_github_orgs)
+        setContentView(binding.root)
 
-        githubOrgsRecyclerView.adapter = githubOrgsGroupAdapter
-        githubOrgsRecyclerView.addOnBottomReached {
+        binding.githubOrgsRecyclerView.adapter = githubOrgsGroupAdapter
+        binding.githubOrgsRecyclerView.addOnBottomReached {
             githubOrgsViewModel.requestAdditional()
         }
-        swipeRefreshLayout.setOnRefreshListener {
+        binding.swipeRefreshLayout.setOnRefreshListener {
             githubOrgsViewModel.request()
         }
-        retryButton.setOnClickListener {
+        binding.retryButton.setOnClickListener {
             githubOrgsViewModel.request()
         }
         compositeLiveDataOf(githubOrgsViewModel.githubOrgs, githubOrgsViewModel.isAdditionalLoading, githubOrgsViewModel.additionalError).observe(this) {
-            val items: List<Item> = mutableListOf<Item>().apply {
-                addAll(createGithubOrgItems(it.first))
+            val items: List<Group> = mutableListOf<Group>().apply {
+                this += createGithubOrgItems(it.first)
                 if (it.second) add(createLoadingItem())
                 if (it.third != null) add(createErrorItem(it.third!!))
             }
             githubOrgsGroupAdapter.updateAsync(items)
         }
         githubOrgsViewModel.isMainLoading.observe(this) {
-            progressBar.isVisible = it
+            binding.progressBar.isVisible = it
         }
         githubOrgsViewModel.mainError.observe(this) {
-            errorGroup.isVisible = (it != null)
-            errorTextView.text = it?.toString()
+            binding.errorGroup.isVisible = (it != null)
+            binding.errorTextView.text = it?.toString()
         }
         githubOrgsViewModel.hideSwipeRefresh.observe(this, "") {
-            swipeRefreshLayout.isRefreshing = false
+            binding.swipeRefreshLayout.isRefreshing = false
         }
         githubOrgsViewModel.strongError.observe(this, "") {
-            Snackbar.make(rootView, it.toString(), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 

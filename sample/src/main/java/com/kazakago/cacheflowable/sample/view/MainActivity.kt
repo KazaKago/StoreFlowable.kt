@@ -2,29 +2,30 @@ package com.kazakago.cacheflowable.sample.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.kazakago.cacheflowable.sample.R
-import kotlinx.android.synthetic.main.activity_main.*
+import com.kazakago.cacheflowable.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        metaButton.setOnClickListener {
+        binding.metaButton.setOnClickListener {
             val intent = GithubMetaActivity.createIntent(this)
             startActivity(intent)
         }
-        orgsButton.setOnClickListener {
+        binding.orgsButton.setOnClickListener {
             val intent = GithubOrgsActivity.createIntent(this)
             startActivity(intent)
         }
-        reposButton.setOnClickListener {
-            val intent = GithubReposActivity.createIntent(this, userNameInputEditText.text.toString())
+        binding.reposButton.setOnClickListener {
+            val intent = GithubReposActivity.createIntent(this, binding.userNameInputEditText.text.toString())
             startActivity(intent)
         }
-        userButton.setOnClickListener {
-            val intent = GithubUserActivity.createIntent(this, userNameInputEditText.text.toString())
+        binding.userButton.setOnClickListener {
+            val intent = GithubUserActivity.createIntent(this, binding.userNameInputEditText.text.toString())
             startActivity(intent)
         }
     }
