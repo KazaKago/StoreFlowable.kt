@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
-    id("com.novoda.bintray-release")
+    id("com.github.panpf.bintray-publish")
 }
 
 java {
