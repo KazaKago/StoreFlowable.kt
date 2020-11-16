@@ -47,8 +47,8 @@ class GithubOrgsActivity : AppCompatActivity() {
         compositeLiveDataOf(githubOrgsViewModel.githubOrgs, githubOrgsViewModel.isAdditionalLoading, githubOrgsViewModel.additionalError).observe(this) {
             val items: List<Group> = mutableListOf<Group>().apply {
                 this += createGithubOrgItems(it.first)
-                if (it.second) add(createLoadingItem())
-                if (it.third != null) add(createErrorItem(it.third!!))
+                if (it.second) this += createLoadingItem()
+                if (it.third != null) this += createErrorItem(it.third!!)
             }
             githubOrgsGroupAdapter.updateAsync(items)
         }
