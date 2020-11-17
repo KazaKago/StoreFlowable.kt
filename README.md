@@ -3,7 +3,7 @@ Repository pattern support library for Kotlin with Coroutines &amp; Flow.
 
 [![Download](https://api.bintray.com/packages/kazakago/maven/storeflowable/images/download.svg)](https://bintray.com/kazakago/maven/storeflowable/_latestVersion)
 [![Build Status](https://app.bitrise.io/app/ab3f1be16f6a6b8b/status.svg?token=XFKB2sqF4-hFdTIyzpganQ&branch=master)](https://app.bitrise.io/app/ab3f1be16f6a6b8b)
-[![license](https://img.shields.io/github/license/kazakago/storeflowable.svg)](LICENSE.md)
+[![license](https://img.shields.io/github/license/kazakago/storeflowable.svg)](LICENSE)
 
 ## Install
 
