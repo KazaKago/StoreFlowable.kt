@@ -26,7 +26,7 @@ abstract class PagingStoreFlowable<KEY, DATA>(private val key: KEY) {
             }
     }
 
-    suspend fun asData(type: AsDataType = AsDataType.Mix): List<DATA>? {
+    suspend fun get(type: AsDataType = AsDataType.Mix): List<DATA> {
         return flowAccessor.getFlow(key)
             .onStart {
                 when (type) {
@@ -38,12 +38,16 @@ abstract class PagingStoreFlowable<KEY, DATA>(private val key: KEY) {
             .transform {
                 val data = dataSelector.load()
                 when (it) {
-                    is DataState.Fixed -> emit(data)
+                    is DataState.Fixed -> if (data != null) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit //do nothing.
-                    is DataState.Error -> emit(data)
+                    is DataState.Error -> if (data != null) emit(data) else throw it.exception
                 }
             }
             .first()
+    }
+
+    suspend fun getOrNull(type: AsDataType = AsDataType.Mix): List<DATA>? {
+        return runCatching { get(type) }.getOrNull()
     }
 
     suspend fun validate() {
