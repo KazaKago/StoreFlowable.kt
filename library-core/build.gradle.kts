@@ -21,7 +21,7 @@ publish {
     groupId = "com.kazakago.cacheflowable"
     artifactId = "cacheflowable-core"
     publishVersion = versionName
-    desc = "Repository pattern support library for Kotlin with Coroutins & Flow."
+    desc = "Repository pattern support library for Kotlin with Coroutines & Flow."
     website = "https://github.com/KazaKago/CacheFlowable"
     setLicences("Apache-2.0")
 }
