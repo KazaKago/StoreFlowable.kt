@@ -13,7 +13,7 @@ Add the following gradle dependency exchanging x.x.x for the latest release.
 implementation 'com.kazakago.storeflowable:storeflowable:x.x.x'
 ```
 
-Optional: if you use `State` class and related functions only.
+Optional: if you use [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class and related functions only.
 ```groovy
 implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
 ```
