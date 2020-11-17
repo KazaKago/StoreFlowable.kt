@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
-    id("com.novoda.bintray-release")
+    id("com.github.panpf.bintray-publish")
 }
 
 java {
@@ -18,22 +18,22 @@ tasks.withType(KotlinCompile::class).all {
 publish {
     val versionName: String by project
     userOrg = "kazakago"
-    groupId = "com.kazakago.cacheflowable"
-    artifactId = "cacheflowable-core"
+    groupId = "com.kazakago.storeflowable"
+    artifactId = "storeflowable-core"
     publishVersion = versionName
-    desc = "Repository pattern support library for Kotlin with Coroutins & Flow."
-    website = "https://github.com/KazaKago/CacheFlowable"
+    desc = "Repository pattern support library for Kotlin with Coroutines & Flow."
+    website = "https://github.com/KazaKago/StoreFlowable"
     setLicences("Apache-2.0")
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
     implementation("com.os.operando.guild.kt:guild_kt:1.0.0")
 
-    testImplementation("junit:junit:4.13")
-    testImplementation("org.amshove.kluent:kluent:1.61")
-    testImplementation("io.mockk:mockk:1.10.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8")
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("org.amshove.kluent:kluent:1.63")
+    testImplementation("io.mockk:mockk:1.10.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1")
 }
