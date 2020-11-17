@@ -10,7 +10,7 @@ fun RecyclerView.addOnBottomReached(onBottom: () -> Unit) {
             val visibleItemCount = layoutManager.childCount
             val totalItemCount = layoutManager.itemCount
             val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-            if (firstVisibleItem + visibleItemCount >= totalItemCount) {
+            if (firstVisibleItem + visibleItemCount >= totalItemCount - 3) {
                 onBottom()
             }
         }
