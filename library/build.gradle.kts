@@ -18,11 +18,11 @@ tasks.withType(KotlinCompile::class).all {
 publish {
     val versionName: String by project
     userOrg = "kazakago"
-    groupId = "com.kazakago.cacheflowable"
-    artifactId = "cacheflowable"
+    groupId = "com.kazakago.storeflowable"
+    artifactId = "storeflowable"
     publishVersion = versionName
     desc = "Repository pattern support library for Kotlin with Coroutines & Flow."
-    website = "https://github.com/KazaKago/CacheFlowable"
+    website = "https://github.com/KazaKago/StoreFlowable"
     setLicences("Apache-2.0")
 }
 

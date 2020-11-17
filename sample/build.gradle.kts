@@ -9,7 +9,7 @@ plugins {
 android {
     compileSdkVersion(30)
     defaultConfig {
-        applicationId = "com.kazakago.cacheflowable.sample"
+        applicationId = "com.kazakago.storeflowable.sample"
         minSdkVersion(21)
         targetSdkVersion(30)
         versionCode = 1
