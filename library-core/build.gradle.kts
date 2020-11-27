@@ -30,11 +30,11 @@ publish {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("com.os.operando.guild.kt:guild_kt:1.0.0")
 
     testImplementation("junit:junit:4.13.1")
-    testImplementation("org.amshove.kluent:kluent:1.63")
+    testImplementation("org.amshove.kluent:kluent:1.64")
     testImplementation("io.mockk:mockk:1.10.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1")
 }
