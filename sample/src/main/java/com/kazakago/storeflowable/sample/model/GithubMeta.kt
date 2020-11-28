@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class GithubMeta(
     @Json(name = "verifiable_password_authentication")
-    val id: Boolean,
+    val verifiablePasswordAuthentication: Boolean,
     @Json(name = "ssh_key_fingerprints")
     val sshKeyFingerprints: SshKeyFingerprints,
 ) {
