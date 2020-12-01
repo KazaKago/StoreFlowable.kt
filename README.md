@@ -202,7 +202,7 @@ If you want to ignore the cache and get new data, add `forceRefresh` parameter t
 
 ```kotlin
 class StoreFlowable {
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>>
+    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>>
 }
 ```
 
