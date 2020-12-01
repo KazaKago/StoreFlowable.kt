@@ -54,18 +54,18 @@ There are only 5 things you have to implement:
 
 ### 1. Create FlowableDataStateManager class
 
-First, create a class that inherits `FlowableDataStateManager<KEY>`.  
+First, create a class that inherits [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt).  
 Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.  
 
 ```kotlin
 object UserStateManager : FlowableDataStateManager<UserId>()
 ```
 
-`FlowableDataStateManager<KEY>` needs to be used in Singleton pattern, so please make it `object class`.  
+[`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it `object class`.  
 
 ### 2. Create StoreFlowable class
 
-Next, create a class that inherits `AbstractStoreFlowable<KEY, DATA>`.  
+Next, create a class that inherits [`AbstractStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/AbstractStoreFlowable.kt).  
 Put the type you want to use as a Data in `<DATA>`.  
 
 An example is shown below.  
@@ -237,7 +237,7 @@ class StoreFlowable {
 ### Paging support
 
 This library includes Paging support.  
-Inherit `AbstractPagingStoreFlowable` instead of `AbstractStoreFlowable`.  
+Inherit [`AbstractPagingStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/paging/AbstractPagingStoreFlowable.kt) instead of [`AbstractStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/AbstractStoreFlowable.kt).  
 
 An example is shown below.  
 
