@@ -91,7 +91,7 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
 
     // Get data from remote server.
     override suspend fun fetchOrigin(): UserData {
-        return userApi.fetchData(userId)
+        return userApi.fetch(userId)
     }
 
     // Whether the cache is valid.
@@ -236,7 +236,43 @@ class StoreFlowable {
 
 ### Paging support
 
-[WIP]
+This library includes Paging support.  
+Inherit `AbstractPagingStoreFlowable` instead of `AbstractStoreFlowable`.
+
+```kotlin
+object UserListStateManager : FlowableDataStateManager<Unit>()
+```
+```kotlin
+class UserListFlowable : AbstractPagingStoreFlowable<Unit, User>(Unit) {
+
+    private val userListApi = UserListApi()
+    private val userListCache = UserListCache()
+
+    override val flowableDataStateManager: FlowableDataStateManager<Unit> = UserListStateManager
+
+    override suspend fun loadData(): List<User>? {
+        return userListCache.load()
+    }
+
+    override suspend fun saveData(data: List<User>?, additionalRequest: Boolean) {
+        userListCache.save(data)
+    }
+
+    override suspend fun fetchOrigin(data: List<User>?, additionalRequest: Boolean): List<GithubRepo> {
+        val page = if (additionalRequest) ((data?.size ?: 0) / 10 + 1) else 1
+        return userListApi.fetch(page)
+    }
+
+    override suspend fun needRefresh(data: List<User>): Boolean {
+        return data.last().isExpired()
+    }
+}
+```
+
+You can have the data in a list. The retrieved remote data will be merged automatically.  
+`additionalRequest: Boolean` parameter indicates whether to load additionally. use if necessary.  
+
+The [GithubOrgsFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsFlowable.kt) and [GithubReposFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposFlowable.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.
 
 ## License
 
