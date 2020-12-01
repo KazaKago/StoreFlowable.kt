@@ -162,6 +162,8 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 ## Example
 
 Refer to the [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
+See [GithubMetaFlowable](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubMetaFlowable.kt) and [GithubUserFlowable](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubUserFlowable.kt).  
+
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).  
 
 ## Advanced Usage
