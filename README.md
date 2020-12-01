@@ -29,9 +29,7 @@ The following is an example of screen display using [`State`](https://github.com
 
 ![https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg](https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg)
 
-## Getting Started
-
-### Install
+## Install
 
 Add the following gradle dependency exchanging x.x.x for the latest release.  
 
@@ -44,7 +42,7 @@ Optional: if you use [`State`](library-core/src/main/java/com/kazakago/storeflow
 implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
 ```
 
-### Usage
+## Basic Usage
 
 There are only 5 things you have to implement:
 
@@ -53,7 +51,7 @@ There are only 5 things you have to implement:
 - Get data from remote server
 - Whether the cache is valid
 
-#### 1. Create StateManager class
+### 1. Create StateManager class
 
 First, create a class that inherits `FlowableDataStateManager<KEY>`.  
 Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.
@@ -64,7 +62,7 @@ object UserStateManager : FlowableDataStateManager<UserId>()
 
 `FlowableDataStateManager<KEY>` needs to be used in Singleton pattern, so please make it `object class`.  
 
-#### 2. Create StoreFlowable class
+### 2. Create StoreFlowable class
 
 Next, create a class that inherits `AbstractStoreFlowable<KEY, DATA>`.  
 Put the type you want to use as a Data in `<DATA>`.  
@@ -100,7 +98,7 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
 You need to prepare the API access class and the cache access class.  
 In this case, `UserAPI` and `UserCache` classes.  
 
-#### 3. Create Repository class
+### 3. Create Repository class
 
 After that, create the Repository class as usual.
 Be sure to go through the created `StoreFlowable` class when getting / updating data.
@@ -119,7 +117,7 @@ class UserRepository {
 }
 ```
 
-#### 4. Use Repository class
+### 4. Use Repository class
 
 You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).
 and branch the data state with `doAction()` method or `when` statement.
@@ -149,7 +147,7 @@ userRepository.followUserData().collect {
 ```
 Actually, on Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.
 
-## Advanced
+## Advanced Usage
 
 [WIP]
 
