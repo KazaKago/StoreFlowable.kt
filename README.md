@@ -72,7 +72,7 @@ Put the type you want to use as a Data in `<DATA>`.
 An example is shown below.  
 
 ```kotlin
-class UserFlowable : AbstractStoreFlowable<UserId, UserData>(val userId: UserId) {
+class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>(userId) {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
