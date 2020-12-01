@@ -89,12 +89,12 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
         userCache.save(userId, data)
     }
 
-    // Get data from remote server
+    // Get data from remote server.
     override suspend fun fetchOrigin(): UserData {
         return userApi.fetchData(userId)
     }
 
-    // Whether the cache is valid
+    // Whether the cache is valid.
     override suspend fun needRefresh(data: UserData): Boolean {
         return data.isExpired()
     }
@@ -161,7 +161,8 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 
 ## Example
 
-Refer to the [sample module](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
+Refer to the [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
+This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).
 
 ## Advanced Usage
 
