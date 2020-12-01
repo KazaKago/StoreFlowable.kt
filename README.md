@@ -46,15 +46,16 @@ implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
 
 There are only 5 things you have to implement:
 
+- Create data state management class
 - Save data to local cache
 - Get data from local cache
 - Get data from remote server
 - Whether the cache is valid
 
-### 1. Create StateManager class
+### 1. Create FlowableDataStateManager class
 
 First, create a class that inherits `FlowableDataStateManager<KEY>`.  
-Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.
+Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.  
 
 ```kotlin
 object UserStateManager : FlowableDataStateManager<UserId>()
@@ -100,8 +101,8 @@ In this case, `UserAPI` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, create the Repository class as usual.
-Be sure to go through the created `StoreFlowable` class when getting / updating data.
+After that, create the Repository class as usual.  
+Be sure to go through the created `StoreFlowable` class when getting / updating data.  
 
 
 ```kotlin
@@ -119,36 +120,56 @@ class UserRepository {
 
 ### 4. Use Repository class
 
-You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).
-and branch the data state with `doAction()` method or `when` statement.
+You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
+and branch the data state with `doAction()` method or `when` statement.  
 
 ```kotlin
-userRepository.followUserData().collect {
-    it.doAction(
-        onFixed = {
-            ...
-        },
-        onLoading = {
-            ...
-        },
-        onError = { exception ->
-            ...
-        }
-    )
-    it.content.doAction(
-        onExist = { userData ->
-            ...
-        },
-        onNotExist = {
-            ...
-        }
-    )
+private fun subscribe() = viewModelScope.launch {
+    userRepository.followUserData().collect {
+        it.doAction(
+            onFixed = {
+                ...
+            },
+            onLoading = {
+                ...
+            },
+            onError = { exception ->
+                ...
+            }
+        )
+        it.content.doAction(
+            onExist = { userData ->
+                ...
+            },
+            onNotExist = {
+                ...
+            }
+        )
+    }
 }
 ```
 
-On Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.
+On Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.  
+
+## Example
+
+Refer to the [sample module](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details.  
 
 ## Advanced Usage
+
+### Request newest data
+
+[WIP]
+
+### Validate cache data
+
+[WIP]
+
+### Update cache data
+
+[WIP]
+
+### Paging support
 
 [WIP]
 
