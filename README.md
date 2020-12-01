@@ -168,19 +168,71 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ### Get data without [State](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
 
-[WIP]
+If you don't need [State](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use `get()` or `getOrNull()`.  
+`get()` throws an Exception if there is no valid cache and fails to get new data.  
+`getOrNull()` returns null instead of Exception.  
+
+```kotlin
+class StoreFlowable {
+    suspend fun get(type: AsDataType = AsDataType.Mix): DATA
+    suspend fun getOrNull(type: AsDataType = AsDataType.Mix): DATA?
+}
+```
+
+`AsDataType` parameter specifies where to get the data.  
+
+```kotlin
+enum class AsDataType {
+    // Gets a combination of valid cache and remote. (Default behavior)
+    Mix,
+    // Gets only remotely.
+    FromOrigin,
+    // Gets only locally.
+    FromCache,
+}
+```
+
+However, use `get()` or `getOrNull()` only for one-shot data acquisition, and consider using `asFlow()` if possible.  
 
 ### Request newest data
 
-[WIP]
+If you want to ignore the cache and get new data, add `forceRefresh` parameter to `asFlow()`.  
+
+```kotlin
+class StoreFlowable {
+    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>>
+}
+```
+
+Or you can use `request()` if you are already observing the `Flow`.  
+
+```kotlin
+class StoreFlowable {
+    suspend fun request()
+}
+```
 
 ### Validate cache data
 
-[WIP]
+Use `validate()` if you want to verify that the local cache is valid.  
+If invalid, get new data remotely.  
+
+```kotlin
+class StoreFlowable {
+    suspend fun validate()
+}
+```
 
 ### Update cache data
 
-[WIP]
+If you want to update the local cache, use the `update()` method.  
+`Flow` observers will be notified.  
+
+```kotlin
+class StoreFlowable {
+    suspend fun update(newData: DATA?)
+}
+```
 
 ### Paging support
 
