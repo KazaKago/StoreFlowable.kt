@@ -47,8 +47,8 @@ implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
 There are only 5 things you have to implement:
 
 - Create data state management class
-- Save data to local cache
 - Get data from local cache
+- Save data to local cache
 - Get data from remote server
 - Whether the cache is valid
 
@@ -76,20 +76,25 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
     private val userApi = UserApi()
     private val userCache = UserCache()
 
+    // Create data state management class.
     override val flowableDataStateManager: FlowableDataStateManager<UserId> = UserStateManager
 
+    // Get data from local cache.
     override suspend fun loadData(): UserData? {
         return userCache.load(userId)
     }
 
+    // Save data to local cache.
     override suspend fun saveData(data: UserData?) {
         userCache.save(userId, data)
     }
 
+    // Get data from remote server
     override suspend fun fetchOrigin(): UserData {
         return userApi.fetchData(userId)
     }
 
+    // Whether the cache is valid
     override suspend fun needRefresh(data: UserData): Boolean {
         return data.isExpired()
     }
