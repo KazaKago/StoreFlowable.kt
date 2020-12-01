@@ -37,14 +37,14 @@ Add the following gradle dependency exchanging x.x.x for the latest release.
 implementation 'com.kazakago.storeflowable:storeflowable:x.x.x'
 ```
 
-Optional: if you use [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class and related functions only.
+Optional: if you use [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class and related functions only.  
 ```groovy
 implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
 ```
 
 ## Basic Usage
 
-There are only 5 things you have to implement:
+There are only 5 things you have to implement:  
 
 - Create data state management class
 - Get data from local cache
@@ -162,7 +162,7 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 ## Example
 
 Refer to the [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
-This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).
+This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).  
 
 ## Advanced Usage
 
@@ -237,7 +237,9 @@ class StoreFlowable {
 ### Paging support
 
 This library includes Paging support.  
-Inherit `AbstractPagingStoreFlowable` instead of `AbstractStoreFlowable`.
+Inherit `AbstractPagingStoreFlowable` instead of `AbstractStoreFlowable`.  
+
+An example is shown below.  
 
 ```kotlin
 object UserListStateManager : FlowableDataStateManager<Unit>()
@@ -272,7 +274,7 @@ class UserListFlowable : AbstractPagingStoreFlowable<Unit, User>(Unit) {
 You can have the data in a list. The retrieved remote data will be merged automatically.  
 `additionalRequest: Boolean` parameter indicates whether to load additionally. use if necessary.  
 
-The [GithubOrgsFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsFlowable.kt) and [GithubReposFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposFlowable.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.
+The [GithubOrgsFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsFlowable.kt) and [GithubReposFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposFlowable.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.  
 
 ## License
 
