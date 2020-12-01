@@ -118,6 +118,9 @@ class UserRepository {
 }
 ```
 
+You can get the data in the form of `Flow<State<DATA>>` by using the `asFlow()`.  
+[`State`](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.  
+
 ### 4. Use Repository class
 
 You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
@@ -153,9 +156,13 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 
 ## Example
 
-Refer to the [sample module](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details.  
+Refer to the [sample module](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
 
 ## Advanced Usage
+
+### Get data without [State](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
+
+[WIP]
 
 ### Request newest data
 
@@ -175,4 +182,4 @@ Refer to the [sample module](https://github.com/KazaKago/StoreFlowable/tree/mast
 
 ## License
 
-This project is licensed under the **Apache-2.0 License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache-2.0 License** - see the [LICENSE](LICENSE) file for details.  
