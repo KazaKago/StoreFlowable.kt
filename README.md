@@ -102,7 +102,7 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
 ```
 
 You need to prepare the API access class and the cache access class.  
-In this case, `UserAPI` and `UserCache` classes.  
+In this case, `UserApi` and `UserCache` classes.  
 
 ### 3. Create Repository class
 
@@ -239,6 +239,9 @@ class StoreFlowable {
 ### Paging support
 
 This library includes Paging support.  
+
+<img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
+
 Inherit [`AbstractPagingStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/paging/AbstractPagingStoreFlowable.kt) instead of [`AbstractStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/AbstractStoreFlowable.kt).  
 
 An example is shown below.  
