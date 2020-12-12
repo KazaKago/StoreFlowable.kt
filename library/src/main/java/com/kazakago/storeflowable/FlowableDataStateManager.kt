@@ -12,11 +12,11 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
         return dataState.getOrCreate(key)
     }
 
-    override fun load(key: KEY): DataState {
+    override fun loadState(key: KEY): DataState {
         return dataState.getOrCreate(key).value
     }
 
-    override fun save(key: KEY, state: DataState) {
+    override fun saveState(key: KEY, state: DataState) {
         dataState.getOrCreate(key).value = state
     }
 
@@ -27,5 +27,4 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
     fun clearAll() {
         dataState.clear()
     }
-
 }

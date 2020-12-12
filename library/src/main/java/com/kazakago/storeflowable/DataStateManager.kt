@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable
 
 internal interface DataStateManager<KEY> {
-    fun load(key: KEY): DataState
-    fun save(key: KEY, state: DataState)
+    fun loadState(key: KEY): DataState
+    fun saveState(key: KEY, state: DataState)
 }
