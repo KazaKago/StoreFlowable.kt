@@ -379,5 +379,4 @@ class DataSelectorTest {
         dataState = DataState.Fixed()
         dataCache = TestData.CachedData(isStale = true)
     }
-
 }

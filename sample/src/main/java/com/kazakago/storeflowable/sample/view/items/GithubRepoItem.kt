@@ -26,6 +26,4 @@ data class GithubRepoItem(private val githubRepo: GithubRepo) : BindableItem<Ite
             onClick(githubRepo)
         }
     }
-
 }
-

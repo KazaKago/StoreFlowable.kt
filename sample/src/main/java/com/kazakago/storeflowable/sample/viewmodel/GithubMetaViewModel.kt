@@ -79,5 +79,4 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
             )
         }
     }
-
 }

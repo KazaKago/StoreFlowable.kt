@@ -64,5 +64,4 @@ class GithubRepository {
         val githubReposFlowable = GithubReposResponder(userName).createStoreFlowable()
         return githubReposFlowable.requestAdditional(fetchAtError)
     }
-
 }

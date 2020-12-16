@@ -18,6 +18,4 @@ class LoadingItem : BindableItem<ItemLoadingBinding>(0) {
     override fun bind(viewBinding: ItemLoadingBinding, position: Int) {
         // do nothing.
     }
-
 }
-

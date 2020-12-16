@@ -23,6 +23,4 @@ data class ErrorItem(private val exception: Exception) : BindableItem<ItemErrorB
             onRetry()
         }
     }
-
 }
-
