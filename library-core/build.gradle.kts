@@ -35,6 +35,6 @@ dependencies {
 
     testImplementation("junit:junit:4.13.1")
     testImplementation("org.amshove.kluent:kluent:1.64")
-    testImplementation("io.mockk:mockk:1.10.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1")
+    testImplementation("io.mockk:mockk:1.10.3-jdk8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 }
