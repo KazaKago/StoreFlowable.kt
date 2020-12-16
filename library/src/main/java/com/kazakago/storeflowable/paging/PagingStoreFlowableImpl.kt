@@ -49,10 +49,6 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
             .first()
     }
 
-    override suspend fun getOrNull(type: AsDataType): List<DATA>? {
-        return runCatching { get(type) }.getOrNull()
-    }
-
     override suspend fun validate() {
         dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
     }

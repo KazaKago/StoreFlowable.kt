@@ -9,8 +9,6 @@ interface StoreFlowable<KEY, DATA> {
 
     suspend fun get(type: AsDataType = AsDataType.Mix): DATA
 
-    suspend fun getOrNull(type: AsDataType = AsDataType.Mix): DATA?
-
     suspend fun validate()
 
     suspend fun request()

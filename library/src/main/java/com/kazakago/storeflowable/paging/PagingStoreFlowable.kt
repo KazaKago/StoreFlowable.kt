@@ -10,8 +10,6 @@ interface PagingStoreFlowable<KEY, DATA> {
 
     suspend fun get(type: AsDataType = AsDataType.Mix): List<DATA>
 
-    suspend fun getOrNull(type: AsDataType = AsDataType.Mix): List<DATA>?
-
     suspend fun validate()
 
     suspend fun request()
