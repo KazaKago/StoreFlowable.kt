@@ -251,7 +251,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListResponder : PagingStoreFlowableResponder<Unit, UserData> {
+class UserListFlowableResponder : PagingStoreFlowableResponder<Unit, UserData> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
