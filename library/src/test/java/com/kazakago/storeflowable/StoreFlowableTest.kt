@@ -2,6 +2,7 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.State
 import com.kazakago.storeflowable.core.StateContent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
@@ -9,6 +10,7 @@ import org.junit.Test
 import java.lang.Thread.sleep
 import java.net.UnknownHostException
 
+@ExperimentalCoroutinesApi
 class StoreFlowableTest {
 
     sealed class TestData(val isStale: Boolean) {

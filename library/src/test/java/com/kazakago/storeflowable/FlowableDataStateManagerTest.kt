@@ -1,12 +1,14 @@
 package com.kazakago.storeflowable
 
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class FlowableDataStateManagerTest {
 
     private lateinit var flowableDataStateManager: FlowableDataStateManager<String>

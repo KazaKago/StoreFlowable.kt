@@ -1,11 +1,13 @@
 package com.kazakago.storeflowable
 
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeNull
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class DataSelectorTest {
 
     private sealed class TestData(val isStale: Boolean) {
