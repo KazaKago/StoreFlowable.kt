@@ -106,9 +106,8 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, create the Repository class as usual.  
-Be sure to go through the created `StoreFlowable` class when getting / updating data.  
-
+After that, you can get the `StoreFlowable` class from the `StoreFlowableResponder.createStoreFlowable()` method, and use it to build the Repository class.
+Be sure to go through the created `StoreFlowable` class when getting / updating data.
 
 ```kotlin
 class UserRepository {
