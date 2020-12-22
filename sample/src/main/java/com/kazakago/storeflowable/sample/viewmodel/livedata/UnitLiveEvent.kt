@@ -18,5 +18,4 @@ open class UnitLiveEvent : LiveEvent<Unit>() {
     protected open fun call() {
         super.call(Unit)
     }
-
 }

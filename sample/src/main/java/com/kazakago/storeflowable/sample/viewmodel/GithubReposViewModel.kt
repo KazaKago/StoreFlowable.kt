@@ -109,5 +109,4 @@ class GithubReposViewModel(application: Application, private val userName: Strin
             )
         }
     }
-
 }

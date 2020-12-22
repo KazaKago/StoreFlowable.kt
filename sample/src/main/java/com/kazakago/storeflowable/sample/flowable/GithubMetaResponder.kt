@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.sample.flowable
 
-import com.kazakago.storeflowable.AbstractStoreFlowable
 import com.kazakago.storeflowable.FlowableDataStateManager
+import com.kazakago.storeflowable.StoreFlowableResponder
 import com.kazakago.storeflowable.sample.api.GithubApi
 import com.kazakago.storeflowable.sample.cache.GithubInMemoryCache
 import com.kazakago.storeflowable.sample.cache.GithubMetaStateManager
@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.sample.model.GithubMeta
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubMetaFlowable : AbstractStoreFlowable<Unit, GithubMeta>(Unit) {
+class GithubMetaResponder(override val key: Unit = Unit) : StoreFlowableResponder<Unit, GithubMeta> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)
@@ -41,5 +41,4 @@ class GithubMetaFlowable : AbstractStoreFlowable<Unit, GithubMeta>(Unit) {
             true
         }
     }
-
 }

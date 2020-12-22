@@ -285,5 +285,4 @@ internal class EnneadLiveData<A, B, C, D, E, F, G, H, I>(private val compositeLi
         val ninth = compositeLiveData.ninth.value as I
         value = Ennead(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth)
     }
-
 }

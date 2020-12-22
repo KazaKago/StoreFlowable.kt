@@ -7,37 +7,6 @@
     tools:context=".view.GithubMetaActivity">
 
     <TextView
-        android:id="@+id/md5RsaTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:textSize="13sp"
-        app:layout_constraintBottom_toTopOf="@id/md5DsaTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="MD5_RSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
-
-    <TextView
-        android:id="@+id/md5DsaTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:textSize="13sp"
-        app:layout_constraintBottom_toTopOf="@id/sha256RsaTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/md5RsaTextView"
-        tools:text="MD5_DSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
-
-    <TextView
         android:id="@+id/sha256RsaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,7 +18,8 @@
         app:layout_constraintBottom_toTopOf="@id/sha256DsaTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/md5DsaTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="SHA256_RSA\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
 
     <TextView

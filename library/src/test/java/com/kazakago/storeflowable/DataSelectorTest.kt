@@ -16,25 +16,25 @@ class DataSelectorTest {
     private val dataSelector = DataSelector(
         key = "key",
         dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+            override fun loadState(key: String): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun saveState(key: String, state: DataState) {
                 dataState = state
             }
         },
         cacheDataManager = object : CacheDataManager<TestData> {
-            override suspend fun load(): TestData? {
+            override suspend fun loadData(): TestData? {
                 return dataCache
             }
 
-            override suspend fun save(data: TestData?) {
+            override suspend fun saveData(data: TestData?) {
                 dataCache = data
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
-            override suspend fun fetch(): TestData {
+            override suspend fun fetchOrigin(): TestData {
                 return TestData.FetchedData()
             }
         },
@@ -379,5 +379,4 @@ class DataSelectorTest {
         dataState = DataState.Fixed()
         dataCache = TestData.CachedData(isStale = true)
     }
-
 }

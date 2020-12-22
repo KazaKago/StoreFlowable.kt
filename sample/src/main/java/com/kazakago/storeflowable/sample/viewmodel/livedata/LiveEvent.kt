@@ -64,5 +64,4 @@ open class LiveEvent<T> : LiveData<T>() {
         dispatchedTagSet.clear()
         value = t
     }
-
 }

@@ -8,5 +8,4 @@ class MutableLiveEvent<T> : LiveEvent<T>() {
     public override fun call(t: T) {
         super.call(t)
     }
-
 }

@@ -84,5 +84,4 @@ class GithubUserViewModel(application: Application, private val userName: String
             )
         }
     }
-
 }
