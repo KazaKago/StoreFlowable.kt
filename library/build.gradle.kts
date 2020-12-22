@@ -37,5 +37,4 @@ dependencies {
     testImplementation("org.amshove.kluent:kluent:1.64")
     testImplementation("io.mockk:mockk:1.10.3-jdk8")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
-    testImplementation("app.cash.turbine:turbine:0.2.1")
 }

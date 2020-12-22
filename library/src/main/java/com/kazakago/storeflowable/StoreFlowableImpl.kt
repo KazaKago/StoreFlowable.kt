@@ -38,9 +38,9 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
             .transform {
                 val data = dataSelector.load()
                 when (it) {
-                    is DataState.Fixed -> if (data != null) emit(data) else throw NoSuchElementException()
+                    is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit //do nothing.
-                    is DataState.Error -> if (data != null) emit(data) else throw it.exception
+                    is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw it.exception
                 }
             }
             .first()
