@@ -63,15 +63,15 @@ object UserStateManager : FlowableDataStateManager<UserId>()
 
 [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it `object class`.  
 
-### 2. Create StoreFlowable class
+### 2. Create StoreFlowableResponder class
 
-Next, create a class that inherits [`AbstractStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/AbstractStoreFlowable.kt).  
+Next, create a class that implements [`StoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableResponder.kt).
 Put the type you want to use as a Data in `<DATA>`.  
 
 An example is shown below.  
 
 ```kotlin
-class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>(userId) {
+class UserFlowableResponder(override val key: UserId) : StoreFlowableResponder<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
@@ -81,17 +81,17 @@ class UserFlowable(val userId: UserId) : AbstractStoreFlowable<UserId, UserData>
 
     // Get data from local cache.
     override suspend fun loadData(): UserData? {
-        return userCache.load(userId)
+        return userCache.load(key)
     }
 
     // Save data to local cache.
     override suspend fun saveData(data: UserData?) {
-        userCache.save(userId, data)
+        userCache.save(key, data)
     }
 
     // Get data from remote server.
     override suspend fun fetchOrigin(): UserData {
-        return userApi.fetch(userId)
+        return userApi.fetch(key)
     }
 
     // Whether the cache is valid.
@@ -114,11 +114,13 @@ Be sure to go through the created `StoreFlowable` class when getting / updating 
 class UserRepository {
 
     fun followUserData(userId: UserId): Flow<State<UserData>> {
-        return UserFlowable(userId).asFlow()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableResponder(userId).createStoreFlowable()
+        return userFlowable.asFlow()
     }
-    
+
     suspend fun updateUserData(userData: UserData) {
-        UserFlowable(userData.userId).update(userData)
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableResponder(userData.userId).createStoreFlowable()
+        userFlowable.update(userData)
     }
 }
 ```
@@ -132,8 +134,8 @@ You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx
 and branch the data state with `doAction()` method or `when` statement.  
 
 ```kotlin
-private fun subscribe() = viewModelScope.launch {
-    userRepository.followUserData().collect {
+private fun subscribe(userId: UserId) = viewModelScope.launch {
+    userRepository.followUserData(userId).collect {
         it.doAction(
             onFixed = {
                 ...
@@ -175,9 +177,8 @@ If you don't need [`State`](https://github.com/KazaKago/StoreFlowable/blob/maste
 `getOrNull()` returns null instead of Exception.  
 
 ```kotlin
-class StoreFlowable {
+interface StoreFlowable<KEY, DATA> {
     suspend fun get(type: AsDataType = AsDataType.Mix): DATA
-    suspend fun getOrNull(type: AsDataType = AsDataType.Mix): DATA?
 }
 ```
 
@@ -201,7 +202,7 @@ However, use `get()` or `getOrNull()` only for one-shot data acquisition, and co
 If you want to ignore the cache and get new data, add `forceRefresh` parameter to `asFlow()`.  
 
 ```kotlin
-class StoreFlowable {
+interface StoreFlowable<KEY, DATA> {
     fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>>
 }
 ```
@@ -209,7 +210,7 @@ class StoreFlowable {
 Or you can use `request()` if you are already observing the `Flow`.  
 
 ```kotlin
-class StoreFlowable {
+interface StoreFlowable<KEY, DATA> {
     suspend fun request()
 }
 ```
@@ -220,7 +221,7 @@ Use `validate()` if you want to verify that the local cache is valid.
 If invalid, get new data remotely.  
 
 ```kotlin
-class StoreFlowable {
+interface StoreFlowable<KEY, DATA> {
     suspend fun validate()
 }
 ```
@@ -231,7 +232,7 @@ If you want to update the local cache, use the `update()` method.
 `Flow` observers will be notified.  
 
 ```kotlin
-class StoreFlowable {
+interface StoreFlowable<KEY, DATA> {
     suspend fun update(newData: DATA?)
 }
 ```
@@ -242,7 +243,7 @@ This library includes Paging support.
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`AbstractPagingStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/paging/AbstractPagingStoreFlowable.kt) instead of [`AbstractStoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/AbstractStoreFlowable.kt).  
+Inherit [`PagingStoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/paging/PagingStoreFlowableResponder.kt) instead of [`StoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableResponder.kt).
 
 An example is shown below.  
 
@@ -250,27 +251,28 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowable : AbstractPagingStoreFlowable<Unit, User>(Unit) {
+class UserListFlowable : PagingStoreFlowableResponder<Unit, UserData> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
 
+    override val key: Unit = Unit
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = UserListStateManager
 
-    override suspend fun loadData(): List<User>? {
+    override suspend fun loadData(): List<UserData>? {
         return userListCache.load()
     }
 
-    override suspend fun saveData(data: List<User>?, additionalRequest: Boolean) {
+    override suspend fun saveData(data: List<UserData>?, additionalRequest: Boolean) {
         userListCache.save(data)
     }
 
-    override suspend fun fetchOrigin(data: List<User>?, additionalRequest: Boolean): List<GithubRepo> {
+    override suspend fun fetchOrigin(data: List<UserData>?, additionalRequest: Boolean): List<UserData> {
         val page = if (additionalRequest) ((data?.size ?: 0) / 10 + 1) else 1
         return userListApi.fetch(page)
     }
 
-    override suspend fun needRefresh(data: List<User>): Boolean {
+    override suspend fun needRefresh(data: List<UserData>): Boolean {
         return data.last().isExpired()
     }
 }
