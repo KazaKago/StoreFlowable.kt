@@ -162,7 +162,7 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 
 ## Example
 
-Refer to the [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) for details. This module works as an Android app.  
+Refer to the [**sample module**](sample) for details. This module works as an Android app.  
 See [GithubMetaResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubMetaResponder.kt) and [GithubUserResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubUserResponder.kt).
 
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).  
@@ -280,7 +280,7 @@ class UserListFlowableResponder : PagingStoreFlowableResponder<Unit, UserData> {
 You can have the data in a list. The retrieved remote data will be merged automatically.  
 `additionalRequest: Boolean` parameter indicates whether to load additionally. use if necessary.  
 
-The [GithubOrgsResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsResponder.kt) and [GithubReposResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposResponder.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.
+The [GithubOrgsResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsResponder.kt) and [GithubReposResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposResponder.kt) classes in [**sample module**](sample) implement paging.
 
 ## License
 
