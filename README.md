@@ -25,7 +25,7 @@ The following is the class structure of Repository pattern using this library.
 
 ![https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg](https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg)
 
-The following is an example of screen display using [`State`](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt).
+The following is an example of screen display using [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt).
 
 ![https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg](https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg)
 
@@ -126,7 +126,7 @@ class UserRepository {
 ```
 
 You can get the data in the form of `Flow<State<DATA>>` by using the `asFlow()`.  
-[`State`](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.  
+[`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
 
@@ -170,9 +170,9 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ## Advanced Usage
 
-### Get data without [State](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
+### Get data without [State](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
 
-If you don't need [`State`](https://github.com/KazaKago/StoreFlowable/blob/master/library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use `get()` or `getOrNull()`.  
+If you don't need [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use `get()` or `getOrNull()`.
 `get()` throws an Exception if there is no valid cache and fails to get new data.  
 `getOrNull()` returns null instead of Exception.  
 
@@ -281,7 +281,7 @@ class UserListFlowable : PagingStoreFlowableResponder<Unit, UserData> {
 You can have the data in a list. The retrieved remote data will be merged automatically.  
 `additionalRequest: Boolean` parameter indicates whether to load additionally. use if necessary.  
 
-The [GithubOrgsFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsFlowable.kt) and [GithubReposFlowable](https://github.com/KazaKago/StoreFlowable/blob/master/sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposFlowable.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.  
+The [GithubOrgsFlowable](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsFlowable.kt) and [GithubReposFlowable](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposFlowable.kt) classes in [**sample module**](https://github.com/KazaKago/StoreFlowable/tree/master/sample) implement paging.
 
 ## License
 
