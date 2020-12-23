@@ -106,8 +106,8 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, you can get the [`StoreFlowable`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableResponder.createStoreFlowable()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
-Be sure to go through the created [`StoreFlowable`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
+After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableResponder<KEY, DATA>.createStoreFlowable()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
 
 ```kotlin
 class UserRepository {
@@ -171,7 +171,7 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ### Get data without [State](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
 
-If you don't need [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt).
+If you don't need [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt).  
 [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
 [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) returns null instead of Exception.  
 
