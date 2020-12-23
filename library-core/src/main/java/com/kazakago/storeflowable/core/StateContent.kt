@@ -1,7 +1,9 @@
 package com.kazakago.storeflowable.core
 
 sealed class StateContent<out T> {
+
     data class Exist<out T>(val rawContent: T) : StateContent<T>()
+
     class NotExist<out T> : StateContent<T>()
 
     fun <V> doAction(onExist: ((rawContent: T) -> V), onNotExist: (() -> V)): V {
@@ -20,5 +22,4 @@ sealed class StateContent<out T> {
             }
         }
     }
-
 }

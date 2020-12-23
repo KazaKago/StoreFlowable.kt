@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable.core
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -10,6 +11,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class FlowStateMapperTest {
 
     private lateinit var flowFixedState: Flow<State<Int>>
@@ -33,5 +35,4 @@ class FlowStateMapperTest {
             }
         )
     }
-
 }

@@ -20,7 +20,4 @@ data class GithubOrgItem(private val githubOrg: GithubOrg) : BindableItem<ItemGi
         viewBinding.idTextView.text = "ID: ${githubOrg.id}"
         viewBinding.titleTextView.text = githubOrg.name
     }
-
-
 }
-

@@ -24,8 +24,8 @@ internal class PairLiveData<A, B>(private val compositeLiveData: Pair<LiveData<A
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Pair<A, B>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Pair<A, B>>) {
@@ -47,9 +47,9 @@ internal class TripleLiveData<A, B, C>(private val compositeLiveData: Triple<Liv
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Triple<A, B, C>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Triple<A, B, C>>) {
@@ -73,10 +73,10 @@ internal class QuartetLiveData<A, B, C, D>(private val compositeLiveData: Quarte
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Quartet<A, B, C, D>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Quartet<A, B, C, D>>) {
@@ -102,11 +102,11 @@ internal class QuintetLiveData<A, B, C, D, E>(private val compositeLiveData: Qui
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Quintet<A, B, C, D, E>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fifth.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
+        compositeLiveData.fifth.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Quintet<A, B, C, D, E>>) {
@@ -134,12 +134,12 @@ internal class SextetLiveData<A, B, C, D, E, F>(private val compositeLiveData: S
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Sextet<A, B, C, D, E, F>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fifth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.sixth.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
+        compositeLiveData.fifth.observe(owner) { setCurrentValue() }
+        compositeLiveData.sixth.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Sextet<A, B, C, D, E, F>>) {
@@ -169,13 +169,13 @@ internal class SeptetLiveData<A, B, C, D, E, F, G>(private val compositeLiveData
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Septet<A, B, C, D, E, F, G>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fifth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.sixth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.seventh.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
+        compositeLiveData.fifth.observe(owner) { setCurrentValue() }
+        compositeLiveData.sixth.observe(owner) { setCurrentValue() }
+        compositeLiveData.seventh.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Septet<A, B, C, D, E, F, G>>) {
@@ -207,14 +207,14 @@ internal class OctetLiveData<A, B, C, D, E, F, G, H>(private val compositeLiveDa
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Octet<A, B, C, D, E, F, G, H>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fifth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.sixth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.seventh.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.eighth.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
+        compositeLiveData.fifth.observe(owner) { setCurrentValue() }
+        compositeLiveData.sixth.observe(owner) { setCurrentValue() }
+        compositeLiveData.seventh.observe(owner) { setCurrentValue() }
+        compositeLiveData.eighth.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Octet<A, B, C, D, E, F, G, H>>) {
@@ -248,15 +248,15 @@ internal class EnneadLiveData<A, B, C, D, E, F, G, H, I>(private val compositeLi
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in Ennead<A, B, C, D, E, F, G, H, I>>) {
         super.observe(owner, observer)
-        compositeLiveData.first.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.second.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.third.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fourth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.fifth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.sixth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.seventh.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.eighth.observe(owner, Observer { setCurrentValue() })
-        compositeLiveData.ninth.observe(owner, Observer { setCurrentValue() })
+        compositeLiveData.first.observe(owner) { setCurrentValue() }
+        compositeLiveData.second.observe(owner) { setCurrentValue() }
+        compositeLiveData.third.observe(owner) { setCurrentValue() }
+        compositeLiveData.fourth.observe(owner) { setCurrentValue() }
+        compositeLiveData.fifth.observe(owner) { setCurrentValue() }
+        compositeLiveData.sixth.observe(owner) { setCurrentValue() }
+        compositeLiveData.seventh.observe(owner) { setCurrentValue() }
+        compositeLiveData.eighth.observe(owner) { setCurrentValue() }
+        compositeLiveData.ninth.observe(owner) { setCurrentValue() }
     }
 
     override fun observeForever(observer: Observer<in Ennead<A, B, C, D, E, F, G, H, I>>) {
@@ -285,5 +285,4 @@ internal class EnneadLiveData<A, B, C, D, E, F, G, H, I>(private val compositeLi
         val ninth = compositeLiveData.ninth.value as I
         value = Ennead(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth)
     }
-
 }

@@ -2,7 +2,6 @@ package com.kazakago.storeflowable.sample.view
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -32,11 +31,9 @@ class GithubMetaActivity : AppCompatActivity() {
         binding.retryButton.setOnClickListener {
             githubMetaViewModel.request()
         }
-        githubMetaViewModel.githubMeta.observe(this) {
-            binding.md5RsaTextView.text = it?.sshKeyFingerprints?.md5Rsa?.let { "MD5_RSA\n${it}" }
-            binding.md5DsaTextView.text = it?.sshKeyFingerprints?.md5Dsa?.let { "MD5_DSA\n${it}" }
-            binding.sha256RsaTextView.text = it?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n${it}" }
-            binding.sha256DsaTextView.text = it?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n${it}" }
+        githubMetaViewModel.githubMeta.observe(this) { meta ->
+            binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
+            binding.sha256DsaTextView.text = meta?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n$it" }
         }
         githubMetaViewModel.isLoading.observe(this) {
             binding.progressBar.isVisible = it
@@ -63,10 +60,5 @@ class GithubMetaActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun launch(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(intent)
     }
 }

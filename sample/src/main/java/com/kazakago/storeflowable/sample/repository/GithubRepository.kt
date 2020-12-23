@@ -1,10 +1,12 @@
 package com.kazakago.storeflowable.sample.repository
 
 import com.kazakago.storeflowable.core.State
-import com.kazakago.storeflowable.sample.flowable.GithubMetaFlowable
-import com.kazakago.storeflowable.sample.flowable.GithubOrgsFlowable
-import com.kazakago.storeflowable.sample.flowable.GithubReposFlowable
-import com.kazakago.storeflowable.sample.flowable.GithubUserFlowable
+import com.kazakago.storeflowable.createStoreFlowable
+import com.kazakago.storeflowable.paging.createStoreFlowable
+import com.kazakago.storeflowable.sample.flowable.GithubMetaResponder
+import com.kazakago.storeflowable.sample.flowable.GithubOrgsResponder
+import com.kazakago.storeflowable.sample.flowable.GithubReposResponder
+import com.kazakago.storeflowable.sample.flowable.GithubUserResponder
 import com.kazakago.storeflowable.sample.model.GithubMeta
 import com.kazakago.storeflowable.sample.model.GithubOrg
 import com.kazakago.storeflowable.sample.model.GithubRepo
@@ -14,43 +16,52 @@ import kotlinx.coroutines.flow.Flow
 class GithubRepository {
 
     fun followMeta(): Flow<State<GithubMeta>> {
-        return GithubMetaFlowable().asFlow()
+        val githubMetaFlowable = GithubMetaResponder().createStoreFlowable()
+        return githubMetaFlowable.asFlow()
     }
 
     suspend fun requestMeta() {
-        return GithubMetaFlowable().request()
+        val githubMetaFlowable = GithubMetaResponder().createStoreFlowable()
+        return githubMetaFlowable.request()
     }
 
     fun followOrgs(): Flow<State<List<GithubOrg>>> {
-        return GithubOrgsFlowable().asFlow()
+        val githubOrgsFlowable = GithubOrgsResponder().createStoreFlowable()
+        return githubOrgsFlowable.asFlow()
     }
 
     suspend fun requestOrgs() {
-        return GithubOrgsFlowable().request()
+        val githubOrgsFlowable = GithubOrgsResponder().createStoreFlowable()
+        return githubOrgsFlowable.request()
     }
 
     suspend fun requestAdditionalOrgs(fetchAtError: Boolean) {
-        return GithubOrgsFlowable().requestAdditional(fetchAtError)
+        val githubOrgsFlowable = GithubOrgsResponder().createStoreFlowable()
+        return githubOrgsFlowable.requestAdditional(fetchAtError)
     }
 
     fun followUser(userName: String): Flow<State<GithubUser>> {
-        return GithubUserFlowable(userName).asFlow()
+        val githubUserFlowable = GithubUserResponder(userName).createStoreFlowable()
+        return githubUserFlowable.asFlow()
     }
 
     suspend fun requestUser(userName: String) {
-        return GithubUserFlowable(userName).request()
+        val githubUserFlowable = GithubUserResponder(userName).createStoreFlowable()
+        return githubUserFlowable.request()
     }
 
     fun followRepos(userName: String): Flow<State<List<GithubRepo>>> {
-        return GithubReposFlowable(userName).asFlow()
+        val githubReposFlowable = GithubReposResponder(userName).createStoreFlowable()
+        return githubReposFlowable.asFlow()
     }
 
     suspend fun requestRepos(userName: String) {
-        return GithubReposFlowable(userName).request()
+        val githubReposFlowable = GithubReposResponder(userName).createStoreFlowable()
+        return githubReposFlowable.request()
     }
 
     suspend fun requestAdditionalRepos(userName: String, fetchAtError: Boolean) {
-        return GithubReposFlowable(userName).requestAdditional(fetchAtError)
+        val githubReposFlowable = GithubReposResponder(userName).createStoreFlowable()
+        return githubReposFlowable.requestAdditional(fetchAtError)
     }
-
 }

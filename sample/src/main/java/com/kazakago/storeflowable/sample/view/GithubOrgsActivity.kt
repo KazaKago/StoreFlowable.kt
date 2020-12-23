@@ -80,5 +80,4 @@ class GithubOrgsActivity : AppCompatActivity() {
             onRetry = { githubOrgsViewModel.retryAdditional() }
         }
     }
-
 }

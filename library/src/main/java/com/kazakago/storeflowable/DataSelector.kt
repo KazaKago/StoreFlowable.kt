@@ -13,16 +13,16 @@ internal class DataSelector<KEY, DATA>(
 ) {
 
     suspend fun load(): DATA? {
-        return cacheDataManager.load()
+        return cacheDataManager.loadData()
     }
 
     suspend fun update(newData: DATA?) {
-        cacheDataManager.save(newData)
-        dataStateManager.save(key, DataState.Fixed())
+        cacheDataManager.saveData(newData)
+        dataStateManager.saveState(key, DataState.Fixed())
     }
 
     suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchAtError: Boolean, fetchAsync: Boolean) {
-        when (dataStateManager.load(key)) {
+        when (dataStateManager.loadState(key)) {
             is DataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCache = clearCache, fetchAsync = fetchAsync)
             is DataState.Loading -> Unit
             is DataState.Error -> if (fetchAtError) prepareFetch(clearCache = clearCache, fetchAsync = fetchAsync)
@@ -30,15 +30,15 @@ internal class DataSelector<KEY, DATA>(
     }
 
     private suspend fun doDataAction(forceRefresh: Boolean, clearCache: Boolean, fetchAsync: Boolean) {
-        val data = cacheDataManager.load()
+        val data = cacheDataManager.loadData()
         if (data == null || forceRefresh || needRefresh(data)) {
             prepareFetch(clearCache = clearCache, fetchAsync = fetchAsync)
         }
     }
 
     private suspend fun prepareFetch(clearCache: Boolean, fetchAsync: Boolean) {
-        if (clearCache) cacheDataManager.save(null)
-        dataStateManager.save(key, DataState.Loading())
+        if (clearCache) cacheDataManager.saveData(null)
+        dataStateManager.saveState(key, DataState.Loading())
         if (fetchAsync) {
             CoroutineScope(Dispatchers.IO).launch { fetchNewData() }
         } else {
@@ -48,12 +48,11 @@ internal class DataSelector<KEY, DATA>(
 
     private suspend fun fetchNewData() {
         try {
-            val fetchedData = originDataManager.fetch()
-            cacheDataManager.save(fetchedData)
-            dataStateManager.save(key, DataState.Fixed())
+            val fetchedData = originDataManager.fetchOrigin()
+            cacheDataManager.saveData(fetchedData)
+            dataStateManager.saveState(key, DataState.Fixed())
         } catch (exception: Exception) {
-            dataStateManager.save(key, DataState.Error(exception))
+            dataStateManager.saveState(key, DataState.Error(exception))
         }
     }
-
 }

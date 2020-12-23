@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable.core
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -10,6 +11,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class FlowStateCombinerTest {
 
     private lateinit var flowFixedExist: Flow<State<Int>>
@@ -139,5 +141,4 @@ class FlowStateCombinerTest {
             }
         )
     }
-
 }

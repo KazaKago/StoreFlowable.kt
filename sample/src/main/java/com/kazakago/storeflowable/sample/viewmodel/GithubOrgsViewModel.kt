@@ -104,5 +104,4 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
             )
         }
     }
-
 }

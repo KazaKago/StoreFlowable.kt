@@ -1,6 +1,8 @@
 package com.kazakago.storeflowable.paging
 
-internal interface PagingCacheDataManager<DATA> {
-    suspend fun load(): List<DATA>?
-    suspend fun save(data: List<DATA>?, additionalRequest: Boolean)
+interface PagingCacheDataManager<DATA> {
+
+    suspend fun loadData(): List<DATA>?
+
+    suspend fun saveData(data: List<DATA>?, additionalRequest: Boolean)
 }
