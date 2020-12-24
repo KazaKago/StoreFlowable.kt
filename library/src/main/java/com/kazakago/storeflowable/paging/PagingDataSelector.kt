@@ -18,12 +18,9 @@ internal class PagingDataSelector<KEY, DATA>(
         return cacheDataManager.loadData()
     }
 
-    suspend fun update(newData: List<DATA>?, additionalRequest: Boolean = false) {
-        val data = cacheDataManager.loadData()
-        val mergedData = if (additionalRequest) (data ?: emptyList()) + (newData ?: emptyList()) else (newData ?: emptyList())
-        cacheDataManager.saveData(mergedData, additionalRequest)
-        val isReachLast = mergedData.isEmpty()
-        dataStateManager.saveState(key, DataState.Fixed(isReachLast))
+    suspend fun update(newData: List<DATA>?) {
+        cacheDataManager.saveData(newData, false)
+        dataStateManager.saveState(key, DataState.Fixed())
     }
 
     suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchAtError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
