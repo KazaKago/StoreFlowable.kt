@@ -6,6 +6,6 @@ suspend inline fun <KEY, DATA> PagingStoreFlowable<KEY, DATA>.getOrNull(type: As
     return runCatching { get(type) }.getOrNull()
 }
 
-fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.createStoreFlowable(): PagingStoreFlowable<KEY, DATA> {
+fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.create(): PagingStoreFlowable<KEY, DATA> {
     return PagingStoreFlowableImpl(this)
 }
