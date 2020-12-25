@@ -4,6 +4,6 @@ suspend inline fun <KEY, DATA> StoreFlowable<KEY, DATA>.getOrNull(type: AsDataTy
     return runCatching { get(type) }.getOrNull()
 }
 
-fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.createStoreFlowable(): StoreFlowable<KEY, DATA> {
+fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(this)
 }
