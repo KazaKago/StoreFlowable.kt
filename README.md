@@ -71,7 +71,7 @@ Put the type you want to use as a Data in `<DATA>`.
 An example is shown below.  
 
 ```kotlin
-class UserFlowableResponder(override val key: UserId) : StoreFlowableResponder<UserId, UserData> {
+class UserResponder(override val key: UserId) : StoreFlowableResponder<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
@@ -106,19 +106,19 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableResponder<KEY, DATA>.createStoreFlowable()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableResponder<KEY, DATA>.create()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
 Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
 
 ```kotlin
 class UserRepository {
 
     fun followUserData(userId: UserId): Flow<State<UserData>> {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableResponder(userId).createStoreFlowable()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserResponder(userId).create()
         return userFlowable.asFlow()
     }
 
     suspend fun updateUserData(userData: UserData) {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableResponder(userData.userId).createStoreFlowable()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserResponder(userData.userId).create()
         userFlowable.update(userData)
     }
 }
@@ -250,7 +250,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowableResponder : PagingStoreFlowableResponder<Unit, UserData> {
+class UserListResponder : PagingStoreFlowableResponder<Unit, UserData> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
