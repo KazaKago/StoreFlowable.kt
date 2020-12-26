@@ -17,7 +17,7 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
     override fun asFlow(forceRefresh: Boolean): Flow<State<DATA>> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
-                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCache = true, fetchAtError = false, fetchAsync = true)
+                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
             }
             .map {
                 val data = dataSelector.load()
@@ -30,8 +30,8 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
                     AsDataType.FromCache -> Unit //do nothing.
                 }
             }
@@ -47,11 +47,15 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
     }
 
     override suspend fun validate() {
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+    }
+
+    override suspend fun refresh(clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean) {
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = clearCacheWhenFetchFails, continueWhenError = continueWhenError, awaitFetching = true)
     }
 
     override suspend fun request() {
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
+        refresh()
     }
 
     override suspend fun update(newData: DATA?) {

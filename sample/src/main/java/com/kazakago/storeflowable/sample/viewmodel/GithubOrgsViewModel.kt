@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.sample.model.GithubOrg
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableUnitLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -16,21 +14,23 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
     val githubOrgs = MutableLiveData<List<GithubOrg>>(emptyList())
     val isMainLoading = MutableLiveData(false)
     val isAdditionalLoading = MutableLiveData(false)
+    val isRefreshing = MutableLiveData(false)
     val mainError = MutableLiveData<Exception?>()
     val additionalError = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
-    val hideSwipeRefresh = MutableUnitLiveEvent()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
-        if (!githubOrgs.value.isNullOrEmpty()) shouldNoticeErrorOnNextState = true
-        githubRepository.requestOrgs()
-        hideSwipeRefresh.call()
+    fun refresh() = viewModelScope.launch {
+        isRefreshing.value = true
+        githubRepository.refreshOrgs()
+        isRefreshing.value = false
+    }
+
+    fun retry() = viewModelScope.launch {
+        githubRepository.refreshOrgs()
     }
 
     fun requestAdditional() = viewModelScope.launch {
@@ -45,7 +45,6 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
         githubRepository.followOrgs().collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubOrgs ->
                             githubOrgs.value = _githubOrgs
@@ -82,8 +81,6 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubOrgs ->
                             githubOrgs.value = _githubOrgs

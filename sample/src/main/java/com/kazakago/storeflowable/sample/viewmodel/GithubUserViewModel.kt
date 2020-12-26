@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.kazakago.storeflowable.sample.model.GithubUser
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -20,24 +19,24 @@ class GithubUserViewModel(application: Application, private val userName: String
     val githubUser = MutableLiveData<GithubUser?>()
     val isLoading = MutableLiveData(false)
     val error = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
-        if (githubUser.value != null) shouldNoticeErrorOnNextState = true
-        githubRepository.requestUser(userName)
+    fun refresh() = viewModelScope.launch {
+        githubRepository.refreshUser(userName)
+    }
+
+    fun retry() = viewModelScope.launch {
+        githubRepository.refreshUser(userName)
     }
 
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followUser(userName).collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubUser ->
                             githubUser.value = _githubUser
@@ -66,8 +65,6 @@ class GithubUserViewModel(application: Application, private val userName: String
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubUser ->
                             githubUser.value = _githubUser

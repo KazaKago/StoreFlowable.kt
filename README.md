@@ -196,7 +196,7 @@ enum class AsDataType {
 
 However, use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) only for one-shot data acquisition, and consider using [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
 
-### Request newest data
+### Refresh data
 
 If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
 
@@ -206,11 +206,11 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-Or you can use [`request()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you are already observing the `Flow`.  
+Or you can use [`refresh()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you are already observing the `Flow`.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun request()
+    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
 }
 ```
 

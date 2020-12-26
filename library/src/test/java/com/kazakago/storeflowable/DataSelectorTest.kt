@@ -10,9 +10,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class DataSelectorTest {
 
-    private sealed class TestData(val isStale: Boolean) {
-        class CachedData(isStale: Boolean) : TestData(isStale)
-        class FetchedData : TestData(false)
+    private enum class TestData(val isStale: Boolean) {
+        ValidData(true),
+        InvalidData(true),
+        FetchedData(false),
     }
 
     private val dataSelector = DataSelector(
@@ -37,7 +38,7 @@ class DataSelectorTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetchOrigin(): TestData {
-                return TestData.FetchedData()
+                return TestData.FetchedData
             }
         },
         needRefresh = { it.isStale }
@@ -46,339 +47,339 @@ class DataSelectorTest {
     private var dataState: DataState = DataState.Fixed()
     private var dataCache: TestData? = null
 
-    @Test
-    fun validateFixedNotExist() = runBlockingTest {
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-    }
-
-    private fun setupValidateFixedNotExist() {
+    private fun setupFixedStatNoCache() {
         dataState = DataState.Fixed()
         dataCache = null
     }
 
-    @Test
-    fun validateLoadingNotExist() = runBlockingTest {
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-
-        setupValidateLoadingNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache.shouldBeNull()
-    }
-
-    private fun setupValidateLoadingNotExist() {
+    private fun setupLoadingStateNoCache() {
         dataState = DataState.Loading()
         dataCache = null
     }
 
-    @Test
-    fun validateErrorNotExist() = runBlockingTest {
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache.shouldBeNull()
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache.shouldBeNull()
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache.shouldBeNull()
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache.shouldBeNull()
-
-        setupValidateErrorNotExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-    }
-
-    private fun setupValidateErrorNotExist() {
+    private fun setupErrorStateNoCache() {
         dataState = DataState.Error(mockk())
         dataCache = null
     }
 
-    @Test
-    fun validateFixedExist() = runBlockingTest {
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateFixedExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-    }
-
-    private fun setupValidateFixedExist() {
+    private fun setupFixedStateValidCache() {
         dataState = DataState.Fixed()
-        dataCache = TestData.CachedData(isStale = false)
+        dataCache = TestData.ValidData
     }
 
-    @Test
-    fun validateLoadingExist() = runBlockingTest {
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateLoadingExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-    }
-
-    private fun setupValidateLoadingExist() {
+    private fun setupLoadingStateValidCache() {
         dataState = DataState.Loading()
-        dataCache = TestData.CachedData(isStale = false)
+        dataCache = TestData.ValidData
     }
 
-    @Test
-    fun validateErrorExist() = runBlockingTest {
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeInstanceOf TestData.CachedData::class
-
-        setupValidateErrorExist()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
-    }
-
-    private fun setupValidateErrorExist() {
+    private fun setupErrorStateValidCache() {
         dataState = DataState.Error(mockk())
-        dataCache = TestData.CachedData(isStale = false)
+        dataCache = TestData.ValidData
+    }
+
+    private fun setupFixedStateInvalidData() {
+        dataState = DataState.Fixed()
+        dataCache = TestData.InvalidData
     }
 
     @Test
-    fun validateFixedStaleData() = runBlockingTest {
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = false, fetchAsync = false)
+    fun doActionWithFixedStateNoCache() = runBlockingTest {
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = true, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = true, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = false, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
 
-        setupValidateFixedStaleData()
-        dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = true, fetchAsync = false)
+        setupFixedStatNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 
-    private fun setupValidateFixedStaleData() {
-        dataState = DataState.Fixed()
-        dataCache = TestData.CachedData(isStale = true)
+    @Test
+    fun doActionWithLoadingStateNoCache() = runBlockingTest {
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+
+        setupLoadingStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache.shouldBeNull()
+    }
+
+    @Test
+    fun doActionWithErrorStateNoCache() = runBlockingTest {
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache.shouldBeNull()
+
+        setupErrorStateNoCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+    }
+
+    @Test
+    fun doActionWithFixedStateValidCache() = runBlockingTest {
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+    }
+
+    @Test
+    fun doActionWithLoadingStateValidCache() = runBlockingTest {
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupLoadingStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Loading::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+    }
+
+    @Test
+    fun doActionWithErrorStateValidCache() = runBlockingTest {
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
+
+        setupErrorStateValidCache()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+    }
+
+    @Test
+    fun doActionWithFixedStateInvalidData() = runBlockingTest {
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
+
+        setupFixedStateInvalidData()
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        dataCache shouldBeInstanceOf TestData.FetchedData::class
     }
 }

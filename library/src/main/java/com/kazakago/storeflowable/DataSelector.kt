@@ -21,37 +21,38 @@ internal class DataSelector<KEY, DATA>(
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchAtError: Boolean, fetchAsync: Boolean) {
+    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean) {
         when (dataStateManager.loadState(key)) {
-            is DataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCache = clearCache, fetchAsync = fetchAsync)
+            is DataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching)
             is DataState.Loading -> Unit
-            is DataState.Error -> if (fetchAtError) prepareFetch(clearCache = clearCache, fetchAsync = fetchAsync)
+            is DataState.Error -> if (continueWhenError) doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching)
         }
     }
 
-    private suspend fun doDataAction(forceRefresh: Boolean, clearCache: Boolean, fetchAsync: Boolean) {
+    private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean) {
         val data = cacheDataManager.loadData()
         if (data == null || forceRefresh || needRefresh(data)) {
-            prepareFetch(clearCache = clearCache, fetchAsync = fetchAsync)
+            prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching)
         }
     }
 
-    private suspend fun prepareFetch(clearCache: Boolean, fetchAsync: Boolean) {
-        if (clearCache) cacheDataManager.saveData(null)
+    private suspend fun prepareFetch(clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean) {
+        if (clearCacheBeforeFetching) cacheDataManager.saveData(null)
         dataStateManager.saveState(key, DataState.Loading())
-        if (fetchAsync) {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData() }
+        if (awaitFetching) {
+            fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails)
         } else {
-            fetchNewData()
+            CoroutineScope(Dispatchers.IO).launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails) }
         }
     }
 
-    private suspend fun fetchNewData() {
+    private suspend fun fetchNewData(clearCacheWhenFetchFails: Boolean) {
         try {
             val fetchedData = originDataManager.fetchOrigin()
             cacheDataManager.saveData(fetchedData)
             dataStateManager.saveState(key, DataState.Fixed())
         } catch (exception: Exception) {
+            if (clearCacheWhenFetchFails) cacheDataManager.saveData(null)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }

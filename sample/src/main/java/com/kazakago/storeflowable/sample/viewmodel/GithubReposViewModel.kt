@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.kazakago.storeflowable.sample.model.GithubRepo
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableUnitLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -21,21 +19,23 @@ class GithubReposViewModel(application: Application, private val userName: Strin
     val githubRepos = MutableLiveData<List<GithubRepo>>(emptyList())
     val isMainLoading = MutableLiveData(false)
     val isAdditionalLoading = MutableLiveData(false)
+    val isRefreshing = MutableLiveData(false)
     val mainError = MutableLiveData<Exception?>()
     val additionalError = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
-    val hideSwipeRefresh = MutableUnitLiveEvent()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
-        if (!githubRepos.value.isNullOrEmpty()) shouldNoticeErrorOnNextState = true
-        githubRepository.requestRepos(userName)
-        hideSwipeRefresh.call()
+    fun refresh() = viewModelScope.launch {
+        isRefreshing.value = true
+        githubRepository.refreshRepos(userName)
+        isRefreshing.value = false
+    }
+
+    fun retry() = viewModelScope.launch {
+        githubRepository.refreshRepos(userName)
     }
 
     fun requestAdditional() = viewModelScope.launch {
@@ -50,7 +50,6 @@ class GithubReposViewModel(application: Application, private val userName: Strin
         githubRepository.followRepos(userName).collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubRepos ->
                             githubRepos.value = _githubRepos
@@ -87,8 +86,6 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubRepos ->
                             githubRepos.value = _githubRepos

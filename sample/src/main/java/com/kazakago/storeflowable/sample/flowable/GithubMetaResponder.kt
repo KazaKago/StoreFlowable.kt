@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class GithubMetaResponder(override val key: Unit = Unit) : StoreFlowableResponder<Unit, GithubMeta> {
 
     companion object {
-        private val EXPIRED_DURATION = Duration.ofMinutes(1)
+        private val EXPIRED_DURATION = Duration.ofSeconds(30)
     }
 
     private val githubApi = GithubApi()

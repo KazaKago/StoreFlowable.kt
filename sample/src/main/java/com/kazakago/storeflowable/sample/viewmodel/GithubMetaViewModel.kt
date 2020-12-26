@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.sample.model.GithubMeta
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -15,24 +14,24 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
     val githubMeta = MutableLiveData<GithubMeta?>()
     val isLoading = MutableLiveData(false)
     val error = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
-        if (githubMeta.value != null) shouldNoticeErrorOnNextState = true
-        githubRepository.requestMeta()
+    fun refresh() = viewModelScope.launch {
+        githubRepository.refreshMeta()
+    }
+
+    fun retry() = viewModelScope.launch {
+        githubRepository.refreshMeta()
     }
 
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followMeta().collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubMeta ->
                             githubMeta.value = _githubMeta
@@ -61,8 +60,6 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubMeta ->
                             githubMeta.value = _githubMeta

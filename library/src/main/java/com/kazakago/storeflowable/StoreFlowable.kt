@@ -11,6 +11,9 @@ interface StoreFlowable<KEY, DATA> {
 
     suspend fun validate()
 
+    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
+
+    @Deprecated("Use refresh", ReplaceWith("refresh()"))
     suspend fun request()
 
     suspend fun update(newData: DATA?)
