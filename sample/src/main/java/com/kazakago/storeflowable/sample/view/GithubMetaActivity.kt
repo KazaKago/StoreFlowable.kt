@@ -8,7 +8,6 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.google.android.material.snackbar.Snackbar
 import com.kazakago.storeflowable.sample.R
 import com.kazakago.storeflowable.sample.databinding.ActivityGithubMetaBinding
 import com.kazakago.storeflowable.sample.viewmodel.GithubMetaViewModel
@@ -41,9 +40,6 @@ class GithubMetaActivity : AppCompatActivity() {
         githubMetaViewModel.error.observe(this) {
             binding.errorGroup.isVisible = (it != null)
             binding.errorTextView.text = it?.toString()
-        }
-        githubMetaViewModel.refreshingError.observe(this, "") {
-            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 

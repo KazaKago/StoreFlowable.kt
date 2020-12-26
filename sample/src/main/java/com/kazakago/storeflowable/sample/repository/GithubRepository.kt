@@ -35,9 +35,9 @@ class GithubRepository {
         return githubOrgsFlowable.request()
     }
 
-    suspend fun requestAdditionalOrgs(fetchAtError: Boolean) {
+    suspend fun requestAdditionalOrgs(continueWhenError: Boolean) {
         val githubOrgsFlowable = GithubOrgsResponder().create()
-        return githubOrgsFlowable.requestAdditional(fetchAtError)
+        return githubOrgsFlowable.requestAdditional(continueWhenError)
     }
 
     fun followUser(userName: String): Flow<State<GithubUser>> {
@@ -60,8 +60,8 @@ class GithubRepository {
         return githubReposFlowable.request()
     }
 
-    suspend fun requestAdditionalRepos(userName: String, fetchAtError: Boolean) {
+    suspend fun requestAdditionalRepos(userName: String, continueWhenError: Boolean) {
         val githubReposFlowable = GithubReposResponder(userName).create()
-        return githubReposFlowable.requestAdditional(fetchAtError)
+        return githubReposFlowable.requestAdditional(continueWhenError)
     }
 }

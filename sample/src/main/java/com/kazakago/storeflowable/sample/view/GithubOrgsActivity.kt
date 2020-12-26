@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.google.android.material.snackbar.Snackbar
 import com.kazakago.storeflowable.sample.databinding.ActivityGithubOrgsBinding
 import com.kazakago.storeflowable.sample.model.GithubOrg
 import com.kazakago.storeflowable.sample.view.items.ErrorItem
@@ -61,9 +60,6 @@ class GithubOrgsActivity : AppCompatActivity() {
         }
         githubOrgsViewModel.isRefreshing.observe(this) {
             binding.swipeRefreshLayout.isRefreshing = it
-        }
-        githubOrgsViewModel.refreshingError.observe(this, "") {
-            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 

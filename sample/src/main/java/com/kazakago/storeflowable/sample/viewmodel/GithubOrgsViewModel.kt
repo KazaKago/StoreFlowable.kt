@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.sample.model.GithubOrg
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -18,7 +17,6 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
     val isRefreshing = MutableLiveData(false)
     val mainError = MutableLiveData<Exception?>()
     val additionalError = MutableLiveData<Exception?>()
-    val refreshingError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
 
     init {
@@ -83,7 +81,6 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
                     )
                 },
                 onError = { exception ->
-                    if (isRefreshing.value == true) refreshingError.call(exception)
                     it.content.doAction(
                         onExist = { _githubOrgs ->
                             githubOrgs.value = _githubOrgs
