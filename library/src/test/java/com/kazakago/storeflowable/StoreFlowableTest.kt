@@ -318,11 +318,11 @@ class StoreFlowableTest {
     }
 
     @Test
-    fun request() = runBlockingTest {
+    fun refresh() = runBlockingTest {
         val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
         storeFlowable.asFlow().toTest(this).use {
             it.history.size shouldBeEqualTo 1 // Fixed
-            storeFlowable.request()
+            storeFlowable.refresh()
             it.history.size shouldBeEqualTo 3 // Fixed -> Loading -> Fixed
         }
     }
