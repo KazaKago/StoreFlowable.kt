@@ -23,33 +23,33 @@ internal class PagingDataSelector<KEY, DATA>(
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, continueWhenError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
+    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
         val state = dataStateManager.loadState(key)
         val data = cacheDataManager.loadData()
         when (state) {
-            is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
+            is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
             is DataState.Loading -> Unit
-            is DataState.Error -> if (continueWhenError) doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = false)
+            is DataState.Error -> if (continueWhenError) doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = false)
         }
     }
 
-    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, fetchAsync: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
+    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, fetchAsync: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
         if (data == null || forceRefresh || needRefresh(data) || (additionalRequest && !currentIsReachLast)) {
-            prepareFetch(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
+            prepareFetch(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun prepareFetch(data: List<DATA>?, clearCacheBeforeFetching: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
+    private suspend fun prepareFetch(data: List<DATA>?, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
         if (clearCacheBeforeFetching) cacheDataManager.saveData(null, additionalRequest)
         dataStateManager.saveState(key, DataState.Loading())
         if (fetchAsync) {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, additionalRequest = additionalRequest) }
+            CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest) }
         } else {
-            fetchNewData(data = data, additionalRequest = additionalRequest)
+            fetchNewData(data = data, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun fetchNewData(data: List<DATA>?, additionalRequest: Boolean) {
+    private suspend fun fetchNewData(data: List<DATA>?, clearCacheWhenFetchFails: Boolean, additionalRequest: Boolean) {
         try {
             val fetchedData = originDataManager.fetchOrigin(data, additionalRequest)
             val mergedData = if (additionalRequest) (data ?: emptyList()) + fetchedData else fetchedData
@@ -57,7 +57,7 @@ internal class PagingDataSelector<KEY, DATA>(
             val isReachLast = fetchedData.isEmpty()
             dataStateManager.saveState(key, DataState.Fixed(isReachLast))
         } catch (exception: Exception) {
-            if (!additionalRequest) cacheDataManager.saveData(null, additionalRequest)
+            if (clearCacheWhenFetchFails) cacheDataManager.saveData(null, additionalRequest)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }

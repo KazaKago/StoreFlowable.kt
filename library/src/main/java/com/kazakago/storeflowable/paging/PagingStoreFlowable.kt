@@ -12,7 +12,7 @@ interface PagingStoreFlowable<KEY, DATA> {
 
     suspend fun validate()
 
-    suspend fun request(continueWhenError: Boolean = true)
+    suspend fun request(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
 
     suspend fun requestAdditional(continueWhenError: Boolean = true)
 
