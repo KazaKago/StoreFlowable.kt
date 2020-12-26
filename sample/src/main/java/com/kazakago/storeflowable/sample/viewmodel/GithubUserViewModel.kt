@@ -19,17 +19,22 @@ class GithubUserViewModel(application: Application, private val userName: String
 
     val githubUser = MutableLiveData<GithubUser?>()
     val isLoading = MutableLiveData(false)
+    val isRefreshing = MutableLiveData(false)
     val error = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
+    val refreshingError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
     fun request() = viewModelScope.launch {
-        if (githubUser.value != null) shouldNoticeErrorOnNextState = true
+        isRefreshing.value = true
+        githubRepository.requestUser(userName)
+        isRefreshing.value = false
+    }
+
+    fun retry() = viewModelScope.launch {
         githubRepository.requestUser(userName)
     }
 
@@ -37,7 +42,6 @@ class GithubUserViewModel(application: Application, private val userName: String
         githubRepository.followUser(userName).collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubUser ->
                             githubUser.value = _githubUser
@@ -66,8 +70,7 @@ class GithubUserViewModel(application: Application, private val userName: String
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
+                    if (isRefreshing.value == true) refreshingError.call(exception)
                     it.content.doAction(
                         onExist = { _githubUser ->
                             githubUser.value = _githubUser

@@ -52,7 +52,7 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.request()
         }
         binding.retryButton.setOnClickListener {
-            githubReposViewModel.request()
+            githubReposViewModel.retry()
         }
         compositeLiveDataOf(githubReposViewModel.githubRepos, githubReposViewModel.isAdditionalLoading, githubReposViewModel.additionalError).observe(this) {
             val items: List<Group> = mutableListOf<Group>().apply {
@@ -69,10 +69,10 @@ class GithubReposActivity : AppCompatActivity() {
             binding.errorGroup.isVisible = (it != null)
             binding.errorTextView.text = it?.toString()
         }
-        githubReposViewModel.hideSwipeRefresh.observe(this, "") {
-            binding.swipeRefreshLayout.isRefreshing = false
+        githubReposViewModel.isRefreshing.observe(this) {
+            binding.swipeRefreshLayout.isRefreshing = it
         }
-        githubReposViewModel.strongError.observe(this, "") {
+        githubReposViewModel.refreshingError.observe(this, "") {
             Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }

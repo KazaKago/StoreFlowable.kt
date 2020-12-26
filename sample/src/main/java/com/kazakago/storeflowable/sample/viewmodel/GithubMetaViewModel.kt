@@ -14,17 +14,22 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
 
     val githubMeta = MutableLiveData<GithubMeta?>()
     val isLoading = MutableLiveData(false)
+    val isRefreshing = MutableLiveData(false)
     val error = MutableLiveData<Exception?>()
-    val strongError = MutableLiveEvent<Exception>()
+    val refreshingError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
-    private var shouldNoticeErrorOnNextState: Boolean = false
 
     init {
         subscribe()
     }
 
     fun request() = viewModelScope.launch {
-        if (githubMeta.value != null) shouldNoticeErrorOnNextState = true
+        isRefreshing.value = true
+        githubRepository.requestMeta()
+        isRefreshing.value = false
+    }
+
+    fun retry() = viewModelScope.launch {
         githubRepository.requestMeta()
     }
 
@@ -32,7 +37,6 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
         githubRepository.followMeta().collect {
             it.doAction(
                 onFixed = {
-                    shouldNoticeErrorOnNextState = false
                     it.content.doAction(
                         onExist = { _githubMeta ->
                             githubMeta.value = _githubMeta
@@ -61,8 +65,7 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
                     )
                 },
                 onError = { exception ->
-                    if (shouldNoticeErrorOnNextState) strongError.call(exception)
-                    shouldNoticeErrorOnNextState = false
+                    if (isRefreshing.value == true) refreshingError.call(exception)
                     it.content.doAction(
                         onExist = { _githubMeta ->
                             githubMeta.value = _githubMeta

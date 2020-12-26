@@ -43,7 +43,7 @@ class GithubUserActivity : AppCompatActivity() {
             githubUserViewModel.githubUser.value?.let { launch(it.htmlUrl) }
         }
         binding.retryButton.setOnClickListener {
-            githubUserViewModel.request()
+            githubUserViewModel.retry()
         }
         githubUserViewModel.githubUser.observe(this) {
             binding.avatarImageView.load(it?.avatarUrl)
@@ -58,13 +58,13 @@ class GithubUserActivity : AppCompatActivity() {
             binding.errorGroup.isVisible = (it != null)
             binding.errorTextView.text = it?.toString()
         }
-        githubUserViewModel.strongError.observe(this, "") {
+        githubUserViewModel.refreshingError.observe(this, "") {
             Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_github_user, menu);
+        menuInflater.inflate(R.menu.menu_github_user, menu)
         return super.onCreateOptionsMenu(menu)
     }
 

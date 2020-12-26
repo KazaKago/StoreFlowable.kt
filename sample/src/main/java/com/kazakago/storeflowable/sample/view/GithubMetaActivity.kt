@@ -29,7 +29,7 @@ class GithubMetaActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.retryButton.setOnClickListener {
-            githubMetaViewModel.request()
+            githubMetaViewModel.retry()
         }
         githubMetaViewModel.githubMeta.observe(this) { meta ->
             binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
@@ -42,7 +42,7 @@ class GithubMetaActivity : AppCompatActivity() {
             binding.errorGroup.isVisible = (it != null)
             binding.errorTextView.text = it?.toString()
         }
-        githubMetaViewModel.strongError.observe(this, "") {
+        githubMetaViewModel.refreshingError.observe(this, "") {
             Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
