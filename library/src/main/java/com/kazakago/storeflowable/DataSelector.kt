@@ -40,19 +40,19 @@ internal class DataSelector<KEY, DATA>(
         if (clearCacheBeforeFetching) cacheDataManager.saveData(null)
         dataStateManager.saveState(key, DataState.Loading())
         if (fetchAsync) {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData(clearCacheBeforeFetching = clearCacheBeforeFetching) }
+            CoroutineScope(Dispatchers.IO).launch { fetchNewData() }
         } else {
-            fetchNewData(clearCacheBeforeFetching = clearCacheBeforeFetching)
+            fetchNewData()
         }
     }
 
-    private suspend fun fetchNewData(clearCacheBeforeFetching: Boolean) {
+    private suspend fun fetchNewData() {
         try {
             val fetchedData = originDataManager.fetchOrigin()
             cacheDataManager.saveData(fetchedData)
             dataStateManager.saveState(key, DataState.Fixed())
         } catch (exception: Exception) {
-            if (!clearCacheBeforeFetching) cacheDataManager.saveData(null)
+            cacheDataManager.saveData(null)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }

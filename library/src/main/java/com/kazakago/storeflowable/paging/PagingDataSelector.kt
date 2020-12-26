@@ -43,13 +43,13 @@ internal class PagingDataSelector<KEY, DATA>(
         if (clearCacheBeforeFetching) cacheDataManager.saveData(null, additionalRequest)
         dataStateManager.saveState(key, DataState.Loading())
         if (fetchAsync) {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, additionalRequest = additionalRequest) }
+            CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, additionalRequest = additionalRequest) }
         } else {
-            fetchNewData(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, additionalRequest = additionalRequest)
+            fetchNewData(data = data, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun fetchNewData(data: List<DATA>?, clearCacheBeforeFetching: Boolean, additionalRequest: Boolean) {
+    private suspend fun fetchNewData(data: List<DATA>?, additionalRequest: Boolean) {
         try {
             val fetchedData = originDataManager.fetchOrigin(data, additionalRequest)
             val mergedData = if (additionalRequest) (data ?: emptyList()) + fetchedData else fetchedData
@@ -57,7 +57,7 @@ internal class PagingDataSelector<KEY, DATA>(
             val isReachLast = fetchedData.isEmpty()
             dataStateManager.saveState(key, DataState.Fixed(isReachLast))
         } catch (exception: Exception) {
-            if (!clearCacheBeforeFetching && !additionalRequest) cacheDataManager.saveData(null, additionalRequest)
+            if (!additionalRequest) cacheDataManager.saveData(null, additionalRequest)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }
