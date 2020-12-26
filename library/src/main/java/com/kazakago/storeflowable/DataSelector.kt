@@ -21,11 +21,11 @@ internal class DataSelector<KEY, DATA>(
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, fetchWhenError: Boolean, fetchAsync: Boolean) {
+    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, continueWhenError: Boolean, fetchAsync: Boolean) {
         when (dataStateManager.loadState(key)) {
             is DataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync)
             is DataState.Loading -> Unit
-            is DataState.Error -> if (fetchWhenError) prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync)
+            is DataState.Error -> if (continueWhenError) doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync)
         }
     }
 

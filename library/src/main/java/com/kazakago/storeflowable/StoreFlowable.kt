@@ -11,7 +11,7 @@ interface StoreFlowable<KEY, DATA> {
 
     suspend fun validate()
 
-    suspend fun request(fetchWhenError: Boolean = true)
+    suspend fun request(continueWhenError: Boolean = true)
 
     suspend fun update(newData: DATA?)
 }
