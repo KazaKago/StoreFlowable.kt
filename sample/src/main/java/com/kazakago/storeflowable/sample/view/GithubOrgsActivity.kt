@@ -38,7 +38,7 @@ class GithubOrgsActivity : AppCompatActivity() {
             githubOrgsViewModel.requestAdditional()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
-            githubOrgsViewModel.request()
+            githubOrgsViewModel.refresh()
         }
         binding.retryButton.setOnClickListener {
             githubOrgsViewModel.retry()

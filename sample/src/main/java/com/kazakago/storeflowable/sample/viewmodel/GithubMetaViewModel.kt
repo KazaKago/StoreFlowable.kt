@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.sample.model.GithubMeta
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -21,12 +20,12 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
-        githubRepository.requestMeta()
+    fun refresh() = viewModelScope.launch {
+        githubRepository.refreshMeta()
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.requestMeta()
+        githubRepository.refreshMeta()
     }
 
     private fun subscribe() = viewModelScope.launch {

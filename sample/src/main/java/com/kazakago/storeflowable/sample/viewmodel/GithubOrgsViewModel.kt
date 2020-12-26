@@ -23,14 +23,14 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
+    fun refresh() = viewModelScope.launch {
         isRefreshing.value = true
-        githubRepository.requestOrgs()
+        githubRepository.refreshOrgs()
         isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.requestOrgs()
+        githubRepository.refreshOrgs()
     }
 
     fun requestAdditional() = viewModelScope.launch {

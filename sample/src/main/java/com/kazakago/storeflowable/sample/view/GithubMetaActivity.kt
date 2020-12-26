@@ -51,7 +51,7 @@ class GithubMetaActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refresh -> {
-                githubMetaViewModel.request()
+                githubMetaViewModel.refresh()
                 return true
             }
         }

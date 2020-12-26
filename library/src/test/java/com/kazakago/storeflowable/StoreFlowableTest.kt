@@ -3,8 +3,6 @@ package com.kazakago.storeflowable
 import com.kazakago.storeflowable.core.State
 import com.kazakago.storeflowable.core.StateContent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.coInvoking
 import org.amshove.kluent.shouldBeEqualTo

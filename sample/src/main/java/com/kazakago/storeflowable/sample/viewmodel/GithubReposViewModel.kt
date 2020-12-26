@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.kazakago.storeflowable.sample.model.GithubRepo
 import com.kazakago.storeflowable.sample.repository.GithubRepository
-import com.kazakago.storeflowable.sample.viewmodel.livedata.MutableLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -23,21 +22,20 @@ class GithubReposViewModel(application: Application, private val userName: Strin
     val isRefreshing = MutableLiveData(false)
     val mainError = MutableLiveData<Exception?>()
     val additionalError = MutableLiveData<Exception?>()
-    val refreshingError = MutableLiveEvent<Exception>()
     private val githubRepository = GithubRepository()
 
     init {
         subscribe()
     }
 
-    fun request() = viewModelScope.launch {
+    fun refresh() = viewModelScope.launch {
         isRefreshing.value = true
-        githubRepository.requestRepos(userName)
+        githubRepository.refreshRepos(userName)
         isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.requestRepos(userName)
+        githubRepository.refreshRepos(userName)
     }
 
     fun requestAdditional() = viewModelScope.launch {
@@ -88,7 +86,6 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                     )
                 },
                 onError = { exception ->
-                    if (isRefreshing.value == true) refreshingError.call(exception)
                     it.content.doAction(
                         onExist = { _githubRepos ->
                             githubRepos.value = _githubRepos

@@ -20,9 +20,9 @@ class GithubRepository {
         return githubMetaFlowable.asFlow()
     }
 
-    suspend fun requestMeta() {
+    suspend fun refreshMeta() {
         val githubMetaFlowable = GithubMetaResponder().create()
-        return githubMetaFlowable.request()
+        githubMetaFlowable.refresh()
     }
 
     fun followOrgs(): Flow<State<List<GithubOrg>>> {
@@ -30,14 +30,14 @@ class GithubRepository {
         return githubOrgsFlowable.asFlow()
     }
 
-    suspend fun requestOrgs() {
+    suspend fun refreshOrgs() {
         val githubOrgsFlowable = GithubOrgsResponder().create()
-        return githubOrgsFlowable.request()
+        githubOrgsFlowable.refresh()
     }
 
     suspend fun requestAdditionalOrgs(continueWhenError: Boolean) {
         val githubOrgsFlowable = GithubOrgsResponder().create()
-        return githubOrgsFlowable.requestAdditional(continueWhenError)
+        githubOrgsFlowable.requestAdditional(continueWhenError)
     }
 
     fun followUser(userName: String): Flow<State<GithubUser>> {
@@ -45,9 +45,9 @@ class GithubRepository {
         return githubUserFlowable.asFlow()
     }
 
-    suspend fun requestUser(userName: String) {
+    suspend fun refreshUser(userName: String) {
         val githubUserFlowable = GithubUserResponder(userName).create()
-        return githubUserFlowable.request()
+        githubUserFlowable.refresh()
     }
 
     fun followRepos(userName: String): Flow<State<List<GithubRepo>>> {
@@ -55,13 +55,13 @@ class GithubRepository {
         return githubReposFlowable.asFlow()
     }
 
-    suspend fun requestRepos(userName: String) {
+    suspend fun refreshRepos(userName: String) {
         val githubReposFlowable = GithubReposResponder(userName).create()
-        return githubReposFlowable.request()
+        githubReposFlowable.refresh()
     }
 
     suspend fun requestAdditionalRepos(userName: String, continueWhenError: Boolean) {
         val githubReposFlowable = GithubReposResponder(userName).create()
-        return githubReposFlowable.requestAdditional(continueWhenError)
+        githubReposFlowable.requestAdditional(continueWhenError)
     }
 }

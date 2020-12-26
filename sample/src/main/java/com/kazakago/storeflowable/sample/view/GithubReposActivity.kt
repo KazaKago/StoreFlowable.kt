@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.google.android.material.snackbar.Snackbar
 import com.kazakago.storeflowable.sample.databinding.ActivityGithubReposBinding
 import com.kazakago.storeflowable.sample.model.GithubRepo
 import com.kazakago.storeflowable.sample.view.items.ErrorItem
@@ -49,7 +48,7 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.requestAdditional()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
-            githubReposViewModel.request()
+            githubReposViewModel.refresh()
         }
         binding.retryButton.setOnClickListener {
             githubReposViewModel.retry()
@@ -71,9 +70,6 @@ class GithubReposActivity : AppCompatActivity() {
         }
         githubReposViewModel.isRefreshing.observe(this) {
             binding.swipeRefreshLayout.isRefreshing = it
-        }
-        githubReposViewModel.refreshingError.observe(this, "") {
-            Snackbar.make(binding.root, it.toString(), Snackbar.LENGTH_SHORT).show()
         }
     }
 
