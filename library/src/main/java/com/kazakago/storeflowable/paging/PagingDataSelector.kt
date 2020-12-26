@@ -23,24 +23,24 @@ internal class PagingDataSelector<KEY, DATA>(
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCache: Boolean, fetchAtError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
+    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, fetchWhenError: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
         val state = dataStateManager.loadState(key)
         val data = cacheDataManager.loadData()
         when (state) {
-            is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
+            is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
             is DataState.Loading -> Unit
-            is DataState.Error -> if (fetchAtError) prepareFetch(data = data, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
+            is DataState.Error -> if (fetchWhenError) prepareFetch(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCache: Boolean, fetchAsync: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
+    private suspend fun doDataAction(data: List<DATA>?, forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, fetchAsync: Boolean, additionalRequest: Boolean, currentIsReachLast: Boolean) {
         if (data == null || forceRefresh || needRefresh(data) || (additionalRequest && !currentIsReachLast)) {
-            prepareFetch(data = data, clearCache = clearCache, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
+            prepareFetch(data = data, clearCacheBeforeFetching = clearCacheBeforeFetching, fetchAsync = fetchAsync, additionalRequest = additionalRequest)
         }
     }
 
-    private suspend fun prepareFetch(data: List<DATA>?, clearCache: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
-        if (clearCache) cacheDataManager.saveData(null, additionalRequest)
+    private suspend fun prepareFetch(data: List<DATA>?, clearCacheBeforeFetching: Boolean, fetchAsync: Boolean, additionalRequest: Boolean) {
+        if (clearCacheBeforeFetching) cacheDataManager.saveData(null, additionalRequest)
         dataStateManager.saveState(key, DataState.Loading())
         if (fetchAsync) {
             CoroutineScope(Dispatchers.IO).launch { fetchNewData(data = data, additionalRequest = additionalRequest) }

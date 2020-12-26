@@ -20,7 +20,7 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
     override fun asFlow(forceRefresh: Boolean): Flow<State<List<DATA>>> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
-                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCache = true, fetchAtError = false, fetchAsync = true, additionalRequest = false)
+                dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, fetchWhenError = true, fetchAsync = true, additionalRequest = false)
             }
             .map {
                 val data = dataSelector.load()
@@ -33,8 +33,8 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
+                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, fetchWhenError = true, fetchAsync = false, additionalRequest = false)
+                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, fetchWhenError = true, fetchAsync = false, additionalRequest = false)
                     AsDataType.FromCache -> Unit //do nothing.
                 }
             }
@@ -50,15 +50,15 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
     }
 
     override suspend fun validate() {
-        dataSelector.doStateAction(forceRefresh = false, clearCache = true, fetchAtError = false, fetchAsync = false, additionalRequest = false)
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, fetchWhenError = true, fetchAsync = false, additionalRequest = false)
     }
 
-    override suspend fun request() {
-        dataSelector.doStateAction(forceRefresh = true, clearCache = false, fetchAtError = true, fetchAsync = false, additionalRequest = false)
+    override suspend fun request(fetchWhenError: Boolean) {
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, fetchWhenError = fetchWhenError, fetchAsync = false, additionalRequest = false)
     }
 
-    override suspend fun requestAdditional(fetchAtError: Boolean) {
-        return dataSelector.doStateAction(forceRefresh = false, clearCache = false, fetchAtError = fetchAtError, fetchAsync = false, additionalRequest = true)
+    override suspend fun requestAdditional(fetchWhenError: Boolean) {
+        return dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, fetchWhenError = fetchWhenError, fetchAsync = false, additionalRequest = true)
     }
 
     override suspend fun update(newData: List<DATA>?) {

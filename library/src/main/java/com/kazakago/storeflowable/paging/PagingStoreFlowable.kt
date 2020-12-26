@@ -12,9 +12,9 @@ interface PagingStoreFlowable<KEY, DATA> {
 
     suspend fun validate()
 
-    suspend fun request()
+    suspend fun request(fetchWhenError: Boolean = true)
 
-    suspend fun requestAdditional(fetchAtError: Boolean = true)
+    suspend fun requestAdditional(fetchWhenError: Boolean = true)
 
     suspend fun update(newData: List<DATA>?)
 }
