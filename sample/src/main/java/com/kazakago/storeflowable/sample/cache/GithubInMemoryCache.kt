@@ -5,7 +5,6 @@ import com.kazakago.storeflowable.sample.model.GithubOrg
 import com.kazakago.storeflowable.sample.model.GithubRepo
 import com.kazakago.storeflowable.sample.model.GithubUser
 import java.time.LocalDateTime
-import java.util.*
 
 object GithubInMemoryCache {
     var metaCache: GithubMeta? = null
@@ -14,9 +13,9 @@ object GithubInMemoryCache {
     var orgsCache: List<GithubOrg>? = null
     var orgsCacheCreatedAt: LocalDateTime? = null
 
-    var userCache: HashMap<String, GithubUser?> = hashMapOf()
-    var userCacheCreateAt: HashMap<String, LocalDateTime> = hashMapOf()
+    var userCache: MutableMap<String, GithubUser?> = mutableMapOf()
+    var userCacheCreateAt: MutableMap<String, LocalDateTime> = mutableMapOf()
 
-    var reposCache: HashMap<String, List<GithubRepo>?> = hashMapOf()
-    var reposCacheCreatedAt: HashMap<String, LocalDateTime> = hashMapOf()
+    var reposCache: MutableMap<String, List<GithubRepo>?> = mutableMapOf()
+    var reposCacheCreatedAt: MutableMap<String, LocalDateTime> = mutableMapOf()
 }
