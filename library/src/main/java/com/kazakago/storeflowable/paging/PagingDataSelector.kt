@@ -24,9 +24,8 @@ internal class PagingDataSelector<KEY, DATA>(
     }
 
     suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean, additionalRequest: Boolean) {
-        val state = dataStateManager.loadState(key)
         val data = cacheDataManager.loadData()
-        when (state) {
+        when (val state = dataStateManager.loadState(key)) {
             is DataState.Fixed -> doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, additionalRequest = additionalRequest, currentIsReachLast = state.isReachLast)
             is DataState.Loading -> Unit
             is DataState.Error -> if (continueWhenError) doDataAction(data = data, forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, additionalRequest = additionalRequest, currentIsReachLast = false)
