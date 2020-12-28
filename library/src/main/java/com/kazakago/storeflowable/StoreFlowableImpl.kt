@@ -54,10 +54,6 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
         dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = clearCacheWhenFetchFails, continueWhenError = continueWhenError, awaitFetching = true)
     }
 
-    override suspend fun request() {
-        refresh()
-    }
-
     override suspend fun update(newData: DATA?) {
         dataSelector.update(newData)
     }
