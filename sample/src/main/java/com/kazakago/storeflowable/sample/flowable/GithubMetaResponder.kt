@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.sample.model.GithubMeta
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubMetaResponder(override val key: Unit = Unit) : StoreFlowableResponder<Unit, GithubMeta> {
+class GithubMetaResponder : StoreFlowableResponder<Unit, GithubMeta> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofSeconds(30)
@@ -17,6 +17,8 @@ class GithubMetaResponder(override val key: Unit = Unit) : StoreFlowableResponde
 
     private val githubApi = GithubApi()
     private val githubCache = GithubInMemoryCache
+
+    override val key: Unit = Unit
 
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubMetaStateManager
 

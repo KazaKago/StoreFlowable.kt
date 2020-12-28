@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.sample.model.GithubUser
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubUserResponder(override val key: String) : StoreFlowableResponder<String, GithubUser> {
+class GithubUserResponder(userName: String) : StoreFlowableResponder<String, GithubUser> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofSeconds(30)
@@ -17,6 +17,8 @@ class GithubUserResponder(override val key: String) : StoreFlowableResponder<Str
 
     private val githubApi = GithubApi()
     private val githubCache = GithubInMemoryCache
+
+    override val key: String = userName
 
     override val flowableDataStateManager: FlowableDataStateManager<String> = GithubUserStateManager
 

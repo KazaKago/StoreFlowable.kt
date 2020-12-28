@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.sample.model.GithubOrg
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubOrgsResponder(override val key: Unit = Unit) : PagingStoreFlowableResponder<Unit, GithubOrg> {
+class GithubOrgsResponder : PagingStoreFlowableResponder<Unit, GithubOrg> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofSeconds(30)
@@ -18,6 +18,8 @@ class GithubOrgsResponder(override val key: Unit = Unit) : PagingStoreFlowableRe
 
     private val githubApi = GithubApi()
     private val githubCache = GithubInMemoryCache
+
+    override val key: Unit = Unit
 
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubOrgsStateManager
 
