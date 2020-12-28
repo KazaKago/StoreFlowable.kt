@@ -62,7 +62,7 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
     }
 
     override suspend fun requestAdditional(continueWhenError: Boolean) {
-        return dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, additionalRequest = true)
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, additionalRequest = true)
     }
 
     override suspend fun update(newData: List<DATA>?) {
