@@ -13,4 +13,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: deploy
-        run: ./gradlew clean build bintrayUpload -PbintrayUser=$BINTRAY_USERNAME -PbintrayKey=$BINTRAY_KEY -PdryRun=true
+        run: ./gradlew clean build bintrayUpload -PbintrayUser="$BINTRAY_USERNAME" -PbintrayKey="$BINTRAY_KEY" -PdryRun=true
