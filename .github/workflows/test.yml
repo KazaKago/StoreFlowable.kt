@@ -7,11 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: test
-        run: ./gradlew test
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: ./gradlew test
