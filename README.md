@@ -1,7 +1,7 @@
 # StoreFlowable.kt
 
 [![Download](https://api.bintray.com/packages/kazakago/maven/storeflowable/images/download.svg)](https://bintray.com/kazakago/maven/storeflowable/_latestVersion)
-[![Build Status](https://app.bitrise.io/app/ab3f1be16f6a6b8b/status.svg?token=XFKB2sqF4-hFdTIyzpganQ&branch=master)](https://app.bitrise.io/app/ab3f1be16f6a6b8b)
+[![Test](https://github.com/KazaKago/StoreFlowable.kt/workflows/Test/badge.svg)](https://github.com/KazaKago/StoreFlowable.kt/actions)
 [![license](https://img.shields.io/github/license/kazakago/storeflowable.kt.svg)](LICENSE)
 
 [Repository pattern](https://msdn.microsoft.com/en-us/library/ff649690.aspx) support library for Kotlin with Coroutines &amp; Flow.  
