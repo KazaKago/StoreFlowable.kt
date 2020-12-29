@@ -36,11 +36,9 @@ class GithubUserResponder(userName: String) : StoreFlowableResponder<String, Git
     }
 
     override suspend fun needRefresh(data: GithubUser): Boolean {
-        val expiredTime = githubCache.userCacheCreateAt[key]?.plus(EXPIRED_DURATION)
-        return if (expiredTime != null) {
-            expiredTime < LocalDateTime.now()
-        } else {
-            true
-        }
+        return githubCache.userCacheCreateAt[key]?.let { createdAt ->
+            val expiredAt = createdAt + EXPIRED_DURATION
+            expiredAt < LocalDateTime.now()
+        } ?: true
     }
 }

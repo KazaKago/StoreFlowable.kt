@@ -38,11 +38,9 @@ class GithubReposResponder(userName: String) : PagingStoreFlowableResponder<Stri
     }
 
     override suspend fun needRefresh(data: List<GithubRepo>): Boolean {
-        val expiredTime = githubCache.reposCacheCreatedAt[key]?.plus(EXPIRED_DURATION)
-        return if (expiredTime != null) {
-            expiredTime < LocalDateTime.now()
-        } else {
-            true
-        }
+        return githubCache.reposCacheCreatedAt[key]?.let { createdAt ->
+            val expiredAt = createdAt + EXPIRED_DURATION
+            expiredAt < LocalDateTime.now()
+        } ?: true
     }
 }

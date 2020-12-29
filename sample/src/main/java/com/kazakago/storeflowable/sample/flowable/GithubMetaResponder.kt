@@ -36,11 +36,9 @@ class GithubMetaResponder : StoreFlowableResponder<Unit, GithubMeta> {
     }
 
     override suspend fun needRefresh(data: GithubMeta): Boolean {
-        val expiredTime = githubCache.metaCacheCreatedAt?.plus(EXPIRED_DURATION)
-        return if (expiredTime != null) {
-            expiredTime < LocalDateTime.now()
-        } else {
-            true
-        }
+        return githubCache.metaCacheCreatedAt?.let { createdAt ->
+            val expiredAt = createdAt + EXPIRED_DURATION
+            expiredAt < LocalDateTime.now()
+        } ?: true
     }
 }
