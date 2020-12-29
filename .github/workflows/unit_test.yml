@@ -2,16 +2,16 @@ name: UnitTest
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master, develop ]
   pull_request:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Unit Test
+      - name: test
         run: ./gradlew test
