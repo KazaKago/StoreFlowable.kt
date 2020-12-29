@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: ./gradlew clean build bintrayUpload -PbintrayUser="$BINTRAY_USERNAME" -PbintrayKey="$BINTRAY_KEY" -PdryRun=true
+      - run: ./gradlew clean build bintrayUpload -PbintrayUser="$BINTRAY_USERNAME" -PbintrayKey="$BINTRAY_KEY" -PdryRun=false
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
