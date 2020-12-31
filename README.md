@@ -117,7 +117,7 @@ class UserRepository {
 
     fun followUserData(userId: UserId): Flow<State<UserData>> {
         val userFlowable: StoreFlowable<UserId, UserData> = UserResponder(userId).create()
-        return userFlowable.asFlow()
+        return userFlowable.publish()
     }
 
     suspend fun updateUserData(userData: UserData) {
@@ -127,7 +127,7 @@ class UserRepository {
 }
 ```
 
-You can get the data in the form of `Flow<State<DATA>>` by using the [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+You can get the data in the form of `Flow<State<DATA>>` by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
@@ -197,15 +197,15 @@ enum class AsDataType {
 }
 ```
 
-However, use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) only for one-shot data acquisition, and consider using [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
+However, use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
 
 ### Refresh data
 
-If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
+If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>>
+    fun publish(forceRefresh: Boolean = false): Flow<State<DATA>>
 }
 ```
 
