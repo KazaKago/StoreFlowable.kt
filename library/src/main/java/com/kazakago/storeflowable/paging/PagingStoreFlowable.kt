@@ -6,7 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface PagingStoreFlowable<KEY, DATA> {
 
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>>
+    fun publish(forceRefresh: Boolean = false): Flow<State<List<DATA>>>
+
+    @Deprecated("Use publish", ReplaceWith("publish(forceRefresh)"))
+    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>> {
+        return publish()
+    }
 
     suspend fun get(type: AsDataType = AsDataType.Mix): List<DATA>
 

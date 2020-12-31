@@ -17,7 +17,7 @@ class GithubRepository {
 
     fun followMeta(): Flow<State<GithubMeta>> {
         val githubMetaFlowable = GithubMetaResponder().create()
-        return githubMetaFlowable.asFlow()
+        return githubMetaFlowable.publish()
     }
 
     suspend fun refreshMeta() {
@@ -27,7 +27,7 @@ class GithubRepository {
 
     fun followOrgs(): Flow<State<List<GithubOrg>>> {
         val githubOrgsFlowable = GithubOrgsResponder().create()
-        return githubOrgsFlowable.asFlow()
+        return githubOrgsFlowable.publish()
     }
 
     suspend fun refreshOrgs() {
@@ -42,7 +42,7 @@ class GithubRepository {
 
     fun followUser(userName: String): Flow<State<GithubUser>> {
         val githubUserFlowable = GithubUserResponder(userName).create()
-        return githubUserFlowable.asFlow()
+        return githubUserFlowable.publish()
     }
 
     suspend fun refreshUser(userName: String) {
@@ -52,7 +52,7 @@ class GithubRepository {
 
     fun followRepos(userName: String): Flow<State<List<GithubRepo>>> {
         val githubReposFlowable = GithubReposResponder(userName).create()
-        return githubReposFlowable.asFlow()
+        return githubReposFlowable.publish()
     }
 
     suspend fun refreshRepos(userName: String) {

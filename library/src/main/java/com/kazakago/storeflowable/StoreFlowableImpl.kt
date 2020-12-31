@@ -14,7 +14,7 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
         needRefresh = { storeFlowableResponder.needRefresh(it) }
     )
 
-    override fun asFlow(forceRefresh: Boolean): Flow<State<DATA>> {
+    override fun publish(forceRefresh: Boolean): Flow<State<DATA>> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)

@@ -17,7 +17,7 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
         needRefresh = { storeFlowableResponder.needRefresh(it) }
     )
 
-    override fun asFlow(forceRefresh: Boolean): Flow<State<List<DATA>>> {
+    override fun publish(forceRefresh: Boolean): Flow<State<List<DATA>>> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, additionalRequest = false)

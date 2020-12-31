@@ -5,7 +5,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface StoreFlowable<KEY, DATA> {
 
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>>
+    fun publish(forceRefresh: Boolean = false): Flow<State<DATA>>
+
+    @Deprecated("Use publish", ReplaceWith("publish(forceRefresh)"))
+    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>> {
+        return publish()
+    }
 
     suspend fun get(type: AsDataType = AsDataType.Mix): DATA
 
