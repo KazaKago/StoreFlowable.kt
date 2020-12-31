@@ -71,10 +71,13 @@ Put the type you want to use as a Data in `<DATA>`.
 An example is shown below.  
 
 ```kotlin
-class UserResponder(override val key: UserId) : StoreFlowableResponder<UserId, UserData> {
+class UserResponder(userId: UserId) : StoreFlowableResponder<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
+
+    // Set the key for input / output of data. If you don't need the key, put in the Unit.
+    override val key: UserId = userId
 
     // Create data state management class.
     override val flowableDataStateManager: FlowableDataStateManager<UserId> = UserStateManager
@@ -256,6 +259,7 @@ class UserListResponder : PagingStoreFlowableResponder<Unit, UserData> {
     private val userListCache = UserListCache()
 
     override val key: Unit = Unit
+
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = UserListStateManager
 
     override suspend fun loadData(): List<UserData>? {
