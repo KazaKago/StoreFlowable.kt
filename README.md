@@ -23,7 +23,7 @@ Created according to the following 5 policies.
 
 The following is the class structure of Repository pattern using this library.  
 
-![https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg](https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg)
+![https://user-images.githubusercontent.com/7742104/103459191-aa9bed00-4d50-11eb-81ca-fe36f1fbb362.jpg](https://user-images.githubusercontent.com/7742104/103459191-aa9bed00-4d50-11eb-81ca-fe36f1fbb362.jpg)
 
 The following is an example of screen display using [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt).
 
