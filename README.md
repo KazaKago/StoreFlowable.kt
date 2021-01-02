@@ -174,7 +174,7 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ### Get data without [State](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
 
-If you don't need `value flow` and [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt).  
+If you don't need value flow and [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt).  
 [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
 [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) returns null instead of Exception.  
 
