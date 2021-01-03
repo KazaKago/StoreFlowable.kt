@@ -9,7 +9,7 @@ import org.junit.Test
 class StateContentTest {
 
     @Test
-    fun validateWrapMethod() {
+    fun wrap() {
         val content1 = StateContent.wrap(30)
         content1 shouldBeInstanceOf StateContent.Exist::class
         val content2 = StateContent.wrap(null)
@@ -17,7 +17,7 @@ class StateContentTest {
     }
 
     @Test
-    fun validateRawContentField() {
+    fun rawContent() {
         val content1 = StateContent.Exist(30)
         content1.rawContent shouldBeEqualTo 30
         val content2 = StateContent.Exist("Hello World!")
@@ -25,7 +25,7 @@ class StateContentTest {
     }
 
     @Test
-    fun validateExistDoActionMethod() {
+    fun doActionWithExist() {
         val content = StateContent.Exist(30)
         content.doAction(
             onExist = {
@@ -38,7 +38,7 @@ class StateContentTest {
     }
 
     @Test
-    fun validateNotExistDoActionMethod() {
+    fun doActionNotExist() {
         val content = StateContent.NotExist<MockK>()
         content.doAction(
             onExist = {

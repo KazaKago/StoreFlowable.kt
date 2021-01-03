@@ -22,7 +22,7 @@ class StateZipperTest {
     }
 
     @Test
-    fun validateZipFixedLoadingMethod() {
+    fun zipWithFixedLoading() {
         val zippedState = fixedExistState.zip(loadingExistState) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -50,7 +50,7 @@ class StateZipperTest {
     }
 
     @Test
-    fun validateZipFixedErrorMethod() {
+    fun zipWithFixedError() {
         val zippedState = fixedExistState.zip(errorExistState) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 130
@@ -78,7 +78,7 @@ class StateZipperTest {
     }
 
     @Test
-    fun validateZipLoadingErrorMethod() {
+    fun zipWithLoadingError() {
         val zippedState = loadingExistState.zip(errorExistState) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 130
@@ -106,7 +106,7 @@ class StateZipperTest {
     }
 
     @Test
-    fun validateZipFixedFixedNotExistMethod() {
+    fun zipWithFixedFixedNotExist() {
         val zippedState = fixedExistState.zip(fixedNotExistState) { value1, value2 ->
             fail()
             value1 + value2

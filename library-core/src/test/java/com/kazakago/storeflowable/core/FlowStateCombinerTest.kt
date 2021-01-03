@@ -28,7 +28,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedLoadingMethod() = runBlockingTest {
+    fun combineWithFixedLoading() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowLoadingExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -57,7 +57,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedErrorMethod() = runBlockingTest {
+    fun combineWithFixedError() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 130
@@ -86,7 +86,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineLoadingErrorMethod() = runBlockingTest {
+    fun combineWithLoadingError() = runBlockingTest {
         val combinedFlowState = flowLoadingExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 130
@@ -115,7 +115,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateFixedFixedMethod() = runBlockingTest {
+    fun combineWithFixedFixed() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowFixedNotExist) { value1, value2 ->
             fail()
             value1 + value2

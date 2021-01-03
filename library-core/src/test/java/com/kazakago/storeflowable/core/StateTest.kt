@@ -9,7 +9,7 @@ import org.junit.Test
 class StateTest {
 
     @Test
-    fun validateContentField() {
+    fun content() {
         val state1 = State.Fixed(StateContent.Exist<MockK>(mockk()))
         state1.content shouldBeInstanceOf StateContent.Exist::class
         val state2 = State.Fixed(StateContent.NotExist<MockK>())
@@ -17,7 +17,7 @@ class StateTest {
     }
 
     @Test
-    fun validateFixedDoActionMethod() {
+    fun doActionWithFixed() {
         val state = State.Fixed<MockK>(mockk())
         state.doAction(
             onFixed = {
@@ -33,7 +33,7 @@ class StateTest {
     }
 
     @Test
-    fun validateLoadingDoActionMethod() {
+    fun doActionLoading() {
         val state = State.Loading<MockK>(mockk())
         state.doAction(
             onFixed = {
@@ -49,7 +49,7 @@ class StateTest {
     }
 
     @Test
-    fun validateErrorDoActionMethod() {
+    fun doActionError() {
         val state = State.Error<MockK>(mockk(), IllegalStateException())
         state.doAction(
             onFixed = {

@@ -22,7 +22,7 @@ class FlowStateMapperTest {
     }
 
     @Test
-    fun validateMapContentMethod() = runBlockingTest {
+    fun mapContent() = runBlockingTest {
         val mappedFlowFixedState = flowFixedState.mapContent { it + 70 }
         val mappedFixedState = mappedFlowFixedState.first()
         mappedFixedState shouldBeInstanceOf State.Fixed::class
