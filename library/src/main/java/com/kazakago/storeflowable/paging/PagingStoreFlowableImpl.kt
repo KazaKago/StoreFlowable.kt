@@ -24,8 +24,8 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
             }
             .map {
                 val data = dataSelector.load()
-                val stateContent = StateContent.wrap(data)
-                it.mapState(stateContent)
+                val content = StateContent.wrap(data)
+                it.mapState(content)
             }
     }
 

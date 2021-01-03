@@ -10,24 +10,24 @@ class StateContentTest {
 
     @Test
     fun validateWrapMethod() {
-        val stateContent1 = StateContent.wrap(30)
-        stateContent1 shouldBeInstanceOf StateContent.Exist::class
-        val stateContent2 = StateContent.wrap(null)
-        stateContent2 shouldBeInstanceOf StateContent.NotExist::class
+        val content1 = StateContent.wrap(30)
+        content1 shouldBeInstanceOf StateContent.Exist::class
+        val content2 = StateContent.wrap(null)
+        content2 shouldBeInstanceOf StateContent.NotExist::class
     }
 
     @Test
     fun validateRawContentField() {
-        val stateContent1 = StateContent.Exist(30)
-        stateContent1.rawContent shouldBeEqualTo 30
-        val stateContent2 = StateContent.Exist("Hello World!")
-        stateContent2.rawContent shouldBeEqualTo "Hello World!"
+        val content1 = StateContent.Exist(30)
+        content1.rawContent shouldBeEqualTo 30
+        val content2 = StateContent.Exist("Hello World!")
+        content2.rawContent shouldBeEqualTo "Hello World!"
     }
 
     @Test
     fun validateExistDoActionMethod() {
-        val stateContent = StateContent.Exist(30)
-        stateContent.doAction(
+        val content = StateContent.Exist(30)
+        content.doAction(
             onExist = {
                 it shouldBeEqualTo 30
             },
@@ -39,8 +39,8 @@ class StateContentTest {
 
     @Test
     fun validateNotExistDoActionMethod() {
-        val stateContent = StateContent.NotExist<MockK>()
-        stateContent.doAction(
+        val content = StateContent.NotExist<MockK>()
+        content.doAction(
             onExist = {
                 fail()
             },

@@ -21,8 +21,8 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
             }
             .map {
                 val data = dataSelector.load()
-                val stateContent = StateContent.wrap(data)
-                it.mapState(stateContent)
+                val content = StateContent.wrap(data)
+                it.mapState(content)
             }
     }
 

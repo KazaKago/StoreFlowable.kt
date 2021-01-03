@@ -18,8 +18,8 @@ class StateTest {
 
     @Test
     fun validateFixedDoActionMethod() {
-        val stateContent = State.Fixed<MockK>(mockk())
-        stateContent.doAction(
+        val state = State.Fixed<MockK>(mockk())
+        state.doAction(
             onFixed = {
                 // ok
             },
@@ -34,8 +34,8 @@ class StateTest {
 
     @Test
     fun validateLoadingDoActionMethod() {
-        val stateContent = State.Loading<MockK>(mockk())
-        stateContent.doAction(
+        val state = State.Loading<MockK>(mockk())
+        state.doAction(
             onFixed = {
                 fail()
             },
@@ -50,8 +50,8 @@ class StateTest {
 
     @Test
     fun validateErrorDoActionMethod() {
-        val stateContent = State.Error<MockK>(mockk(), IllegalStateException())
-        stateContent.doAction(
+        val state = State.Error<MockK>(mockk(), IllegalStateException())
+        state.doAction(
             onFixed = {
                 fail()
             },
