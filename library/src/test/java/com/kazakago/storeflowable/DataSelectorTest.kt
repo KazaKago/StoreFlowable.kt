@@ -10,8 +10,8 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class DataSelectorTest {
 
-    private enum class TestData(val isStale: Boolean) {
-        ValidData(true),
+    private enum class TestData(val needRefresh: Boolean) {
+        ValidData(false),
         InvalidData(true),
         FetchedData(false),
     }
@@ -41,7 +41,7 @@ class DataSelectorTest {
                 return TestData.FetchedData
             }
         },
-        needRefresh = { it.isStale }
+        needRefresh = { it.needRefresh }
     )
 
     private var dataState: DataState = DataState.Fixed()
@@ -306,8 +306,8 @@ class DataSelectorTest {
 
         setupErrorStateValidCache()
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
 
         setupErrorStateValidCache()
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
@@ -316,8 +316,8 @@ class DataSelectorTest {
 
         setupErrorStateValidCache()
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeInstanceOf TestData.FetchedData::class
+        dataState shouldBeInstanceOf DataState.Error::class
+        dataCache shouldBeInstanceOf TestData.ValidData::class
 
         setupErrorStateValidCache()
         dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = false, awaitFetching = true)
