@@ -13,9 +13,9 @@ object GithubInMemoryCache {
     var orgsCache: List<GithubOrg>? = null
     var orgsCacheCreatedAt: LocalDateTime? = null
 
-    var userCache: MutableMap<String, GithubUser?> = mutableMapOf()
-    var userCacheCreateAt: MutableMap<String, LocalDateTime> = mutableMapOf()
+    val userCache: MutableMap<String, GithubUser?> = mutableMapOf()
+    val userCacheCreateAt: MutableMap<String, LocalDateTime> = mutableMapOf()
 
-    var reposCache: MutableMap<String, List<GithubRepo>?> = mutableMapOf()
-    var reposCacheCreatedAt: MutableMap<String, LocalDateTime> = mutableMapOf()
+    val reposCache: MutableMap<String, List<GithubRepo>?> = mutableMapOf()
+    val reposCacheCreatedAt: MutableMap<String, LocalDateTime> = mutableMapOf()
 }
