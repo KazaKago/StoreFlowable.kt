@@ -24,7 +24,12 @@ interface PagingStoreFlowable<KEY, DATA> {
         refresh()
     }
 
-    suspend fun requestAdditional(continueWhenError: Boolean = true)
+    suspend fun requestAddition(continueWhenError: Boolean = true)
+
+    @Deprecated("Use requestAddition", ReplaceWith("requestAddition(continueWhenError)"))
+    suspend fun requestAdditional(continueWhenError: Boolean = true) {
+        requestAddition(continueWhenError)
+    }
 
     suspend fun update(newData: List<DATA>?)
 }
