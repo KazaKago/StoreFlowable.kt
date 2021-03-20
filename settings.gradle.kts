@@ -1,4 +1,4 @@
 rootProject.name = "StoreFlowable.kt"
-include(":sample")
+include(":example")
 include(":library-core")
 include(":library")
