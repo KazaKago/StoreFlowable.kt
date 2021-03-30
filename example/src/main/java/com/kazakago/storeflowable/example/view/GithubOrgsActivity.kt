@@ -6,16 +6,18 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.kazakago.storeflowable.example.databinding.ActivityGithubOrgsBinding
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.view.items.ErrorItem
 import com.kazakago.storeflowable.example.view.items.GithubOrgItem
 import com.kazakago.storeflowable.example.view.items.LoadingItem
 import com.kazakago.storeflowable.example.viewmodel.GithubOrgsViewModel
-import com.kazakago.storeflowable.example.viewmodel.livedata.compositeLiveDataOf
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 
 class GithubOrgsActivity : AppCompatActivity() {
 
@@ -43,23 +45,32 @@ class GithubOrgsActivity : AppCompatActivity() {
         binding.retryButton.setOnClickListener {
             githubOrgsViewModel.retry()
         }
-        compositeLiveDataOf(githubOrgsViewModel.githubOrgs, githubOrgsViewModel.isAdditionalLoading, githubOrgsViewModel.additionalError).observe(this) {
-            val items: List<Group> = mutableListOf<Group>().apply {
-                this += createGithubOrgItems(it.first)
-                if (it.second) this += createLoadingItem()
-                if (it.third != null) this += createErrorItem(it.third!!)
+
+        lifecycleScope.launchWhenStarted {
+            combine(githubOrgsViewModel.githubOrgs, githubOrgsViewModel.isAdditionalLoading, githubOrgsViewModel.additionalError) { a, b, c -> Triple(a, b, c) }.collect {
+                val items: List<Group> = mutableListOf<Group>().apply {
+                    this += createGithubOrgItems(it.first)
+                    if (it.second) this += createLoadingItem()
+                    if (it.third != null) this += createErrorItem(it.third!!)
+                }
+                githubOrgsGroupAdapter.updateAsync(items)
             }
-            githubOrgsGroupAdapter.updateAsync(items)
         }
-        githubOrgsViewModel.isMainLoading.observe(this) {
-            binding.progressBar.isVisible = it
+        lifecycleScope.launchWhenStarted {
+            githubOrgsViewModel.isMainLoading.collect {
+                binding.progressBar.isVisible = it
+            }
         }
-        githubOrgsViewModel.mainError.observe(this) {
-            binding.errorGroup.isVisible = (it != null)
-            binding.errorTextView.text = it?.toString()
+        lifecycleScope.launchWhenStarted {
+            githubOrgsViewModel.mainError.collect {
+                binding.errorGroup.isVisible = (it != null)
+                binding.errorTextView.text = it?.toString()
+            }
         }
-        githubOrgsViewModel.isRefreshing.observe(this) {
-            binding.swipeRefreshLayout.isRefreshing = it
+        lifecycleScope.launchWhenStarted {
+            githubOrgsViewModel.isRefreshing.collect {
+                binding.swipeRefreshLayout.isRefreshing = it
+            }
         }
     }
 

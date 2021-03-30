@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class GithubUserResponder(userName: String) : StoreFlowableResponder<String, GithubUser> {
 
     companion object {
-        private val EXPIRED_DURATION = Duration.ofSeconds(30)
+        private val EXPIRED_DURATION = Duration.ofMinutes(1)
     }
 
     private val githubApi = GithubApi()

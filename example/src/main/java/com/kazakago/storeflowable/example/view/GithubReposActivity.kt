@@ -7,16 +7,18 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.kazakago.storeflowable.example.databinding.ActivityGithubReposBinding
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.view.items.ErrorItem
 import com.kazakago.storeflowable.example.view.items.GithubRepoItem
 import com.kazakago.storeflowable.example.view.items.LoadingItem
 import com.kazakago.storeflowable.example.viewmodel.GithubReposViewModel
-import com.kazakago.storeflowable.example.viewmodel.livedata.compositeLiveDataOf
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 
 class GithubReposActivity : AppCompatActivity() {
 
@@ -53,23 +55,32 @@ class GithubReposActivity : AppCompatActivity() {
         binding.retryButton.setOnClickListener {
             githubReposViewModel.retry()
         }
-        compositeLiveDataOf(githubReposViewModel.githubRepos, githubReposViewModel.isAdditionalLoading, githubReposViewModel.additionalError).observe(this) {
-            val items: List<Group> = mutableListOf<Group>().apply {
-                this += createGithubRepoItems(it.first)
-                if (it.second) this += createLoadingItem()
-                if (it.third != null) this += createErrorItem(it.third!!)
+
+        lifecycleScope.launchWhenStarted {
+            combine(githubReposViewModel.githubRepos, githubReposViewModel.isAdditionalLoading, githubReposViewModel.additionalError) { a, b, c -> Triple(a, b, c) }.collect {
+                val items: List<Group> = mutableListOf<Group>().apply {
+                    this += createGithubRepoItems(it.first)
+                    if (it.second) this += createLoadingItem()
+                    if (it.third != null) this += createErrorItem(it.third!!)
+                }
+                githubReposGroupAdapter.updateAsync(items)
             }
-            githubReposGroupAdapter.updateAsync(items)
         }
-        githubReposViewModel.isMainLoading.observe(this) {
-            binding.progressBar.isVisible = it
+        lifecycleScope.launchWhenStarted {
+            githubReposViewModel.isMainLoading.collect {
+                binding.progressBar.isVisible = it
+            }
         }
-        githubReposViewModel.mainError.observe(this) {
-            binding.errorGroup.isVisible = (it != null)
-            binding.errorTextView.text = it?.toString()
+        lifecycleScope.launchWhenStarted {
+            githubReposViewModel.mainError.collect {
+                binding.errorGroup.isVisible = (it != null)
+                binding.errorTextView.text = it?.toString()
+            }
         }
-        githubReposViewModel.isRefreshing.observe(this) {
-            binding.swipeRefreshLayout.isRefreshing = it
+        lifecycleScope.launchWhenStarted {
+            githubReposViewModel.isRefreshing.collect {
+                binding.swipeRefreshLayout.isRefreshing = it
+            }
         }
     }
 

@@ -1,9 +1,14 @@
 package com.kazakago.storeflowable.example.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubUser
 import com.kazakago.storeflowable.example.repository.GithubRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -16,9 +21,12 @@ class GithubUserViewModel(application: Application, private val userName: String
         }
     }
 
-    val githubUser = MutableLiveData<GithubUser?>()
-    val isLoading = MutableLiveData(false)
-    val error = MutableLiveData<Exception?>()
+    private val _githubUser = MutableStateFlow<GithubUser?>(null)
+    val githubUser: StateFlow<GithubUser?> get() = _githubUser
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _error = MutableStateFlow<Exception?>(null)
+    val error: StateFlow<Exception?> get() = _error
     private val githubRepository = GithubRepository()
 
     init {
@@ -38,43 +46,43 @@ class GithubUserViewModel(application: Application, private val userName: String
             it.doAction(
                 onFixed = {
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
-                            isLoading.value = false
-                            error.value = null
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
+                            _isLoading.value = false
+                            _error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
-                            isLoading.value = false
-                            error.value = null
+                            _githubUser.value = null
+                            _isLoading.value = false
+                            _error.value = null
                         }
                     )
                 },
                 onLoading = {
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
-                            isLoading.value = true
-                            error.value = null
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
+                            _isLoading.value = true
+                            _error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
-                            isLoading.value = true
-                            error.value = null
+                            _githubUser.value = null
+                            _isLoading.value = true
+                            _error.value = null
                         }
                     )
                 },
                 onError = { exception ->
                     it.content.doAction(
-                        onExist = { _githubUser ->
-                            githubUser.value = _githubUser
-                            isLoading.value = false
-                            error.value = null
+                        onExist = { githubUser ->
+                            _githubUser.value = githubUser
+                            _isLoading.value = false
+                            _error.value = null
                         },
                         onNotExist = {
-                            githubUser.value = null
-                            isLoading.value = false
-                            error.value = exception
+                            _githubUser.value = null
+                            _isLoading.value = false
+                            _error.value = exception
                         }
                     )
                 }

@@ -9,10 +9,12 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubUserBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubUserViewModel
+import kotlinx.coroutines.flow.collect
 
 class GithubUserActivity : AppCompatActivity() {
 
@@ -44,18 +46,25 @@ class GithubUserActivity : AppCompatActivity() {
         binding.retryButton.setOnClickListener {
             githubUserViewModel.retry()
         }
-        githubUserViewModel.githubUser.observe(this) {
-            binding.avatarImageView.load(it?.avatarUrl)
-            binding.idTextView.text = it?.id?.let { id -> "ID: $id" }
-            binding.nameTextView.text = it?.name
-            binding.linkTextView.text = it?.htmlUrl
+
+        lifecycleScope.launchWhenStarted {
+            githubUserViewModel.githubUser.collect {
+                binding.avatarImageView.load(it?.avatarUrl)
+                binding.idTextView.text = it?.id?.let { id -> "ID: $id" }
+                binding.nameTextView.text = it?.name
+                binding.linkTextView.text = it?.htmlUrl
+            }
         }
-        githubUserViewModel.isLoading.observe(this) {
-            binding.progressBar.isVisible = it
+        lifecycleScope.launchWhenStarted {
+            githubUserViewModel.isLoading.collect {
+                binding.progressBar.isVisible = it
+            }
         }
-        githubUserViewModel.error.observe(this) {
-            binding.errorGroup.isVisible = (it != null)
-            binding.errorTextView.text = it?.toString()
+        lifecycleScope.launchWhenStarted {
+            githubUserViewModel.error.collect {
+                binding.errorGroup.isVisible = (it != null)
+                binding.errorTextView.text = it?.toString()
+            }
         }
     }
 

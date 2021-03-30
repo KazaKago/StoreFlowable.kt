@@ -8,9 +8,11 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubMetaBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubMetaViewModel
+import kotlinx.coroutines.flow.collect
 
 class GithubMetaActivity : AppCompatActivity() {
 
@@ -30,16 +32,23 @@ class GithubMetaActivity : AppCompatActivity() {
         binding.retryButton.setOnClickListener {
             githubMetaViewModel.retry()
         }
-        githubMetaViewModel.githubMeta.observe(this) { meta ->
-            binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
-            binding.sha256DsaTextView.text = meta?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n$it" }
+
+        lifecycleScope.launchWhenStarted {
+            githubMetaViewModel.githubMeta.collect { meta ->
+                binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
+                binding.sha256DsaTextView.text = meta?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n$it" }
+            }
         }
-        githubMetaViewModel.isLoading.observe(this) {
-            binding.progressBar.isVisible = it
+        lifecycleScope.launchWhenStarted {
+            githubMetaViewModel.isLoading.collect {
+                binding.progressBar.isVisible = it
+            }
         }
-        githubMetaViewModel.error.observe(this) {
-            binding.errorGroup.isVisible = (it != null)
-            binding.errorTextView.text = it?.toString()
+        lifecycleScope.launchWhenStarted {
+            githubMetaViewModel.error.collect {
+                binding.errorGroup.isVisible = (it != null)
+                binding.errorTextView.text = it?.toString()
+            }
         }
     }
 

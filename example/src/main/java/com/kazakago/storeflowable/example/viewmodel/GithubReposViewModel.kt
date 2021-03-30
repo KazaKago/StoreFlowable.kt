@@ -1,9 +1,14 @@
 package com.kazakago.storeflowable.example.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.repository.GithubRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -16,12 +21,18 @@ class GithubReposViewModel(application: Application, private val userName: Strin
         }
     }
 
-    val githubRepos = MutableLiveData<List<GithubRepo>>(emptyList())
-    val isMainLoading = MutableLiveData(false)
-    val isAdditionalLoading = MutableLiveData(false)
-    val isRefreshing = MutableLiveData(false)
-    val mainError = MutableLiveData<Exception?>()
-    val additionalError = MutableLiveData<Exception?>()
+    private val _githubRepos = MutableStateFlow<List<GithubRepo>>(emptyList())
+    val githubRepos: StateFlow<List<GithubRepo>> get() = _githubRepos
+    private val _isMainLoading = MutableStateFlow(false)
+    val isMainLoading: StateFlow<Boolean> get() = _isMainLoading
+    private val _isAdditionalLoading = MutableStateFlow(false)
+    val isAdditionalLoading: StateFlow<Boolean> get() = _isAdditionalLoading
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> get() = _isRefreshing
+    private val _mainError = MutableStateFlow<Exception?>(null)
+    val mainError: StateFlow<Exception?> get() = _mainError
+    private val _additionalError = MutableStateFlow<Exception?>(null)
+    val additionalError: StateFlow<Exception?> = _additionalError
     private val githubRepository = GithubRepository()
 
     init {
@@ -29,9 +40,9 @@ class GithubReposViewModel(application: Application, private val userName: Strin
     }
 
     fun refresh() = viewModelScope.launch {
-        isRefreshing.value = true
+        _isRefreshing.value = true
         githubRepository.refreshRepos(userName)
-        isRefreshing.value = false
+        _isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
@@ -51,55 +62,55 @@ class GithubReposViewModel(application: Application, private val userName: Strin
             it.doAction(
                 onFixed = {
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
-                            isMainLoading.value = false
-                            isAdditionalLoading.value = false
-                            mainError.value = null
-                            additionalError.value = null
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = null
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
-                            isMainLoading.value = true
-                            isAdditionalLoading.value = false
-                            mainError.value = null
-                            additionalError.value = null
+                            _githubRepos.value = emptyList()
+                            _isMainLoading.value = true
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = null
                         }
                     )
                 },
                 onLoading = {
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
-                            isMainLoading.value = false
-                            isAdditionalLoading.value = true
-                            mainError.value = null
-                            additionalError.value = null
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = true
+                            _mainError.value = null
+                            _additionalError.value = null
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
-                            isMainLoading.value = true
-                            isAdditionalLoading.value = false
-                            mainError.value = null
-                            additionalError.value = null
+                            _githubRepos.value = emptyList()
+                            _isMainLoading.value = true
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = null
                         }
                     )
                 },
                 onError = { exception ->
                     it.content.doAction(
-                        onExist = { _githubRepos ->
-                            githubRepos.value = _githubRepos
-                            isMainLoading.value = false
-                            isAdditionalLoading.value = false
-                            mainError.value = null
-                            additionalError.value = exception
+                        onExist = { githubRepos ->
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = exception
                         },
                         onNotExist = {
-                            githubRepos.value = emptyList()
-                            isMainLoading.value = false
-                            isAdditionalLoading.value = false
-                            mainError.value = exception
-                            additionalError.value = null
+                            _githubRepos.value = emptyList()
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = false
+                            _mainError.value = exception
+                            _additionalError.value = null
                         }
                     )
                 }

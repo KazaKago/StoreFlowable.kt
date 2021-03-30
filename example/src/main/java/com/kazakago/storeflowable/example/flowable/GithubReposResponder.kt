@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 class GithubReposResponder(userName: String) : PagingStoreFlowableResponder<String, GithubRepo> {
 
     companion object {
-        private val EXPIRED_DURATION = Duration.ofSeconds(30)
+        private val EXPIRED_DURATION = Duration.ofMinutes(1)
         private const val PER_PAGE = 20
     }
 
