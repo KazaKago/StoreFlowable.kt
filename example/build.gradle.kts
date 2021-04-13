@@ -38,7 +38,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":library"))
-    implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
+    implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
     implementation("androidx.appcompat:appcompat:1.2.0")
@@ -53,7 +53,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi:1.12.0")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
-    implementation("io.coil-kt:coil:1.1.1")
+    implementation("io.coil-kt:coil:1.2.0")
     implementation("com.xwray:groupie:2.9.0")
     implementation("com.xwray:groupie-viewbinding:2.9.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
