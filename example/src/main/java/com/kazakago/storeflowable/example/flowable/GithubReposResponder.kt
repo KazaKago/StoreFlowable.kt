@@ -39,13 +39,13 @@ class GithubReposResponder(userName: String) : PaginatingStoreFlowableResponder<
 
     override suspend fun fetchOrigin(): FetchingResult<List<GithubRepo>> {
         val data = githubApi.getRepos(key, 1, PER_PAGE)
-        return FetchingResult(data = data)
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun fetchAdditionalOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
         val page = ((cachedData?.size ?: 0) / PER_PAGE + 1)
         val data = githubApi.getRepos(key, page, PER_PAGE)
-        return FetchingResult(data = data)
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun needRefresh(cachedData: List<GithubRepo>): Boolean {
