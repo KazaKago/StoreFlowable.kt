@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-internal class PagingDataSelector<KEY, DATA>(
+internal class PaginatingDataSelector<KEY, DATA>(
     private val key: KEY,
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: PaginatingCacheDataManager<DATA>,

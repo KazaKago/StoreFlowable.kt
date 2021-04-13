@@ -4,6 +4,7 @@ buildscript {
     val versionName by extra("3.2.0-SNAPSHOT")
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -19,6 +20,7 @@ buildscript {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
 }

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 
 internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: PaginatingStoreFlowableResponder<KEY, DATA>) : PaginatingStoreFlowable<KEY, DATA> {
 
-    private val dataSelector = PagingDataSelector(
+    private val dataSelector = PaginatingDataSelector(
         key = storeFlowableResponder.key,
         dataStateManager = storeFlowableResponder.flowableDataStateManager,
         cacheDataManager = storeFlowableResponder,
