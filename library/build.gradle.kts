@@ -1,6 +1,7 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm")
-    `java-library`
     id("com.github.panpf.bintray-publish")
 }
 
@@ -9,13 +10,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
+tasks.withType(KotlinCompile::class).all {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 publish {
