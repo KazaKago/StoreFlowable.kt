@@ -2,12 +2,13 @@ package com.kazakago.storeflowable.pagination
 
 import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
+import com.kazakago.storeflowable.StoreFlowableResponder
 
-interface PaginatingStoreFlowableResponder<KEY, DATA> : PaginatingCacheDataManager<DATA>, PaginatingOriginDataManager<DATA> {
+interface PaginatingStoreFlowableResponder<KEY, DATA> : StoreFlowableResponder<KEY, DATA>, PaginatingCacheDataManager<DATA>, PaginatingOriginDataManager<DATA> {
 
-    val key: KEY
+    override val key: KEY
 
-    val flowableDataStateManager: FlowableDataStateManager<KEY>
+    override val flowableDataStateManager: FlowableDataStateManager<KEY>
 
     override suspend fun loadData(): DATA?
 
@@ -19,5 +20,5 @@ interface PaginatingStoreFlowableResponder<KEY, DATA> : PaginatingCacheDataManag
 
     override suspend fun fetchAdditionalOrigin(cachedData: DATA?): FetchingResult<DATA>
 
-    suspend fun needRefresh(cachedData: DATA): Boolean
+    override suspend fun needRefresh(cachedData: DATA): Boolean
 }

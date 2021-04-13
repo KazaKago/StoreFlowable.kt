@@ -2,10 +2,7 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.*
 
 internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: StoreFlowableResponder<KEY, DATA>) : StoreFlowable<KEY, DATA> {
 
@@ -29,7 +26,29 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
             }
     }
 
-    override suspend fun get(type: AsDataType): DATA {
+    override suspend fun getData(type: AsDataType): DATA? {
+        return prepareData(type).transform {
+            val data = dataSelector.load()
+            when (it) {
+                is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else emit(null)
+                is DataState.Loading -> Unit // do nothing.
+                is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else emit(null)
+            }
+        }.first()
+    }
+
+    override suspend fun requireData(type: AsDataType): DATA {
+        return prepareData(type).transform {
+            val data = dataSelector.load()
+            when (it) {
+                is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                is DataState.Loading -> Unit // do nothing.
+                is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw it.exception
+            }
+        }.first()
+    }
+
+    private suspend fun prepareData(type: AsDataType): Flow<DataState> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 when (type) {
@@ -38,15 +57,6 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
                     AsDataType.FromCache -> Unit // do nothing.
                 }
             }
-            .transform {
-                val data = dataSelector.load()
-                when (it) {
-                    is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit // do nothing.
-                    is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw it.exception
-                }
-            }
-            .first()
     }
 
     override suspend fun validate() {

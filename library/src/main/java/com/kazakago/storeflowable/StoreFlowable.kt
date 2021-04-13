@@ -6,7 +6,9 @@ interface StoreFlowable<KEY, DATA> {
 
     fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
 
-    suspend fun get(type: AsDataType = AsDataType.Mix): DATA
+    suspend fun getData(type: AsDataType = AsDataType.Mix): DATA?
+
+    suspend fun requireData(type: AsDataType = AsDataType.Mix): DATA
 
     suspend fun validate()
 
