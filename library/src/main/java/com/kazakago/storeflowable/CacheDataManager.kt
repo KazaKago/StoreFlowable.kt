@@ -4,5 +4,5 @@ interface CacheDataManager<DATA> {
 
     suspend fun loadData(): DATA?
 
-    suspend fun saveData(data: DATA?)
+    suspend fun saveData(newData: DATA?)
 }

@@ -32,13 +32,13 @@ class DataSelectorTest {
                 return dataCache
             }
 
-            override suspend fun saveData(data: TestData?) {
-                dataCache = data
+            override suspend fun saveData(newData: TestData?) {
+                dataCache = newData
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
-            override suspend fun fetchOrigin(): TestData {
-                return TestData.FetchedData
+            override suspend fun fetchOrigin(): FetchingResult<TestData> {
+                return FetchingResult(TestData.FetchedData)
             }
         },
         needRefresh = { it.needRefresh }

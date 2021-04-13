@@ -1,15 +1,16 @@
 package com.kazakago.storeflowable.example.flowable
 
+import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
 import com.kazakago.storeflowable.example.api.GithubApi
-import com.kazakago.storeflowable.example.cache.GithubInMemoryCache
+import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubReposStateManager
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.paging.PagingStoreFlowableResponder
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableResponder
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubReposResponder(userName: String) : PagingStoreFlowableResponder<String, GithubRepo> {
+class GithubReposResponder(userName: String) : PaginatingStoreFlowableResponder<String, List<GithubRepo>> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)
@@ -17,7 +18,7 @@ class GithubReposResponder(userName: String) : PagingStoreFlowableResponder<Stri
     }
 
     private val githubApi = GithubApi()
-    private val githubCache = GithubInMemoryCache
+    private val githubCache = GithubCache
 
     override val key: String = userName
 
@@ -27,20 +28,33 @@ class GithubReposResponder(userName: String) : PagingStoreFlowableResponder<Stri
         return githubCache.reposCache[key]
     }
 
-    override suspend fun saveData(data: List<GithubRepo>?, additionalRequest: Boolean) {
-        githubCache.reposCache[key] = data
-        if (!additionalRequest) githubCache.reposCacheCreatedAt[key] = LocalDateTime.now()
+    override suspend fun saveData(newData: List<GithubRepo>?) {
+        githubCache.reposCache[key] = newData
+        githubCache.reposCacheCreatedAt[key] = LocalDateTime.now()
     }
 
-    override suspend fun fetchOrigin(data: List<GithubRepo>?, additionalRequest: Boolean): List<GithubRepo> {
-        val page = if (additionalRequest) ((data?.size ?: 0) / PER_PAGE + 1) else 1
-        return githubApi.getRepos(key, page, PER_PAGE)
+    override suspend fun saveAdditionalData(cachedData: List<GithubRepo>?, fetchedData: List<GithubRepo>) {
+        githubCache.reposCache[key] = (cachedData ?: emptyList()) + fetchedData
     }
 
-    override suspend fun needRefresh(data: List<GithubRepo>): Boolean {
-        return githubCache.reposCacheCreatedAt[key]?.let { createdAt ->
+    override suspend fun fetchOrigin(): FetchingResult<List<GithubRepo>> {
+        val data = githubApi.getRepos(key, 1, PER_PAGE)
+        return FetchingResult(data = data)
+    }
+
+    override suspend fun fetchAdditionalOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
+        val page = ((cachedData?.size ?: 0) / PER_PAGE + 1)
+        val data = githubApi.getRepos(key, page, PER_PAGE)
+        return FetchingResult(data = data)
+    }
+
+    override suspend fun needRefresh(cachedData: List<GithubRepo>): Boolean {
+        val createdAt = githubCache.reposCacheCreatedAt[key]
+        return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION
             expiredAt < LocalDateTime.now()
-        } ?: true
+        } else {
+            true
+        }
     }
 }

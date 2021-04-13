@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.core
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -14,10 +13,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowStateCombinerTest {
 
-    private lateinit var flowFixedExist: Flow<State<Int>>
-    private lateinit var flowFixedNotExist: Flow<State<Int>>
-    private lateinit var flowLoadingExist: Flow<State<Int>>
-    private lateinit var flowErrorExist: Flow<State<Int>>
+    private lateinit var flowFixedExist: FlowableState<Int>
+    private lateinit var flowFixedNotExist: FlowableState<Int>
+    private lateinit var flowLoadingExist: FlowableState<Int>
+    private lateinit var flowErrorExist: FlowableState<Int>
 
     @Before
     fun setup() {

@@ -1,9 +1,10 @@
 package com.kazakago.storeflowable.example.flowable
 
+import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
 import com.kazakago.storeflowable.StoreFlowableResponder
 import com.kazakago.storeflowable.example.api.GithubApi
-import com.kazakago.storeflowable.example.cache.GithubInMemoryCache
+import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubMetaStateManager
 import com.kazakago.storeflowable.example.model.GithubMeta
 import java.time.Duration
@@ -16,7 +17,7 @@ class GithubMetaResponder : StoreFlowableResponder<Unit, GithubMeta> {
     }
 
     private val githubApi = GithubApi()
-    private val githubCache = GithubInMemoryCache
+    private val githubCache = GithubCache
 
     override val key: Unit = Unit
 
@@ -26,19 +27,23 @@ class GithubMetaResponder : StoreFlowableResponder<Unit, GithubMeta> {
         return githubCache.metaCache
     }
 
-    override suspend fun saveData(data: GithubMeta?) {
-        githubCache.metaCache = data
+    override suspend fun saveData(newData: GithubMeta?) {
+        githubCache.metaCache = newData
         githubCache.metaCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun fetchOrigin(): GithubMeta {
-        return githubApi.getMeta()
+    override suspend fun fetchOrigin(): FetchingResult<GithubMeta> {
+        val data = githubApi.getMeta()
+        return FetchingResult(data = data)
     }
 
-    override suspend fun needRefresh(data: GithubMeta): Boolean {
-        return githubCache.metaCacheCreatedAt?.let { createdAt ->
+    override suspend fun needRefresh(cachedData: GithubMeta): Boolean {
+        val createdAt = githubCache.metaCacheCreatedAt
+        return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION
             expiredAt < LocalDateTime.now()
-        } ?: true
+        } else {
+            true
+        }
     }
 }

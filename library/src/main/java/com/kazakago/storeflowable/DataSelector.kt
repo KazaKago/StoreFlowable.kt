@@ -9,7 +9,7 @@ internal class DataSelector<KEY, DATA>(
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
-    private val needRefresh: (suspend (data: DATA) -> Boolean)
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean)
 ) {
 
     suspend fun load(): DATA? {
@@ -30,8 +30,8 @@ internal class DataSelector<KEY, DATA>(
     }
 
     private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean) {
-        val data = cacheDataManager.loadData()
-        if (data == null || forceRefresh || needRefresh(data)) {
+        val cachedData = cacheDataManager.loadData()
+        if (cachedData == null || forceRefresh || needRefresh(cachedData)) {
             prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching)
         }
     }
@@ -48,8 +48,8 @@ internal class DataSelector<KEY, DATA>(
 
     private suspend fun fetchNewData(clearCacheWhenFetchFails: Boolean) {
         try {
-            val fetchedData = originDataManager.fetchOrigin()
-            cacheDataManager.saveData(fetchedData)
+            val fetchingResult = originDataManager.fetchOrigin()
+            cacheDataManager.saveData(fetchingResult.data)
             dataStateManager.saveState(key, DataState.Fixed())
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.saveData(null)

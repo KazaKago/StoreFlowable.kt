@@ -6,7 +6,7 @@ import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
 import java.time.LocalDateTime
 
-object GithubInMemoryCache {
+object GithubCache {
     var metaCache: GithubMeta? = null
     var metaCacheCreatedAt: LocalDateTime? = null
 

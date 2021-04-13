@@ -30,25 +30,25 @@ class StoreFlowableTest {
             return dataCache
         }
 
-        override suspend fun saveData(data: TestData?) {
-            dataCache = data
+        override suspend fun saveData(newData: TestData?) {
+            dataCache = newData
         }
 
-        override suspend fun needRefresh(data: TestData): Boolean {
-            return data.needRefresh
+        override suspend fun needRefresh(cachedData: TestData): Boolean {
+            return cachedData.needRefresh
         }
     }
 
     private class SucceedTestResponder(dataCache: TestData?) : TestResponder(dataCache) {
 
-        override suspend fun fetchOrigin(): TestData {
-            return TestData.FetchedData
+        override suspend fun fetchOrigin(): FetchingResult<TestData> {
+            return FetchingResult(TestData.FetchedData)
         }
     }
 
     private class FailedTestResponder(dataCache: TestData?) : TestResponder(dataCache) {
 
-        override suspend fun fetchOrigin(): TestData {
+        override suspend fun fetchOrigin(): FetchingResult<TestData> {
             throw UnknownHostException()
         }
     }

@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.example.repository
 
-import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.create
 import com.kazakago.storeflowable.example.flowable.GithubMetaResponder
 import com.kazakago.storeflowable.example.flowable.GithubOrgsResponder
@@ -10,12 +10,11 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
-import com.kazakago.storeflowable.paging.create
-import kotlinx.coroutines.flow.Flow
+import com.kazakago.storeflowable.pagination.create
 
 class GithubRepository {
 
-    fun followMeta(): Flow<State<GithubMeta>> {
+    fun followMeta(): FlowableState<GithubMeta> {
         val githubMetaFlowable = GithubMetaResponder().create()
         return githubMetaFlowable.publish()
     }
@@ -25,7 +24,7 @@ class GithubRepository {
         githubMetaFlowable.refresh()
     }
 
-    fun followOrgs(): Flow<State<List<GithubOrg>>> {
+    fun followOrgs(): FlowableState<List<GithubOrg>> {
         val githubOrgsFlowable = GithubOrgsResponder().create()
         return githubOrgsFlowable.publish()
     }
@@ -40,7 +39,7 @@ class GithubRepository {
         githubOrgsFlowable.requestAddition(continueWhenError)
     }
 
-    fun followUser(userName: String): Flow<State<GithubUser>> {
+    fun followUser(userName: String): FlowableState<GithubUser> {
         val githubUserFlowable = GithubUserResponder(userName).create()
         return githubUserFlowable.publish()
     }
@@ -50,7 +49,7 @@ class GithubRepository {
         githubUserFlowable.refresh()
     }
 
-    fun followRepos(userName: String): Flow<State<List<GithubRepo>>> {
+    fun followRepos(userName: String): FlowableState<List<GithubRepo>> {
         val githubReposFlowable = GithubReposResponder(userName).create()
         return githubReposFlowable.publish()
     }

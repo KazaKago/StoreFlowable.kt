@@ -1,13 +1,16 @@
-package com.kazakago.storeflowable.paging
+package com.kazakago.storeflowable.pagination
 
 import com.kazakago.storeflowable.AsDataType
 import com.kazakago.storeflowable.DataState
-import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
 import com.kazakago.storeflowable.mapState
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 
-internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: PagingStoreFlowableResponder<KEY, DATA>) : PagingStoreFlowable<KEY, DATA> {
+internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: PaginatingStoreFlowableResponder<KEY, DATA>) : PaginatingStoreFlowable<KEY, DATA> {
 
     private val dataSelector = PagingDataSelector(
         key = storeFlowableResponder.key,
@@ -17,7 +20,7 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
         needRefresh = { storeFlowableResponder.needRefresh(it) }
     )
 
-    override fun publish(forceRefresh: Boolean): Flow<State<List<DATA>>> {
+    override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, additionalRequest = false)
@@ -29,20 +32,20 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
             }
     }
 
-    override suspend fun get(type: AsDataType): List<DATA> {
+    override suspend fun get(type: AsDataType): DATA {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 when (type) {
                     AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
                     AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    AsDataType.FromCache -> Unit //do nothing.
+                    AsDataType.FromCache -> Unit // do nothing.
                 }
             }
             .transform {
                 val data = dataSelector.load()
                 when (it) {
                     is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit //do nothing.
+                    is DataState.Loading -> Unit // do nothing.
                     is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw it.exception
                 }
             }
@@ -61,7 +64,7 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val storeFlowableRespo
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, additionalRequest = true)
     }
 
-    override suspend fun update(newData: List<DATA>?) {
+    override suspend fun update(newData: DATA?) {
         dataSelector.update(newData)
     }
 }

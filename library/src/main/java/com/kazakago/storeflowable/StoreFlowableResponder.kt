@@ -8,9 +8,9 @@ interface StoreFlowableResponder<KEY, DATA> : CacheDataManager<DATA>, OriginData
 
     override suspend fun loadData(): DATA?
 
-    override suspend fun saveData(data: DATA?)
+    override suspend fun saveData(newData: DATA?)
 
-    override suspend fun fetchOrigin(): DATA
+    override suspend fun fetchOrigin(): FetchingResult<DATA>
 
-    suspend fun needRefresh(data: DATA): Boolean
+    suspend fun needRefresh(cachedData: DATA): Boolean
 }

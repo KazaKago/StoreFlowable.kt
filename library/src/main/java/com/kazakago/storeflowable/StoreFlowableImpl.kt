@@ -1,8 +1,11 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 
 internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: StoreFlowableResponder<KEY, DATA>) : StoreFlowable<KEY, DATA> {
 
@@ -14,7 +17,7 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
         needRefresh = { storeFlowableResponder.needRefresh(it) }
     )
 
-    override fun publish(forceRefresh: Boolean): Flow<State<DATA>> {
+    override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
         return storeFlowableResponder.flowableDataStateManager.getFlow(storeFlowableResponder.key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
@@ -32,14 +35,14 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableResponder: 
                 when (type) {
                     AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
                     AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    AsDataType.FromCache -> Unit //do nothing.
+                    AsDataType.FromCache -> Unit // do nothing.
                 }
             }
             .transform {
                 val data = dataSelector.load()
                 when (it) {
                     is DataState.Fixed -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit //do nothing.
+                    is DataState.Loading -> Unit // do nothing.
                     is DataState.Error -> if (data != null && !storeFlowableResponder.needRefresh(data)) emit(data) else throw it.exception
                 }
             }

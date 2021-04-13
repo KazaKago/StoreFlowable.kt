@@ -1,10 +1,9 @@
 package com.kazakago.storeflowable.core
 
 import com.os.operando.guild.kt.to
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-fun <A, B, Z> Flow<State<A>>.combineState(otherFlow: Flow<State<B>>, transform: (content1: A, content2: B) -> Z): Flow<State<Z>> {
+fun <A, B, Z> FlowableState<A>.combineState(otherFlow: FlowableState<B>, transform: (content1: A, content2: B) -> Z): FlowableState<Z> {
     return combine(otherFlow) { state1, state2 ->
         state1.zip(state2) { content1, content2 ->
             transform(content1, content2)
@@ -12,7 +11,7 @@ fun <A, B, Z> Flow<State<A>>.combineState(otherFlow: Flow<State<B>>, transform: 
     }
 }
 
-fun <A, B, C, Z> Flow<State<A>>.combineState(otherFlow1: Flow<State<B>>, otherFlow2: Flow<State<C>>, transform: (content1: A, content2: B, content3: C) -> Z): Flow<State<Z>> {
+fun <A, B, C, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, transform: (content1: A, content2: B, content3: C) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2
     }.combineState(otherFlow2) { content1_2, content3 ->
@@ -20,7 +19,7 @@ fun <A, B, C, Z> Flow<State<A>>.combineState(otherFlow1: Flow<State<B>>, otherFl
     }
 }
 
-fun <A, B, C, D, Z> Flow<State<A>>.combineState(otherFlow1: Flow<State<B>>, otherFlow2: Flow<State<C>>, otherFlow3: Flow<State<D>>, transform: (content1: A, content2: B, content3: C, content4: D) -> Z): Flow<State<Z>> {
+fun <A, B, C, D, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, otherFlow3: FlowableState<D>, transform: (content1: A, content2: B, content3: C, content4: D) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2
     }.combineState(otherFlow2) { content1_2, content3 ->
@@ -30,7 +29,7 @@ fun <A, B, C, D, Z> Flow<State<A>>.combineState(otherFlow1: Flow<State<B>>, othe
     }
 }
 
-fun <A, B, C, D, E, Z> Flow<State<A>>.combineState(otherFlow1: Flow<State<B>>, otherFlow2: Flow<State<C>>, otherFlow3: Flow<State<D>>, otherFlow4: Flow<State<E>>, transform: (content1: A, content2: B, content3: C, content4: D, content5: E) -> Z): Flow<State<Z>> {
+fun <A, B, C, D, E, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, otherFlow3: FlowableState<D>, otherFlow4: FlowableState<E>, transform: (content1: A, content2: B, content3: C, content4: D, content5: E) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2
     }.combineState(otherFlow2) { content1_2, content3 ->
