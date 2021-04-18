@@ -1,21 +1,22 @@
 package com.kazakago.storeflowable.pagination
 
 import com.kazakago.storeflowable.AsDataType
+import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.FlowableState
 
-interface PaginatingStoreFlowable<KEY, DATA> {
+interface PaginatingStoreFlowable<KEY, DATA> : StoreFlowable<KEY, DATA> {
 
-    fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
+    override fun publish(forceRefresh: Boolean): FlowableState<DATA>
 
-    suspend fun getData(type: AsDataType = AsDataType.Mix): DATA?
+    override suspend fun getData(type: AsDataType): DATA?
 
-    suspend fun requireData(type: AsDataType = AsDataType.Mix): DATA
+    override suspend fun requireData(type: AsDataType): DATA
 
-    suspend fun validate()
+    override suspend fun validate()
 
-    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
+    override suspend fun refresh(clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean)
 
     suspend fun requestAddition(continueWhenError: Boolean = true)
 
-    suspend fun update(newData: DATA?)
+    override suspend fun update(newData: DATA?)
 }

@@ -6,11 +6,11 @@ import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubReposStateManager
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableResponder
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubReposResponder(userName: String) : PaginatingStoreFlowableResponder<String, List<GithubRepo>> {
+class GithubReposResponder(userName: String) : PaginatingStoreFlowableCallback<String, List<GithubRepo>> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)
