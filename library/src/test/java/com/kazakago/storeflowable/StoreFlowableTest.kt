@@ -20,7 +20,7 @@ class StoreFlowableTest {
         FetchedData(false),
     }
 
-    private abstract class TestResponder(private var dataCache: TestData?) : StoreFlowableResponder<String, TestData> {
+    private abstract class TestFlowableCallback(private var dataCache: TestData?) : StoreFlowableCallback<String, TestData> {
 
         override val key: String = "Key"
 
@@ -39,14 +39,14 @@ class StoreFlowableTest {
         }
     }
 
-    private class SucceedTestResponder(dataCache: TestData?) : TestResponder(dataCache) {
+    private class SucceedTestFlowableCallback(dataCache: TestData?) : TestFlowableCallback(dataCache) {
 
         override suspend fun fetchOrigin(): FetchingResult<TestData> {
             return FetchingResult(TestData.FetchedData)
         }
     }
 
-    private class FailedTestResponder(dataCache: TestData?) : TestResponder(dataCache) {
+    private class FailedTestFlowableCallback(dataCache: TestData?) : TestFlowableCallback(dataCache) {
 
         override suspend fun fetchOrigin(): FetchingResult<TestData> {
             throw UnknownHostException()
@@ -58,7 +58,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithNoCache() = runBlocking {
-//        SucceedTestResponder(dataCache = null).create().publish().toTest(this).use {
+//        SucceedTestFlowableCallback(dataCache = null).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -75,7 +75,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithValidCache() = runBlocking {
-//        SucceedTestResponder(dataCache = TestData.ValidData).create().publish().toTest(this).use {
+//        SucceedTestFlowableCallback(dataCache = TestData.ValidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 1
 //            it.history[0].let { state ->
@@ -88,7 +88,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithInvalidCache() = runBlocking {
-//        SucceedTestResponder(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
+//        SucceedTestFlowableCallback(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -105,7 +105,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithNoCache() = runBlocking {
-//        FailedTestResponder(dataCache = null).create().publish().toTest(this).use {
+//        FailedTestFlowableCallback(dataCache = null).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -122,7 +122,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithValidCache() = runBlocking {
-//        FailedTestResponder(dataCache = TestData.ValidData).create().publish().toTest(this).use {
+//        FailedTestFlowableCallback(dataCache = TestData.ValidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 1
 //            it.history[0].let { state ->
@@ -135,7 +135,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithInvalidCache() = runBlocking {
-//        FailedTestResponder(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
+//        FailedTestFlowableCallback(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -152,115 +152,115 @@ class StoreFlowableTest {
 
     @Test
     fun getFromMixWithNoCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = null).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = null).create()
         storeFlowable.requireData(AsDataType.Mix) shouldBeInstanceOf TestData.FetchedData::class
     }
 
     @Test
     fun getFromMixWithValidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.requireData(AsDataType.Mix) shouldBeInstanceOf TestData.ValidData::class
     }
 
     @Test
     fun getFromMixWithInvalidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         storeFlowable.requireData(AsDataType.Mix) shouldBeInstanceOf TestData.FetchedData::class
     }
 
     @Test
     fun getFromCacheWithNoCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = null).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = null).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromCache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun getFromCacheWithValidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.requireData(AsDataType.FromCache) shouldBeInstanceOf TestData.ValidData::class
     }
 
     @Test
     fun getFromCacheWithInvalidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromCache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun getFromOriginWithNoCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = null).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = null).create()
         storeFlowable.requireData(AsDataType.FromOrigin) shouldBeInstanceOf TestData.FetchedData::class
     }
 
     @Test
     fun getFromOriginWithValidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.requireData(AsDataType.FromOrigin) shouldBeInstanceOf TestData.FetchedData::class
     }
 
     @Test
     fun getFromOriginWithInvalidCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         storeFlowable.requireData(AsDataType.FromOrigin) shouldBeInstanceOf TestData.FetchedData::class
     }
 
     @Test
     fun getFailedFromMixWithNoCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = null).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = null).create()
         coInvoking { storeFlowable.requireData(AsDataType.Mix) } shouldThrow UnknownHostException::class
     }
 
     @Test
     fun getFailedFromMixWithValidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.requireData(AsDataType.Mix) shouldBeInstanceOf TestData.ValidData::class
     }
 
     @Test
     fun getFailedFromMixWithInvalidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         coInvoking { storeFlowable.requireData(AsDataType.Mix) } shouldThrow UnknownHostException::class
     }
 
     @Test
     fun getFailedFromCacheWithNoCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = null).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = null).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromCache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun getFailedFromCacheWithValidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.requireData(AsDataType.FromCache) shouldBeInstanceOf TestData.ValidData::class
     }
 
     @Test
     fun getFailedFromCacheWithInvalidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromCache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun getFailedFromOriginWithNoCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = null).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = null).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromOrigin) } shouldThrow UnknownHostException::class
     }
 
     @Test
     fun getFailedFromOriginWithValidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.ValidData).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromOrigin) } shouldThrow UnknownHostException::class
     }
 
     @Test
     fun getFailedFromOriginWithInvalidCache() = runBlockingTest {
-        val storeFlowable = FailedTestResponder(dataCache = TestData.InvalidData).create()
+        val storeFlowable = FailedTestFlowableCallback(dataCache = TestData.InvalidData).create()
         coInvoking { storeFlowable.requireData(AsDataType.FromOrigin) } shouldThrow UnknownHostException::class
     }
 
     @Test
     fun updateData() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             storeFlowable.update(TestData.ValidData)
             it.history.last().let { state ->
@@ -272,7 +272,7 @@ class StoreFlowableTest {
 
     @Test
     fun updateNull() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             storeFlowable.update(null)
             it.history.last().let { state ->
@@ -284,7 +284,7 @@ class StoreFlowableTest {
 
     @Test
     fun validateWithNoCache() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             storeFlowable.update(null)
             it.history.size shouldBeEqualTo 2 // Fixed -> Fixed
@@ -295,7 +295,7 @@ class StoreFlowableTest {
 
     @Test
     fun validateWithValidData() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             storeFlowable.update(TestData.ValidData)
             it.history.size shouldBeEqualTo 2 // Fixed -> Fixed
@@ -306,7 +306,7 @@ class StoreFlowableTest {
 
     @Test
     fun validateWithInvalidData() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             storeFlowable.update(TestData.InvalidData)
             it.history.size shouldBeEqualTo 2 // Fixed -> Fixed
@@ -317,7 +317,7 @@ class StoreFlowableTest {
 
     @Test
     fun refresh() = runBlockingTest {
-        val storeFlowable = SucceedTestResponder(dataCache = TestData.ValidData).create()
+        val storeFlowable = SucceedTestFlowableCallback(dataCache = TestData.ValidData).create()
         storeFlowable.publish().toTest(this).use {
             it.history.size shouldBeEqualTo 1 // Fixed
             storeFlowable.refresh()

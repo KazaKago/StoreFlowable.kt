@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubOrgsResponder : PaginatingStoreFlowableCallback<Unit, List<GithubOrg>> {
+class GithubOrgsFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<GithubOrg>> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)

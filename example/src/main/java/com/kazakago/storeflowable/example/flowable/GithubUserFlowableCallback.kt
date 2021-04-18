@@ -3,6 +3,7 @@ package com.kazakago.storeflowable.example.flowable
 import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
 import com.kazakago.storeflowable.StoreFlowableCallback
+import com.kazakago.storeflowable.StoreFlowableResponder
 import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubUserStateManager
@@ -10,7 +11,7 @@ import com.kazakago.storeflowable.example.model.GithubUser
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubUserResponder(userName: String) : StoreFlowableCallback<String, GithubUser> {
+class GithubUserFlowableCallback(userName: String) : StoreFlowableCallback<String, GithubUser> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)

@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubMetaResponder : StoreFlowableCallback<Unit, GithubMeta> {
+class GithubMetaFlowableCallback : StoreFlowableCallback<Unit, GithubMeta> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)

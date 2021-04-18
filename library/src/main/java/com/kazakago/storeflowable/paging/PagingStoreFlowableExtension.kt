@@ -5,7 +5,7 @@ import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 
-fun <KEY, DATA> PagingStoreFlowableResponder<KEY, List<DATA>>.create(): PagingStoreFlowable<KEY, List<DATA>> {
+fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.create(): PagingStoreFlowable<KEY, DATA> {
     return PagingStoreFlowableImpl(PaginatingStoreFlowableImpl(toPaginatingStoreFlowableCallback()))
 }
 
