@@ -2,7 +2,7 @@ package com.kazakago.storeflowable
 
 interface CacheDataManager<DATA> {
 
-    suspend fun loadData(): DATA?
+    suspend fun loadDataFromCache(): DATA?
 
-    suspend fun saveData(newData: DATA?)
+    suspend fun saveDataToCache(newData: DATA?)
 }

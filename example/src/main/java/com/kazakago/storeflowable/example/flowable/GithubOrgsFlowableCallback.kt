@@ -24,25 +24,25 @@ class GithubOrgsFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<Gi
 
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubOrgsStateManager
 
-    override suspend fun loadData(): List<GithubOrg>? {
+    override suspend fun loadDataFromCache(): List<GithubOrg>? {
         return githubCache.orgsCache
     }
 
-    override suspend fun saveData(newData: List<GithubOrg>?) {
+    override suspend fun saveDataToCache(newData: List<GithubOrg>?) {
         githubCache.orgsCache = newData
         githubCache.orgsCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveAdditionalData(cachedData: List<GithubOrg>?, fetchedData: List<GithubOrg>) {
-        githubCache.orgsCache = (cachedData ?: emptyList()) + fetchedData
+    override suspend fun saveAdditionalDataToCache(cachedData: List<GithubOrg>?, newData: List<GithubOrg>) {
+        githubCache.orgsCache = (cachedData ?: emptyList()) + newData
     }
 
-    override suspend fun fetchOrigin(): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchDataFromOrigin(): FetchingResult<List<GithubOrg>> {
         val data = githubApi.getOrgs(null, PER_PAGE)
         return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
-    override suspend fun fetchAdditionalOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchAdditionalDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
         val since = cachedData?.lastOrNull()?.id
         val data = githubApi.getOrgs(since, PER_PAGE)
         return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())

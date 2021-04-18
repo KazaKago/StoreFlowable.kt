@@ -9,15 +9,15 @@ interface PaginatingStoreFlowableCallback<KEY, DATA> : PaginatingCacheDataManage
 
     val flowableDataStateManager: FlowableDataStateManager<KEY>
 
-    override suspend fun loadData(): DATA?
+    override suspend fun loadDataFromCache(): DATA?
 
-    override suspend fun saveData(newData: DATA?)
+    override suspend fun saveDataToCache(newData: DATA?)
 
-    override suspend fun saveAdditionalData(cachedData: DATA?, fetchedData: DATA)
+    override suspend fun saveAdditionalDataToCache(cachedData: DATA?, newData: DATA)
 
-    override suspend fun fetchOrigin(): FetchingResult<DATA>
+    override suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
 
-    override suspend fun fetchAdditionalOrigin(cachedData: DATA?): FetchingResult<DATA>
+    override suspend fun fetchAdditionalDataFromOrigin(cachedData: DATA?): FetchingResult<DATA>
 
     suspend fun needRefresh(cachedData: DATA): Boolean
 }

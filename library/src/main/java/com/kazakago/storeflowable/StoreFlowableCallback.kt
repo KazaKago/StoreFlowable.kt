@@ -6,11 +6,11 @@ interface StoreFlowableCallback<KEY, DATA> : CacheDataManager<DATA>, OriginDataM
 
     val flowableDataStateManager: FlowableDataStateManager<KEY>
 
-    override suspend fun loadData(): DATA?
+    override suspend fun loadDataFromCache(): DATA?
 
-    override suspend fun saveData(newData: DATA?)
+    override suspend fun saveDataToCache(newData: DATA?)
 
-    override suspend fun fetchOrigin(): FetchingResult<DATA>
+    override suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
 
     suspend fun needRefresh(cachedData: DATA): Boolean
 }

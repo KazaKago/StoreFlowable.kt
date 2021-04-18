@@ -13,11 +13,11 @@ internal class DataSelector<KEY, DATA>(
 ) {
 
     suspend fun load(): DATA? {
-        return cacheDataManager.loadData()
+        return cacheDataManager.loadDataFromCache()
     }
 
     suspend fun update(newData: DATA?) {
-        cacheDataManager.saveData(newData)
+        cacheDataManager.saveDataToCache(newData)
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
@@ -30,14 +30,14 @@ internal class DataSelector<KEY, DATA>(
     }
 
     private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean) {
-        val cachedData = cacheDataManager.loadData()
+        val cachedData = cacheDataManager.loadDataFromCache()
         if (cachedData == null || forceRefresh || needRefresh(cachedData)) {
             prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching)
         }
     }
 
     private suspend fun prepareFetch(clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean) {
-        if (clearCacheBeforeFetching) cacheDataManager.saveData(null)
+        if (clearCacheBeforeFetching) cacheDataManager.saveDataToCache(null)
         dataStateManager.saveState(key, DataState.Loading())
         if (awaitFetching) {
             fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails)
@@ -48,11 +48,11 @@ internal class DataSelector<KEY, DATA>(
 
     private suspend fun fetchNewData(clearCacheWhenFetchFails: Boolean) {
         try {
-            val fetchingResult = originDataManager.fetchOrigin()
-            cacheDataManager.saveData(fetchingResult.data)
+            val fetchingResult = originDataManager.fetchDataFromOrigin()
+            cacheDataManager.saveDataToCache(fetchingResult.data)
             dataStateManager.saveState(key, DataState.Fixed())
         } catch (exception: Exception) {
-            if (clearCacheWhenFetchFails) cacheDataManager.saveData(null)
+            if (clearCacheWhenFetchFails) cacheDataManager.saveDataToCache(null)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }

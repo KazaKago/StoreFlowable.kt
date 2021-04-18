@@ -26,11 +26,11 @@ class StoreFlowableTest {
 
         override val flowableDataStateManager: FlowableDataStateManager<String> = object : FlowableDataStateManager<String>() {}
 
-        override suspend fun loadData(): TestData? {
+        override suspend fun loadDataFromCache(): TestData? {
             return dataCache
         }
 
-        override suspend fun saveData(newData: TestData?) {
+        override suspend fun saveDataToCache(newData: TestData?) {
             dataCache = newData
         }
 
@@ -41,14 +41,14 @@ class StoreFlowableTest {
 
     private class SucceedTestFlowableCallback(dataCache: TestData?) : TestFlowableCallback(dataCache) {
 
-        override suspend fun fetchOrigin(): FetchingResult<TestData> {
+        override suspend fun fetchDataFromOrigin(): FetchingResult<TestData> {
             return FetchingResult(TestData.FetchedData)
         }
     }
 
     private class FailedTestFlowableCallback(dataCache: TestData?) : TestFlowableCallback(dataCache) {
 
-        override suspend fun fetchOrigin(): FetchingResult<TestData> {
+        override suspend fun fetchDataFromOrigin(): FetchingResult<TestData> {
             throw UnknownHostException()
         }
     }

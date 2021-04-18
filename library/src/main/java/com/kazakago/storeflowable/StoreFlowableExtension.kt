@@ -15,15 +15,15 @@ private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallbac
 
         override val flowableDataStateManager = this@toStoreFlowableCallback.flowableDataStateManager
 
-        override suspend fun loadData(): DATA? {
+        override suspend fun loadDataFromCache(): DATA? {
             return this@toStoreFlowableCallback.loadData()
         }
 
-        override suspend fun saveData(newData: DATA?) {
+        override suspend fun saveDataToCache(newData: DATA?) {
             this@toStoreFlowableCallback.saveData(newData)
         }
 
-        override suspend fun fetchOrigin(): FetchingResult<DATA> {
+        override suspend fun fetchDataFromOrigin(): FetchingResult<DATA> {
             return FetchingResult(this@toStoreFlowableCallback.fetchOrigin())
         }
 

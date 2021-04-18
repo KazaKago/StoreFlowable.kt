@@ -16,24 +16,24 @@ private fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.toPaginatingStor
 
         override val flowableDataStateManager = this@toPaginatingStoreFlowableCallback.flowableDataStateManager
 
-        override suspend fun loadData(): List<DATA>? {
+        override suspend fun loadDataFromCache(): List<DATA>? {
             return this@toPaginatingStoreFlowableCallback.loadData()
         }
 
-        override suspend fun saveData(newData: List<DATA>?) {
+        override suspend fun saveDataToCache(newData: List<DATA>?) {
             this@toPaginatingStoreFlowableCallback.saveData(newData, additionalRequest = false)
         }
 
-        override suspend fun saveAdditionalData(cachedData: List<DATA>?, fetchedData: List<DATA>) {
-            this@toPaginatingStoreFlowableCallback.saveData((cachedData ?: emptyList()) + fetchedData, additionalRequest = true)
+        override suspend fun saveAdditionalDataToCache(cachedData: List<DATA>?, newData: List<DATA>) {
+            this@toPaginatingStoreFlowableCallback.saveData((cachedData ?: emptyList()) + newData, additionalRequest = true)
         }
 
-        override suspend fun fetchOrigin(): FetchingResult<List<DATA>> {
+        override suspend fun fetchDataFromOrigin(): FetchingResult<List<DATA>> {
             val fetchedData = this@toPaginatingStoreFlowableCallback.fetchOrigin(null, additionalRequest = false)
             return FetchingResult(fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
         }
 
-        override suspend fun fetchAdditionalOrigin(cachedData: List<DATA>?): FetchingResult<List<DATA>> {
+        override suspend fun fetchAdditionalDataFromOrigin(cachedData: List<DATA>?): FetchingResult<List<DATA>> {
             val fetchedData = this@toPaginatingStoreFlowableCallback.fetchOrigin(cachedData, additionalRequest = true)
             return FetchingResult(fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
         }

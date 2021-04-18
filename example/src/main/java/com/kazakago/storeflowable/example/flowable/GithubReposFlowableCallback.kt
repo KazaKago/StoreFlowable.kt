@@ -24,25 +24,25 @@ class GithubReposFlowableCallback(userName: String) : PaginatingStoreFlowableCal
 
     override val flowableDataStateManager: FlowableDataStateManager<String> = GithubReposStateManager
 
-    override suspend fun loadData(): List<GithubRepo>? {
+    override suspend fun loadDataFromCache(): List<GithubRepo>? {
         return githubCache.reposCache[key]
     }
 
-    override suspend fun saveData(newData: List<GithubRepo>?) {
+    override suspend fun saveDataToCache(newData: List<GithubRepo>?) {
         githubCache.reposCache[key] = newData
         githubCache.reposCacheCreatedAt[key] = LocalDateTime.now()
     }
 
-    override suspend fun saveAdditionalData(cachedData: List<GithubRepo>?, fetchedData: List<GithubRepo>) {
-        githubCache.reposCache[key] = (cachedData ?: emptyList()) + fetchedData
+    override suspend fun saveAdditionalDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
+        githubCache.reposCache[key] = (cachedData ?: emptyList()) + newData
     }
 
-    override suspend fun fetchOrigin(): FetchingResult<List<GithubRepo>> {
+    override suspend fun fetchDataFromOrigin(): FetchingResult<List<GithubRepo>> {
         val data = githubApi.getRepos(key, 1, PER_PAGE)
         return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
-    override suspend fun fetchAdditionalOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
+    override suspend fun fetchAdditionalDataFromOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
         val page = ((cachedData?.size ?: 0) / PER_PAGE + 1)
         val data = githubApi.getRepos(key, page, PER_PAGE)
         return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())

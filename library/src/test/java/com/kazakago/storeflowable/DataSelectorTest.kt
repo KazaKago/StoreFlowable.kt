@@ -28,16 +28,16 @@ class DataSelectorTest {
             }
         },
         cacheDataManager = object : CacheDataManager<TestData> {
-            override suspend fun loadData(): TestData? {
+            override suspend fun loadDataFromCache(): TestData? {
                 return dataCache
             }
 
-            override suspend fun saveData(newData: TestData?) {
+            override suspend fun saveDataToCache(newData: TestData?) {
                 dataCache = newData
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
-            override suspend fun fetchOrigin(): FetchingResult<TestData> {
+            override suspend fun fetchDataFromOrigin(): FetchingResult<TestData> {
                 return FetchingResult(TestData.FetchedData)
             }
         },

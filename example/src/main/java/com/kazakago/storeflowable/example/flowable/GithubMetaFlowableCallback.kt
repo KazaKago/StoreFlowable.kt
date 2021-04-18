@@ -23,16 +23,16 @@ class GithubMetaFlowableCallback : StoreFlowableCallback<Unit, GithubMeta> {
 
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubMetaStateManager
 
-    override suspend fun loadData(): GithubMeta? {
+    override suspend fun loadDataFromCache(): GithubMeta? {
         return githubCache.metaCache
     }
 
-    override suspend fun saveData(newData: GithubMeta?) {
+    override suspend fun saveDataToCache(newData: GithubMeta?) {
         githubCache.metaCache = newData
         githubCache.metaCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun fetchOrigin(): FetchingResult<GithubMeta> {
+    override suspend fun fetchDataFromOrigin(): FetchingResult<GithubMeta> {
         val data = githubApi.getMeta()
         return FetchingResult(data = data)
     }

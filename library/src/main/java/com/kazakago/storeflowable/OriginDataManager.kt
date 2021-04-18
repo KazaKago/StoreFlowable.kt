@@ -2,5 +2,5 @@ package com.kazakago.storeflowable
 
 interface OriginDataManager<DATA> {
 
-    suspend fun fetchOrigin(): FetchingResult<DATA>
+    suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
 }

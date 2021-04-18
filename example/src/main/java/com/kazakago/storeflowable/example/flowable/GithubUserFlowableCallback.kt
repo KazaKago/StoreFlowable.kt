@@ -24,16 +24,16 @@ class GithubUserFlowableCallback(userName: String) : StoreFlowableCallback<Strin
 
     override val flowableDataStateManager: FlowableDataStateManager<String> = GithubUserStateManager
 
-    override suspend fun loadData(): GithubUser? {
+    override suspend fun loadDataFromCache(): GithubUser? {
         return githubCache.userCache[key]
     }
 
-    override suspend fun saveData(newData: GithubUser?) {
+    override suspend fun saveDataToCache(newData: GithubUser?) {
         githubCache.userCache[key] = newData
         githubCache.userCacheCreateAt[key] = LocalDateTime.now()
     }
 
-    override suspend fun fetchOrigin(): FetchingResult<GithubUser> {
+    override suspend fun fetchDataFromOrigin(): FetchingResult<GithubUser> {
         val data = githubApi.getUser(key)
         return FetchingResult(data = data)
     }

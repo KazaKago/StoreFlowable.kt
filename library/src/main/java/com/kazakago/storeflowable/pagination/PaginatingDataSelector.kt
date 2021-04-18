@@ -15,11 +15,11 @@ internal class PaginatingDataSelector<KEY, DATA>(
 ) {
 
     suspend fun load(): DATA? {
-        return cacheDataManager.loadData()
+        return cacheDataManager.loadDataFromCache()
     }
 
     suspend fun update(newData: DATA?) {
-        cacheDataManager.saveData(newData)
+        cacheDataManager.saveDataToCache(newData)
         dataStateManager.saveState(key, DataState.Fixed())
     }
 
@@ -32,14 +32,14 @@ internal class PaginatingDataSelector<KEY, DATA>(
     }
 
     private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, additionalRequest: Boolean, noMoreAdditionalData: Boolean) {
-        val cachedData = cacheDataManager.loadData()
+        val cachedData = cacheDataManager.loadDataFromCache()
         if (cachedData == null || forceRefresh || needRefresh(cachedData) || (additionalRequest && !noMoreAdditionalData)) {
             prepareFetch(cachedData = cachedData, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, additionalRequest = additionalRequest)
         }
     }
 
     private suspend fun prepareFetch(cachedData: DATA?, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, additionalRequest: Boolean) {
-        if (clearCacheBeforeFetching) cacheDataManager.saveData(null)
+        if (clearCacheBeforeFetching) cacheDataManager.saveDataToCache(null)
         dataStateManager.saveState(key, DataState.Loading())
         if (awaitFetching) {
             fetchNewData(cachedData = cachedData, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest)
@@ -51,18 +51,18 @@ internal class PaginatingDataSelector<KEY, DATA>(
     private suspend fun fetchNewData(cachedData: DATA?, clearCacheWhenFetchFails: Boolean, additionalRequest: Boolean) {
         try {
             val fetchedResult = if (additionalRequest) {
-                originDataManager.fetchAdditionalOrigin(cachedData)
+                originDataManager.fetchAdditionalDataFromOrigin(cachedData)
             } else {
-                originDataManager.fetchOrigin()
+                originDataManager.fetchDataFromOrigin()
             }
             if (additionalRequest) {
-                cacheDataManager.saveAdditionalData(cachedData, fetchedResult.data)
+                cacheDataManager.saveAdditionalDataToCache(cachedData, fetchedResult.data)
             } else {
-                cacheDataManager.saveData(fetchedResult.data)
+                cacheDataManager.saveDataToCache(fetchedResult.data)
             }
             dataStateManager.saveState(key, DataState.Fixed(fetchedResult.noMoreAdditionalData))
         } catch (exception: Exception) {
-            if (clearCacheWhenFetchFails) cacheDataManager.saveData(null)
+            if (clearCacheWhenFetchFails) cacheDataManager.saveDataToCache(null)
             dataStateManager.saveState(key, DataState.Error(exception))
         }
     }
