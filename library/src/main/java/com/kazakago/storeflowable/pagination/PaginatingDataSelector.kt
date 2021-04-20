@@ -32,7 +32,7 @@ internal class PaginatingDataSelector<KEY, DATA>(
 
     private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, additionalRequest: Boolean, noMoreAdditionalData: Boolean) {
         val cachedData = cacheDataManager.loadDataFromCache()
-        if (cachedData == null || forceRefresh || needRefresh(cachedData) || (additionalRequest && !noMoreAdditionalData)) {
+        if (cachedData == null || forceRefresh || (!additionalRequest && needRefresh(cachedData)) || (additionalRequest && !noMoreAdditionalData)) {
             prepareFetch(cachedData = cachedData, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, additionalRequest = additionalRequest)
         }
     }
