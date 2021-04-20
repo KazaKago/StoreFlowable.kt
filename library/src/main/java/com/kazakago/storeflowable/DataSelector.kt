@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -9,7 +10,8 @@ internal class DataSelector<KEY, DATA>(
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
-    private val needRefresh: (suspend (cachedData: DATA) -> Boolean)
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
     suspend fun load(): DATA? {
@@ -42,7 +44,7 @@ internal class DataSelector<KEY, DATA>(
         if (awaitFetching) {
             fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails)
         } else {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails) }
+            CoroutineScope(defaultDispatcher).launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails) }
         }
     }
 

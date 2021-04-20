@@ -2,16 +2,15 @@ package com.kazakago.storeflowable.pagination
 
 import com.kazakago.storeflowable.DataState
 import com.kazakago.storeflowable.DataStateManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 internal class PaginatingDataSelector<KEY, DATA>(
     private val key: KEY,
     private val dataStateManager: DataStateManager<KEY>,
     private val cacheDataManager: PaginatingCacheDataManager<DATA>,
     private val originDataManager: PaginatingOriginDataManager<DATA>,
-    private val needRefresh: (suspend (cachedData: DATA) -> Boolean)
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
     suspend fun load(): DATA? {
@@ -44,7 +43,7 @@ internal class PaginatingDataSelector<KEY, DATA>(
         if (awaitFetching) {
             fetchNewData(cachedData = cachedData, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest)
         } else {
-            CoroutineScope(Dispatchers.IO).launch { fetchNewData(cachedData = cachedData, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest) }
+            CoroutineScope(defaultDispatcher).launch { fetchNewData(cachedData = cachedData, clearCacheWhenFetchFails = clearCacheWhenFetchFails, additionalRequest = additionalRequest) }
         }
     }
 

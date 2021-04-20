@@ -2,7 +2,10 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
 
 internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: StoreFlowableCallback<KEY, DATA>) : StoreFlowable<KEY, DATA> {
 
@@ -19,36 +22,18 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: S
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
             }
-            .map {
+            .map { dataState ->
                 val data = dataSelector.load()
                 val content = StateContent.wrap(data)
-                it.mapState(content)
+                dataState.mapState(content)
             }
     }
 
     override suspend fun getData(type: AsDataType): DATA? {
-        return prepareData(type).transform {
-            val data = dataSelector.load()
-            when (it) {
-                is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else emit(null)
-                is DataState.Loading -> Unit // do nothing.
-                is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else emit(null)
-            }
-        }.first()
+        return runCatching { requireData(type) }.getOrNull()
     }
 
     override suspend fun requireData(type: AsDataType): DATA {
-        return prepareData(type).transform {
-            val data = dataSelector.load()
-            when (it) {
-                is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw NoSuchElementException()
-                is DataState.Loading -> Unit // do nothing.
-                is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw it.exception
-            }
-        }.first()
-    }
-
-    private suspend fun prepareData(type: AsDataType): Flow<DataState> {
         return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
             .onStart {
                 when (type) {
@@ -57,6 +42,15 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: S
                     AsDataType.FromCache -> Unit // do nothing.
                 }
             }
+            .transform { dataState ->
+                val data = dataSelector.load()
+                when (dataState) {
+                    is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                    is DataState.Loading -> Unit // do nothing.
+                    is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw dataState.exception
+                }
+            }
+            .first()
     }
 
     override suspend fun validate() {
