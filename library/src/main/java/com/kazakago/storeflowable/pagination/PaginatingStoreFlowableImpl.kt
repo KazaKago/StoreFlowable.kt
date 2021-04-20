@@ -64,7 +64,7 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
         dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = clearCacheWhenFetchFails, continueWhenError = continueWhenError, awaitFetching = true, additionalRequest = false)
     }
 
-    override suspend fun requestAddition(continueWhenError: Boolean) {
+    override suspend fun requestAdditionalData(continueWhenError: Boolean) {
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, additionalRequest = true)
     }
 

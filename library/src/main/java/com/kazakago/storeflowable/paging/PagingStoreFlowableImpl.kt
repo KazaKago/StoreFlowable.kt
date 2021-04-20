@@ -27,8 +27,8 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val paginatingStoreFlo
         paginatingStoreFlowable.refresh(clearCacheWhenFetchFails, continueWhenError)
     }
 
-    override suspend fun requestAddition(continueWhenError: Boolean) {
-        paginatingStoreFlowable.requestAddition(continueWhenError)
+    override suspend fun requestAdditionalData(continueWhenError: Boolean) {
+        paginatingStoreFlowable.requestAdditionalData(continueWhenError)
     }
 
     override suspend fun update(newData: List<DATA>?) {

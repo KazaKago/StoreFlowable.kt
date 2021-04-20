@@ -6,5 +6,5 @@ import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
 interface PagingStoreFlowable<KEY, DATA> : PaginatingStoreFlowable<KEY, List<DATA>> {
 
     @Deprecated("Use requestAddition", ReplaceWith("requestAddition(continueWhenError)"))
-    suspend fun requestAdditional(continueWhenError: Boolean = true) = requestAddition(continueWhenError)
+    suspend fun requestAdditional(continueWhenError: Boolean = true) = requestAdditionalData(continueWhenError)
 }
