@@ -53,8 +53,7 @@ class StoreFlowableTest {
         }
     }
 
-// TODO: Fixed `Flow` related UnitTest not passing on Bitrise CI.
-// https://app.bitrise.io/build/25f05c3d5f74c402#?tab=log
+// TODO: Fixed `StateFlow` related UnitTest not passing on CI.
 //
 //    @Test
 //    fun flowWithNoCache() = runBlocking {
