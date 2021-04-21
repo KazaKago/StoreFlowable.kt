@@ -206,7 +206,7 @@ If you want to ignore the cache and get new data, add `forceRefresh` parameter t
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    fun publish(forceRefresh: Boolean = false): Flow<State<DATA>>
+    fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
 }
 ```
 
