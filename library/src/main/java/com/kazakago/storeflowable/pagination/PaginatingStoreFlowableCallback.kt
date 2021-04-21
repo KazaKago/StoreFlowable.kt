@@ -1,23 +1,36 @@
 package com.kazakago.storeflowable.pagination
 
-import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
 
+/**
+ * Callback class used from [PaginatingStoreFlowable] class.
+ *
+ * Create a class that implements origin or cache data Input / Output according to this interface.
+ *
+ * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
+ * @param DATA Specify the type of data to be handled.
+ */
 interface PaginatingStoreFlowableCallback<KEY, DATA> : PaginatingCacheDataManager<DATA>, PaginatingOriginDataManager<DATA> {
 
+    /**
+     * Key to which data to get.
+     *
+     * Please implement so that you can pass the key from the outside.
+     */
     val key: KEY
 
+    /**
+     * Used for data state management.
+     *
+     * Create a class that inherits [FlowableDataStateManager] and assign it.
+     */
     val flowableDataStateManager: FlowableDataStateManager<KEY>
 
-    override suspend fun loadDataFromCache(): DATA?
-
-    override suspend fun saveDataToCache(newData: DATA?)
-
-    override suspend fun saveAdditionalDataToCache(cachedData: DATA?, newData: DATA)
-
-    override suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
-
-    override suspend fun fetchAdditionalDataFromOrigin(cachedData: DATA?): FetchingResult<DATA>
-
+    /**
+     * Determine if the cache is valid.
+     *
+     * @param cachedData Current cache data.
+     * @return Returns `true` if the cache is invalid and refresh is needed.
+     */
     suspend fun needRefresh(cachedData: DATA): Boolean
 }

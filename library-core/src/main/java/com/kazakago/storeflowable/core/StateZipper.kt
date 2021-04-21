@@ -2,6 +2,13 @@ package com.kazakago.storeflowable.core
 
 import com.os.operando.guild.kt.to
 
+/**
+ * Combine multiple [State].
+ *
+ * @param otherState The second [State] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [State] containing the combined data.
+ */
 fun <A, B, Z> State<A>.zip(otherState: State<B>, transform: (content1: A, content2: B) -> Z): State<Z> {
     return when (this) {
         is State.Fixed -> this.zip(otherState, transform)
@@ -10,6 +17,14 @@ fun <A, B, Z> State<A>.zip(otherState: State<B>, transform: (content1: A, conten
     }
 }
 
+/**
+ * Combine multiple [State].
+ *
+ * @param otherState1 The second [State] to combine.
+ * @param otherState2 The third [State] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [State] containing the combined data.
+ */
 fun <A, B, C, Z> State<A>.zip(otherState1: State<B>, otherState2: State<C>, transform: (content1: A, content2: B, content3: C) -> Z): State<Z> {
     return zip(otherState1) { content1, content2 ->
         content1 to content2
@@ -18,6 +33,15 @@ fun <A, B, C, Z> State<A>.zip(otherState1: State<B>, otherState2: State<C>, tran
     }
 }
 
+/**
+ * Combine multiple [State].
+ *
+ * @param otherState1 The second [State] to combine.
+ * @param otherState2 The third [State] to combine.
+ * @param otherState3 The fourth [State] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [State] containing the combined data.
+ */
 fun <A, B, C, D, Z> State<A>.zip(otherState1: State<B>, otherState2: State<C>, otherState3: State<D>, transform: (content1: A, content2: B, content3: C, content4: D) -> Z): State<Z> {
     return zip(otherState1) { content1, content2 ->
         content1 to content2
@@ -28,6 +52,16 @@ fun <A, B, C, D, Z> State<A>.zip(otherState1: State<B>, otherState2: State<C>, o
     }
 }
 
+/**
+ * Combine multiple [State].
+ *
+ * @param otherState1 The second [State] to combine.
+ * @param otherState2 The third [State] to combine.
+ * @param otherState3 The fourth [State] to combine.
+ * @param otherState4 The fifth [State] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [State] containing the combined data.
+ */
 fun <A, B, C, D, E, Z> State<A>.zip(otherState1: State<B>, otherState2: State<C>, otherState3: State<D>, otherState4: State<E>, transform: (content1: A, content2: B, content3: C, content4: D, content5: E) -> Z): State<Z> {
     return zip(otherState1) { content1, content2 ->
         content1 to content2

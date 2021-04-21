@@ -3,6 +3,13 @@ package com.kazakago.storeflowable.core
 import com.os.operando.guild.kt.to
 import kotlinx.coroutines.flow.combine
 
+/**
+ * Combine multiple [FlowableState].
+ *
+ * @param otherFlow The second [FlowableState] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [FlowableState] containing the combined data.
+ */
 fun <A, B, Z> FlowableState<A>.combineState(otherFlow: FlowableState<B>, transform: (content1: A, content2: B) -> Z): FlowableState<Z> {
     return combine(otherFlow) { state1, state2 ->
         state1.zip(state2) { content1, content2 ->
@@ -11,6 +18,15 @@ fun <A, B, Z> FlowableState<A>.combineState(otherFlow: FlowableState<B>, transfo
     }
 }
 
+/**
+ * Combine multiple [FlowableState].
+ *
+ * @param otherFlow1 The second [FlowableState] to combine.
+ * @param otherFlow2 The third [FlowableState] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [FlowableState] containing the combined data.
+ * @see combineState
+ */
 fun <A, B, C, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, transform: (content1: A, content2: B, content3: C) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2
@@ -19,6 +35,16 @@ fun <A, B, C, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, oth
     }
 }
 
+/**
+ * Combine multiple [FlowableState].
+ *
+ * @param otherFlow1 The second [FlowableState] to combine.
+ * @param otherFlow2 The third [FlowableState] to combine.
+ * @param otherFlow3 The fourth [FlowableState] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [FlowableState] containing the combined data.
+ * @see combineState
+ */
 fun <A, B, C, D, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, otherFlow3: FlowableState<D>, transform: (content1: A, content2: B, content3: C, content4: D) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2
@@ -29,6 +55,17 @@ fun <A, B, C, D, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, 
     }
 }
 
+/**
+ * Combine multiple [FlowableState].
+ *
+ * @param otherFlow1 The second [FlowableState] to combine.
+ * @param otherFlow2 The third [FlowableState] to combine.
+ * @param otherFlow3 The fourth [FlowableState] to combine.
+ * @param otherFlow4 The fifth [FlowableState] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [FlowableState] containing the combined data.
+ * @see combineState
+ */
 fun <A, B, C, D, E, Z> FlowableState<A>.combineState(otherFlow1: FlowableState<B>, otherFlow2: FlowableState<C>, otherFlow3: FlowableState<D>, otherFlow4: FlowableState<E>, transform: (content1: A, content2: B, content3: C, content4: D, content5: E) -> Z): FlowableState<Z> {
     return combineState(otherFlow1) { content1, content2 ->
         content1 to content2

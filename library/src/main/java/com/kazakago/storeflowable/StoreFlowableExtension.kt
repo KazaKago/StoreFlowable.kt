@@ -1,9 +1,13 @@
 package com.kazakago.storeflowable
 
+/**
+ * Create [StoreFlowable] class from [StoreFlowableCallback].
+ */
 fun <KEY, DATA> StoreFlowableCallback<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(this)
 }
 
+@Deprecated("Use StoreFlowableCallback.create")
 fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(toStoreFlowableCallback())
 }
@@ -33,6 +37,11 @@ private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallbac
     }
 }
 
+/**
+ * Deprecated, use [StoreFlowable.getData].
+ *
+ * @see StoreFlowable.getData
+ */
 @Deprecated("Use getData()", ReplaceWith("getData(type)"))
 suspend inline fun <KEY, DATA> StoreFlowable<KEY, DATA>.getOrNull(type: AsDataType = AsDataType.Mix): DATA? {
     return runCatching { get(type) }.getOrNull()

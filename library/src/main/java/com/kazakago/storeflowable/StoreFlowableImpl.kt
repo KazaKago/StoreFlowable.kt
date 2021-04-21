@@ -29,17 +29,17 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: S
             }
     }
 
-    override suspend fun getData(type: AsDataType): DATA? {
-        return runCatching { requireData(type) }.getOrNull()
+    override suspend fun getData(from: GettingFrom): DATA? {
+        return runCatching { requireData(from) }.getOrNull()
     }
 
-    override suspend fun requireData(type: AsDataType): DATA {
+    override suspend fun requireData(from: GettingFrom): DATA {
         return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
             .onStart {
-                when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    AsDataType.FromCache -> Unit // do nothing.
+                when (from) {
+                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->

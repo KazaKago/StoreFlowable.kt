@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.paging
 
-import com.kazakago.storeflowable.AsDataType
+import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
 
@@ -11,12 +11,12 @@ internal class PagingStoreFlowableImpl<KEY, DATA>(private val paginatingStoreFlo
         return paginatingStoreFlowable.publish(forceRefresh)
     }
 
-    override suspend fun getData(type: AsDataType): List<DATA>? {
-        return paginatingStoreFlowable.getData(type)
+    override suspend fun getData(from: GettingFrom): List<DATA>? {
+        return paginatingStoreFlowable.getData(from)
     }
 
-    override suspend fun requireData(type: AsDataType): List<DATA> {
-        return paginatingStoreFlowable.requireData(type)
+    override suspend fun requireData(from: GettingFrom): List<DATA> {
+        return paginatingStoreFlowable.requireData(from)
     }
 
     override suspend fun validate() {

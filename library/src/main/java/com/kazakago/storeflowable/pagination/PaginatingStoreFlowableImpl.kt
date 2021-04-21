@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.pagination
 
-import com.kazakago.storeflowable.AsDataType
+import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.DataState
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
@@ -32,17 +32,17 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
             }
     }
 
-    override suspend fun getData(type: AsDataType): DATA? {
-        return runCatching { requireData(type) }.getOrNull()
+    override suspend fun getData(from: GettingFrom): DATA? {
+        return runCatching { requireData(from) }.getOrNull()
     }
 
-    override suspend fun requireData(type: AsDataType): DATA {
+    override suspend fun requireData(from: GettingFrom): DATA {
         return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
             .onStart {
-                when (type) {
-                    AsDataType.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    AsDataType.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    AsDataType.FromCache -> Unit // do nothing.
+                when (from) {
+                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->
