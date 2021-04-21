@@ -254,7 +254,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowableCallback : PagingStoreFlowableCallback<Unit, List<UserData>> {
+class UserListFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<UserData>> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
@@ -296,7 +296,7 @@ class UserListFlowableCallback : PagingStoreFlowableCallback<Unit, List<UserData
 You need to additionally implements `saveAdditionalDataToCache()` and `fetchAdditionalDataFromOrigin()`.  
 When saving the data, combine the cached data and the new data before saving.  
 
-The [GithubOrgsFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableCallback.kt) and [GithubReposFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableCallback.kt) classes in [**example module**](example) implement paging.
+The [GithubOrgsFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableCallback.kt) and [GithubReposFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableCallback.kt) classes in [**example module**](example) implement pagination.
 
 ## License
 
