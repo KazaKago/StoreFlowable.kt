@@ -128,7 +128,7 @@ class UserRepository {
 }
 ```
 
-You can get the data in the form of `FlowableState<DATA>` (Same as `Flow<State<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+You can get the data in the form of [`FlowableState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableState.kt) (Same as `Flow<State<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
@@ -181,7 +181,7 @@ If you don't need value flow and [`State`](library-core/src/main/java/com/kazaka
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun get(type: AsDataType = AsDataType.Mix): DATA
+    suspend fun get(from: GettingFrom = GettingFrom.Mix): DATA
 }
 ```
 
