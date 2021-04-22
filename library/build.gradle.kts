@@ -1,10 +1,10 @@
-import org.danilopianini.gradle.mavencentral.mavenCentral
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
-    id("org.danilopianini.publish-on-central")
+    `maven-publish`
+    signing
 }
 
 java {
@@ -16,39 +16,68 @@ tasks.withType(KotlinCompile::class).all {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-publishOnCentral {
+tasks.create("javadocJar", Jar::class) {
+    group = "publishing"
+    dependsOn("dokkaJavadoc")
+    archiveClassifier.set("javadoc")
+    buildDir.resolve("dokka/javadoc")
+}
+
+tasks.create("sourcesJar", Jar::class) {
+    group = "publishing"
+    dependsOn("classes")
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+publishing {
     val versionName: String by project
-    projectLongName = PublishingInfo.projectName
-    projectDescription = PublishingInfo.projectDescription
-    licenseName = PublishingInfo.licenseName
-    licenseUrl = PublishingInfo.licenseUrl
-    projectUrl = PublishingInfo.projectUrl
-    scmConnection = PublishingInfo.scmConnection
-    publishing {
-        publications {
-            withType<MavenPublication> {
-                configurePomForMavenCentral()
-                groupId = PublishingInfo.groupId
-                artifactId = "storeflowable"
-                version = versionName
-                pom {
-                    developers {
-                        developer {
-                            name.set(PublishingInfo.developerName)
-                            email.set(PublishingInfo.developerEmail)
-                            url.set(PublishingInfo.developerUrl)
-                        }
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+            groupId = PublishingInfo.groupId
+            artifactId = "storeflowable"
+            version = versionName
+            pom {
+                name.set(PublishingInfo.projectName)
+                description.set(PublishingInfo.projectDescription)
+                url.set(PublishingInfo.projectUrl)
+                licenses {
+                    license {
+                        name.set(PublishingInfo.licenseName)
+                        url.set(PublishingInfo.licenseUrl)
+                    }
+                }
+                scm {
+                    connection.set(PublishingInfo.scmConnection)
+                    developerConnection.set(PublishingInfo.scmConnection)
+                    url.set(PublishingInfo.projectUrl)
+                }
+                developers {
+                    developer {
+                        name.set(PublishingInfo.developerName)
+                        email.set(PublishingInfo.developerEmail)
+                        url.set(PublishingInfo.developerUrl)
                     }
                 }
             }
+            signing {
+                sign(this@create)
+            }
         }
     }
-    val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-    val snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots"
-    val repositoryUrl = if (versionName.endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-    repository(repositoryUrl) {
-        user = mavenCentral().user()
-        password = mavenCentral().password()
+    repositories {
+        maven {
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
+            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
+            url = if (versionName.endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            credentials {
+                username = System.getenv("SONATYPE_USERNAME") ?: project.properties["sonatypeUsername"].toString()
+                password = System.getenv("SONATYPE_PASSWORD") ?: project.properties["sonatypePassword"].toString()
+            }
+        }
     }
 }
 
