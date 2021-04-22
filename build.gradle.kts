@@ -5,13 +5,13 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.3")
         classpath(kotlin("gradle-plugin", "1.4.32"))
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.4.30")
-        classpath("com.github.panpf.bintray-publish:bintray-publish:1.0.0")
+        classpath("org.danilopianini:publish-on-central:0.4.3")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
