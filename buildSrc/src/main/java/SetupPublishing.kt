@@ -77,6 +77,10 @@ fun Project.setupPublishing(
                     }
                 }
                 signing {
+                    val keyId = System.getenv("SIGNING_KEY_ID")
+                    val secretKey = System.getenv("SIGNING_SECRET_KEY")
+                    val password = System.getenv("SIGNING_PASSWORD")
+                    useInMemoryPgpKeys(keyId, secretKey, password)
                     sign(this@create)
                 }
             }
