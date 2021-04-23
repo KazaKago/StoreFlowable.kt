@@ -77,9 +77,9 @@ fun Project.setupPublishing(
                     }
                 }
                 signing {
-                    val keyId = System.getenv("SIGNING_KEY_ID")
-                    val secretKey = System.getenv("SIGNING_SECRET_KEY")
-                    val password = System.getenv("SIGNING_PASSWORD")
+                    val keyId = System.getenv("SIGNING_KEY_ID") ?: properties["signing.keyId"].toString()
+                    val secretKey = System.getenv("SIGNING_SECRET_KEY") ?: properties["signing.secretKey"].toString()
+                    val password = System.getenv("SIGNING_PASSWORD") ?: properties["signing.password"].toString()
                     useInMemoryPgpKeys(keyId, secretKey, password)
                     sign(this@create)
                 }
@@ -91,8 +91,8 @@ fun Project.setupPublishing(
                 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
                 url = if (version.endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
                 credentials {
-                    username = System.getenv("SONATYPE_USERNAME") ?: project.properties["sonatypeUsername"].toString()
-                    password = System.getenv("SONATYPE_PASSWORD") ?: project.properties["sonatypePassword"].toString()
+                    username = System.getenv("SONATYPE_USERNAME") ?: properties["sonatype.username"].toString()
+                    password = System.getenv("SONATYPE_PASSWORD") ?: properties["sonatype.password"].toString()
                 }
             }
         }
