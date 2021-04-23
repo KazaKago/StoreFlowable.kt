@@ -16,70 +16,8 @@ tasks.withType(KotlinCompile::class).all {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-tasks.create("javadocJar", Jar::class) {
-    group = "publishing"
-    dependsOn("dokkaJavadoc")
-    archiveClassifier.set("javadoc")
-    buildDir.resolve("dokka/javadoc")
-}
-
-tasks.create("sourcesJar", Jar::class) {
-    group = "publishing"
-    dependsOn("classes")
-    archiveClassifier.set("sources")
-    from(sourceSets["main"].allSource)
-}
-
-publishing {
-    val versionName: String by project
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["javadocJar"])
-            groupId = PublishingInfo.groupId
-            artifactId = "storeflowable"
-            version = versionName
-            pom {
-                name.set(PublishingInfo.projectName)
-                description.set(PublishingInfo.projectDescription)
-                url.set(PublishingInfo.projectUrl)
-                licenses {
-                    license {
-                        name.set(PublishingInfo.licenseName)
-                        url.set(PublishingInfo.licenseUrl)
-                    }
-                }
-                scm {
-                    connection.set(PublishingInfo.scmConnection)
-                    developerConnection.set(PublishingInfo.scmConnection)
-                    url.set(PublishingInfo.projectUrl)
-                }
-                developers {
-                    developer {
-                        name.set(PublishingInfo.developerName)
-                        email.set(PublishingInfo.developerEmail)
-                        url.set(PublishingInfo.developerUrl)
-                    }
-                }
-            }
-            signing {
-                sign(this@create)
-            }
-        }
-    }
-    repositories {
-        maven {
-            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
-            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
-            url = if (versionName.endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME") ?: project.properties["sonatypeUsername"].toString()
-                password = System.getenv("SONATYPE_PASSWORD") ?: project.properties["sonatypePassword"].toString()
-            }
-        }
-    }
-}
+val versionName: String by project
+setupPublishing(artifactId = "storeflowable", version = versionName)
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

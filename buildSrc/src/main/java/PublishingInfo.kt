@@ -1,4 +1,4 @@
-object PublishingInfo {
+internal object PublishingInfo {
     const val groupId = "com.kazakago.storeflowable"
 
     const val projectName = "StoreFlowable.kt"
