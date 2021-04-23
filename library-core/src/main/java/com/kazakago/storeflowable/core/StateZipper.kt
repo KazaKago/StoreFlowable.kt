@@ -9,9 +9,21 @@ package com.kazakago.storeflowable.core
  */
 fun <A, B, Z> State<A>.zip(state2: State<B>, transform: (rawContent1: A, rawContent2: B) -> Z): State<Z> {
     return when (this) {
-        is State.Fixed -> this.zip(state2, transform)
-        is State.Loading -> this.zip(state2, transform)
-        is State.Error -> this.zip(state2, transform)
+        is State.Fixed -> when (state2) {
+            is State.Fixed -> State.Fixed(content.zip(state2.content, transform))
+            is State.Loading -> State.Loading(content.zip(state2.content, transform))
+            is State.Error -> State.Error(content.zip(state2.content, transform), state2.exception)
+        }
+        is State.Loading -> when (state2) {
+            is State.Fixed -> State.Loading(content.zip(state2.content, transform))
+            is State.Loading -> State.Loading(content.zip(state2.content, transform))
+            is State.Error -> State.Error(content.zip(state2.content, transform), state2.exception)
+        }
+        is State.Error -> when (state2) {
+            is State.Fixed -> State.Error(content.zip(state2.content, transform), this.exception)
+            is State.Loading -> State.Error(content.zip(state2.content, transform), this.exception)
+            is State.Error -> State.Error(content.zip(state2.content, transform), this.exception)
+        }
     }
 }
 
@@ -69,29 +81,5 @@ fun <A, B, C, D, E, Z> State<A>.zip(state2: State<B>, state3: State<C>, state4: 
         rawContent U other
     }.zip(state5) { rawContent, other ->
         transform(rawContent.t0, rawContent.t1, rawContent.t2, rawContent.t3, other)
-    }
-}
-
-private fun <A, B, Z> State.Fixed<A>.zip(state2: State<B>, transform: (rawContent1: A, rawContent2: B) -> Z): State<Z> {
-    return when (state2) {
-        is State.Fixed -> State.Fixed(content.zip(state2.content, transform))
-        is State.Loading -> State.Loading(content.zip(state2.content, transform))
-        is State.Error -> State.Error(content.zip(state2.content, transform), state2.exception)
-    }
-}
-
-private fun <A, B, Z> State.Loading<A>.zip(state2: State<B>, transform: (rawContent1: A, rawContent2: B) -> Z): State<Z> {
-    return when (state2) {
-        is State.Fixed -> State.Loading(content.zip(state2.content, transform))
-        is State.Loading -> State.Loading(content.zip(state2.content, transform))
-        is State.Error -> State.Error(content.zip(state2.content, transform), state2.exception)
-    }
-}
-
-private fun <A, B, Z> State.Error<A>.zip(state2: State<B>, transform: (rawContent1: A, rawContent2: B) -> Z): State<Z> {
-    return when (state2) {
-        is State.Fixed -> State.Error(content.zip(state2.content, transform), this.exception)
-        is State.Loading -> State.Error(content.zip(state2.content, transform), this.exception)
-        is State.Error -> State.Error(content.zip(state2.content, transform), this.exception)
     }
 }
