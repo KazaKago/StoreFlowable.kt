@@ -77,7 +77,6 @@ fun Project.setupPublishing(
                     }
                 }
                 signing {
-                    isRequired = false
                     sign(this@create)
                 }
             }
