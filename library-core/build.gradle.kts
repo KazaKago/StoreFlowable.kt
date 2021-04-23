@@ -23,7 +23,6 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-    implementation("com.os.operando.guild.kt:guild_kt:1.0.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.amshove.kluent:kluent:1.65")
