@@ -17,16 +17,22 @@ sealed class State<out T>(val content: StateContent<T>) {
 
     /**
      * No processing state.
+     *
+     * @param content Indicates the existing or not existing of data by [StateContent].
      */
     class Fixed<out T>(content: StateContent<T>) : State<T>(content)
 
     /**
      * Acquiring data state.
+     *
+     * @param content Indicates the existing or not existing of data by [StateContent].
      */
     class Loading<out T>(content: StateContent<T>) : State<T>(content)
 
     /**
      * An error when processing state.
+     *
+     * @param content Indicates the existing or not existing of data by [StateContent].
      */
     class Error<out T>(content: StateContent<T>, val exception: Exception) : State<T>(content)
 

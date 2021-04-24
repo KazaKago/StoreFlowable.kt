@@ -2,6 +2,8 @@ package com.kazakago.storeflowable
 
 /**
  * Create [StoreFlowable] class from [StoreFlowableCallback].
+ *
+ * @return Created StateFlowable.
  */
 fun <KEY, DATA> StoreFlowableCallback<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(this)

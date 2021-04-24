@@ -9,6 +9,8 @@ sealed class StateContent<out T> {
 
     /**
      * Data is exists.
+     *
+     * @property rawContent Included raw content.
      */
     data class Exist<out T>(val rawContent: T) : StateContent<T>()
 

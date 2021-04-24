@@ -16,6 +16,9 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
 
     /**
      * Get the data state as [Flow].
+     *
+     * @param key Key to get the specified data.
+     * @return Flow for getting data state changes.
      */
     override fun getFlow(key: KEY): Flow<DataState> {
         return dataState.getOrCreate(key)
@@ -23,6 +26,9 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
 
     /**
      * Get the current data state.
+     *
+     * @param key Key to get the specified data.
+     * @return State of saved data.
      */
     override fun loadState(key: KEY): DataState {
         return dataState.getOrCreate(key).value
@@ -30,6 +36,9 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
 
     /**
      * Save the data state.
+     *
+     * @param key Key to get the specified data.
+     * @param state State of saved data.
      */
     override fun saveState(key: KEY, state: DataState) {
         dataState.getOrCreate(key).value = state
