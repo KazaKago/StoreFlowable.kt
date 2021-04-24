@@ -181,7 +181,8 @@ If you don't need value flow and [`State`](library-core/src/main/java/com/kazaka
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun get(from: GettingFrom = GettingFrom.Mix): DATA
+    suspend fun getData(from: GettingFrom = GettingFrom.Mix): DATA?
+    suspend fun requireData(from: GettingFrom = GettingFrom.Mix): DATA
 }
 ```
 
@@ -240,7 +241,7 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-### Pagination support
+## Pagination support
 
 This library includes pagination support.  
 
@@ -297,6 +298,16 @@ You need to additionally implements `saveAdditionalDataToCache()` and `fetchAddi
 When saving the data, combine the cached data and the new data before saving.  
 
 The [GithubOrgsFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableCallback.kt) and [GithubReposFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableCallback.kt) classes in [**example module**](example) implement pagination.
+
+### Request additional data
+
+You can request additional data for paginating using the [`requestAdditionalData()`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowable.kt) method.
+
+```kotlin
+interface PaginatingStoreFlowable<KEY, DATA> {
+    suspend fun requestAdditionalData(continueWhenError: Boolean = true)
+}
+```
 
 ## License
 
