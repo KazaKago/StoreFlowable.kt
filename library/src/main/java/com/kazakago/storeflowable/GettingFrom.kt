@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable
 
 /**
- * This enum to specify where to get data when getting data
+ * This enum to specify where to get data when getting data.
  *
  * @see StoreFlowable.getData
  * @see StoreFlowable.requireData
@@ -9,7 +9,7 @@ package com.kazakago.storeflowable
 enum class GettingFrom {
     /**
      * Use both origin and cache.
-     * Returns a valid cache if it exists, otherwise try to get it from origin
+     * Returns a valid cache if it exists, otherwise try to get it from origin.
      */
     Mix,
     /**
@@ -19,5 +19,5 @@ enum class GettingFrom {
     /**
      * Always try to get data from cache.
      */
-    FromCache
+    FromCache,
 }

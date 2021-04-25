@@ -49,17 +49,17 @@ internal class PaginatingDataSelector<KEY, DATA>(
 
     private suspend fun fetchNewData(cachedData: DATA?, clearCacheWhenFetchFails: Boolean, additionalRequest: Boolean) {
         try {
-            val fetchedResult = if (additionalRequest) {
+            val fetchingResult = if (additionalRequest) {
                 originDataManager.fetchAdditionalDataFromOrigin(cachedData)
             } else {
                 originDataManager.fetchDataFromOrigin()
             }
             if (additionalRequest) {
-                cacheDataManager.saveAdditionalDataToCache(cachedData, fetchedResult.data)
+                cacheDataManager.saveAdditionalDataToCache(cachedData, fetchingResult.data)
             } else {
-                cacheDataManager.saveDataToCache(fetchedResult.data)
+                cacheDataManager.saveDataToCache(fetchingResult.data)
             }
-            dataStateManager.saveState(key, DataState.Fixed(fetchedResult.noMoreAdditionalData))
+            dataStateManager.saveState(key, DataState.Fixed(fetchingResult.noMoreAdditionalData))
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.saveDataToCache(null)
             dataStateManager.saveState(key, DataState.Error(exception))

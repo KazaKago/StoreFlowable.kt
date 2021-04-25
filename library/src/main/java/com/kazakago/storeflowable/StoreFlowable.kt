@@ -22,7 +22,7 @@ interface StoreFlowable<KEY, DATA> {
      * The error when retrieving data is included in [State.Error].
      * and this method itself does not throw an [Exception].
      *
-     * @param forceRefresh Set to `true` if you want to forcibly retrieve data from origin when collecting. Default value is `false`
+     * @param forceRefresh Set to `true` if you want to forcibly retrieve data from origin when collecting. Default value is `false`.
      * @return Returns a [Flow] containing the state of the data.
      */
     fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
@@ -43,7 +43,7 @@ interface StoreFlowable<KEY, DATA> {
      *
      * Use [publish] if the state of your data is likely to change.
      *
-     * @param from Specifies where to get the data. Default value is [GettingFrom.Mix]
+     * @param from Specifies where to get the data. Default value is [GettingFrom.Mix].
      * @return Returns the entity of the data.
      * @see GettingFrom
      * @see requireData

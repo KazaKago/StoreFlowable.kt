@@ -10,7 +10,7 @@ interface OriginDataManager<DATA> {
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data
+     * @return [FetchingResult] class including the acquired data.
      */
     suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
 }
