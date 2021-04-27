@@ -10,7 +10,6 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
-import com.kazakago.storeflowable.pagination.create
 
 class GithubRepository {
 

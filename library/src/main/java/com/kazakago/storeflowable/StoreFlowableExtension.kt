@@ -1,5 +1,9 @@
 package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
+
 /**
  * Create [StoreFlowable] class from [StoreFlowableCallback].
  *
@@ -7,6 +11,15 @@ package com.kazakago.storeflowable
  */
 fun <KEY, DATA> StoreFlowableCallback<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(this)
+}
+
+/**
+ * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableCallback].
+ *
+ * @return Created PaginatingStoreFlowable.
+ */
+fun <KEY, DATA> PaginatingStoreFlowableCallback<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
+    return PaginatingStoreFlowableImpl(this)
 }
 
 @Deprecated("Use StoreFlowableCallback.create")
