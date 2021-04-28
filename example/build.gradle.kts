@@ -51,7 +51,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi:1.12.0")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
-    implementation("io.coil-kt:coil:1.2.0")
+    implementation("io.coil-kt:coil:1.2.1")
     implementation("com.xwray:groupie:2.9.0")
     implementation("com.xwray:groupie-viewbinding:2.9.0")
 

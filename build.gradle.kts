@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    val versionName by extra("3.2.0-SNAPSHOT")
+    val versionName by extra("3.2.0")
     repositories {
         google()
         mavenCentral()
