@@ -21,7 +21,7 @@ class StateContentZipperTest {
     }
 
     @Test
-    fun validateZipExistExistMethod() {
+    fun zipWithExistExist() {
         val zippedContent = exist1.zip(exist2) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -38,7 +38,7 @@ class StateContentZipperTest {
     }
 
     @Test
-    fun validateZipExistNotExistMethod() {
+    fun zipWithExistNotExist() {
         val zippedContent = exist1.zip(notExist1) { value1, value2 ->
             fail()
             value1 + value2
@@ -54,7 +54,7 @@ class StateContentZipperTest {
     }
 
     @Test
-    fun validateZipNotExistNotExistMethod() {
+    fun zipWithNotExistNotExist() {
         val zippedContent = notExist1.zip(notExist2) { value1, value2 ->
             fail()
             value1 + value2

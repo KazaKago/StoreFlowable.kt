@@ -1,7 +1,4 @@
 package com.kazakago.storeflowable
 
-enum class AsDataType {
-    Mix,
-    FromOrigin,
-    FromCache
-}
+@Deprecated("Use GettingFrom", ReplaceWith("GettingFrom"))
+typealias AsDataType = GettingFrom

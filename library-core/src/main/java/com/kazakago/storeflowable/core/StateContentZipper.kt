@@ -1,54 +1,78 @@
 package com.kazakago.storeflowable.core
 
-import com.os.operando.guild.kt.to
-
-fun <A, B, Z> StateContent<A>.zip(otherStateContent: StateContent<B>, transform: (content1: A, content2: B) -> Z): StateContent<Z> {
+/**
+ * Combine multiple [StateContent].
+ *
+ * @param content2 The second [StateContent] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [StateContent] containing the combined data.
+ */
+fun <A, B, Z> StateContent<A>.zip(content2: StateContent<B>, transform: (rawContent1: A, rawContent2: B) -> Z): StateContent<Z> {
     return when (this) {
-        is StateContent.Exist -> this.zip(otherStateContent, transform)
-        is StateContent.NotExist -> this.zip(otherStateContent)
+        is StateContent.Exist -> when (content2) {
+            is StateContent.Exist -> StateContent.Exist(transform(rawContent, content2.rawContent))
+            is StateContent.NotExist -> StateContent.NotExist()
+        }
+        is StateContent.NotExist -> when (content2) {
+            is StateContent.Exist -> StateContent.NotExist()
+            is StateContent.NotExist -> StateContent.NotExist()
+        }
     }
 }
 
-fun <A, B, C, Z> StateContent<A>.zip(otherStateContent1: StateContent<B>, otherStateContent2: StateContent<C>, transform: (content1: A, content2: B, content3: C) -> Z): StateContent<Z> {
-    return zip(otherStateContent1) { content1, content2 ->
-        content1 to content2
-    }.zip(otherStateContent2) { content1_2, content3 ->
-        transform(content1_2.first, content1_2.second, content3)
+/**
+ * Combine multiple [StateContent].
+ *
+ * @param content2 The second [StateContent] to combine.
+ * @param content3 The third [StateContent] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [StateContent] containing the combined data.
+ */
+fun <A, B, C, Z> StateContent<A>.zip(content2: StateContent<B>, content3: StateContent<C>, transform: (rawContent1: A, rawContent2: B, rawContent3: C) -> Z): StateContent<Z> {
+    return zip(content2) { rawContent, other ->
+        rawContent U other
+    }.zip(content3) { rawContent, other ->
+        transform(rawContent.t0, rawContent.t1, other)
     }
 }
 
-fun <A, B, C, D, Z> StateContent<A>.zip(otherStateContent1: StateContent<B>, otherStateContent2: StateContent<C>, otherStateContent3: StateContent<D>, transform: (content1: A, content2: B, content3: C, content4: D) -> Z): StateContent<Z> {
-    return zip(otherStateContent1) { content1, content2 ->
-        content1 to content2
-    }.zip(otherStateContent2) { content1_2, content3 ->
-        content1_2.first to content1_2.second to content3
-    }.zip(otherStateContent3) { content1_2_3, content4 ->
-        transform(content1_2_3.first, content1_2_3.second, content1_2_3.third, content4)
+/**
+ * Combine multiple [StateContent].
+ *
+ * @param content2 The second [StateContent] to combine.
+ * @param content3 The third [StateContent] to combine.
+ * @param content4 The fourth [StateContent] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [StateContent] containing the combined data.
+ */
+fun <A, B, C, D, Z> StateContent<A>.zip(content2: StateContent<B>, content3: StateContent<C>, content4: StateContent<D>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D) -> Z): StateContent<Z> {
+    return zip(content2) { rawContent, other ->
+        rawContent U other
+    }.zip(content3) { rawContent, other ->
+        rawContent U other
+    }.zip(content4) { rawContent, other ->
+        transform(rawContent.t0, rawContent.t1, rawContent.t2, other)
     }
 }
 
-fun <A, B, C, D, E, Z> StateContent<A>.zip(otherStateContent1: StateContent<B>, otherStateContent2: StateContent<C>, otherStateContent3: StateContent<D>, otherStateContent4: StateContent<E>, transform: (content1: A, content2: B, content3: C, content4: D, content5: E) -> Z): StateContent<Z> {
-    return zip(otherStateContent1) { content1, content2 ->
-        content1 to content2
-    }.zip(otherStateContent2) { content1_2, content3 ->
-        content1_2.first to content1_2.second to content3
-    }.zip(otherStateContent3) { content1_2_3, content4 ->
-        content1_2_3.first to content1_2_3.second to content1_2_3.third to content4
-    }.zip(otherStateContent4) { content1_2_3_4, content5 ->
-        transform(content1_2_3_4.first, content1_2_3_4.second, content1_2_3_4.third, content1_2_3_4.fourth, content5)
-    }
-}
-
-private fun <A, B, Z> StateContent.Exist<A>.zip(otherStateContent: StateContent<B>, transform: (content1: A, content2: B) -> Z): StateContent<Z> {
-    return when (otherStateContent) {
-        is StateContent.Exist -> StateContent.Exist(transform(rawContent, otherStateContent.rawContent))
-        is StateContent.NotExist -> StateContent.NotExist()
-    }
-}
-
-private fun <A, B, Z> StateContent.NotExist<A>.zip(otherStateContent: StateContent<B>): StateContent<Z> {
-    return when (otherStateContent) {
-        is StateContent.Exist -> StateContent.NotExist()
-        is StateContent.NotExist -> StateContent.NotExist()
+/**
+ * Combine multiple [StateContent].
+ *
+ * @param content2 The second [StateContent] to combine.
+ * @param content3 The third [StateContent] to combine.
+ * @param content4 The fourth [StateContent] to combine.
+ * @param content5 The fifth [StateContent] to combine.
+ * @param transform This callback that returns the result of combining the data.
+ * @return Return [StateContent] containing the combined data.
+ */
+fun <A, B, C, D, E, Z> StateContent<A>.zip(content2: StateContent<B>, content3: StateContent<C>, content4: StateContent<D>, content5: StateContent<E>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D, rawContent5: E) -> Z): StateContent<Z> {
+    return zip(content2) { rawContent, other ->
+        rawContent U other
+    }.zip(content3) { rawContent, other ->
+        rawContent U other
+    }.zip(content4) { rawContent, other ->
+        rawContent U other
+    }.zip(content5) { rawContent, other ->
+        transform(rawContent.t0, rawContent.t1, rawContent.t2, rawContent.t3, other)
     }
 }

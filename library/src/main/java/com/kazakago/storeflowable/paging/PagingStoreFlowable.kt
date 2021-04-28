@@ -1,23 +1,10 @@
 package com.kazakago.storeflowable.paging
 
-import com.kazakago.storeflowable.AsDataType
-import com.kazakago.storeflowable.core.State
-import kotlinx.coroutines.flow.Flow
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
 
-interface PagingStoreFlowable<KEY, DATA> {
+@Deprecated("Use PaginatingStoreFlowable from PaginatingStoreFlowableCallback.create()")
+interface PagingStoreFlowable<KEY, DATA> : PaginatingStoreFlowable<KEY, List<DATA>> {
 
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<List<DATA>>>
-
-    suspend fun get(type: AsDataType = AsDataType.Mix): List<DATA>
-
-    suspend fun validate()
-
-    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
-
-    @Deprecated("Use refresh", ReplaceWith("refresh()"))
-    suspend fun request()
-
-    suspend fun requestAdditional(continueWhenError: Boolean = true)
-
-    suspend fun update(newData: List<DATA>?)
+    @Deprecated("Use requestAdditionalData", ReplaceWith("requestAdditionalData(continueWhenError)"))
+    suspend fun requestAdditional(continueWhenError: Boolean = true) = requestAdditionalData(continueWhenError)
 }

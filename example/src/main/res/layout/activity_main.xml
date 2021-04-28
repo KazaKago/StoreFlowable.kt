@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.MainActivity">
+
+    <TextView
+        android:id="@+id/simpleCacheSampleTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simple example"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/metaButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/metaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Github Meta info\n(Single cache)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/perUserCacheSampleTitleTextView"
+        app:layout_constraintEnd_toStartOf="@id/orgsButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/simpleCacheSampleTitleTextView" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/orgsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Github Orgs\n(Paginating cache)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="@id/metaButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/metaButton"
+        app:layout_constraintTop_toTopOf="@id/metaButton" />
+
+    <TextView
+        android:id="@+id/perUserCacheSampleTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Per user example"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/userNameTextInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/metaButton" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/userNameTextInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintBottom_toTopOf="@id/userButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/perUserCacheSampleTitleTextView">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userNameInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Input any Github username"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/userButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Github User's info\n(Single cache)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/reposButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userNameTextInputLayout" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reposButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Github User's repos\n(Paginating cache)"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="@id/userButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/userButton"
+        app:layout_constraintTop_toTopOf="@id/userButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

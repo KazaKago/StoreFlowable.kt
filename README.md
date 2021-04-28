@@ -1,8 +1,8 @@
 # StoreFlowable.kt
 
-[![Download](https://api.bintray.com/packages/kazakago/maven/storeflowable/images/download.svg)](https://bintray.com/kazakago/maven/storeflowable/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/com.kazakago.storeflowable/storeflowable.svg)](https://search.maven.org/artifact/com.kazakago.storeflowable/storeflowable)
 [![Test](https://github.com/KazaKago/StoreFlowable.kt/workflows/Test/badge.svg)](https://github.com/KazaKago/StoreFlowable.kt/actions?query=workflow%3ATest)
-[![license](https://img.shields.io/github/license/kazakago/storeflowable.kt.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/kazakago/storeflowable.kt.svg)](LICENSE)
 
 [Repository pattern](https://msdn.microsoft.com/en-us/library/ff649690.aspx) support library for Kotlin with Coroutines &amp; Flow.  
 Available for Android or any Kotlin/JVM projects.  
@@ -23,11 +23,11 @@ Created according to the following 5 policies.
 
 The following is the class structure of Repository pattern using this library.  
 
-![https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg](https://user-images.githubusercontent.com/7742104/100694803-2235cf80-33d3-11eb-917c-a2ad24bd1c32.jpg)
+![https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg](https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg)
 
 The following is an example of screen display using [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt).
 
-![https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg](https://user-images.githubusercontent.com/7742104/100700024-c9206880-33df-11eb-8026-8d0ff3b42c7b.jpg)
+![https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg](https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg)
 
 ## Install
 
@@ -63,15 +63,15 @@ object UserStateManager : FlowableDataStateManager<UserId>()
 
 [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
 
-### 2. Create StoreFlowableResponder class
+### 2. Create StoreFlowableCallback class
 
-Next, create a class that implements [`StoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableResponder.kt).
+Next, create a class that implements [`StoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableCallback.kt).
 Put the type you want to use as a Data in `<DATA>`.  
 
 An example is shown below.  
 
 ```kotlin
-class UserResponder(userId: UserId) : StoreFlowableResponder<UserId, UserData> {
+class UserFlowableCallback(userId: UserId) : StoreFlowableCallback<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
@@ -83,23 +83,24 @@ class UserResponder(userId: UserId) : StoreFlowableResponder<UserId, UserData> {
     override val flowableDataStateManager: FlowableDataStateManager<UserId> = UserStateManager
 
     // Get data from local cache.
-    override suspend fun loadData(): UserData? {
+    override suspend fun loadDataFromCache(): UserData? {
         return userCache.load(key)
     }
 
     // Save data to local cache.
-    override suspend fun saveData(data: UserData?) {
+    override suspend fun saveDataToCache(data: UserData?) {
         userCache.save(key, data)
     }
 
     // Get data from remote server.
-    override suspend fun fetchOrigin(): UserData {
-        return userApi.fetch(key)
+    override suspend fun fetchDataFromOrigin(): FetchingResult<UserData> {
+        val data = userApi.fetch(key)
+        return FetchingResult(data = data)
     }
 
     // Whether the cache is valid.
-    override suspend fun needRefresh(data: UserData): Boolean {
-        return data.isExpired()
+    override suspend fun needRefresh(cachedData: UserData): Boolean {
+        return cachedData.isExpired()
     }
 }
 ```
@@ -109,25 +110,25 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableResponder<KEY, DATA>.create()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableCallback<KEY, DATA>.create()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
 Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
 
 ```kotlin
 class UserRepository {
 
-    fun followUserData(userId: UserId): Flow<State<UserData>> {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserResponder(userId).create()
-        return userFlowable.asFlow()
+    fun followUserData(userId: UserId): FlowableState<UserData> {
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableCallback(userId).create()
+        return userFlowable.publish()
     }
 
     suspend fun updateUserData(userData: UserData) {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserResponder(userData.userId).create()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableCallback(userData.userId).create()
         userFlowable.update(userData)
     }
 }
 ```
 
-You can get the data in the form of `Flow<State<DATA>>` by using the [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+You can get the data in the form of [`FlowableState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableState.kt) (Same as `Flow<State<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
@@ -165,8 +166,8 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 
 ## Example
 
-Refer to the [**sample module**](sample) for details. This module works as an Android app.  
-See [GithubMetaResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubMetaResponder.kt) and [GithubUserResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubUserResponder.kt).
+Refer to the [**example module**](example) for details. This module works as an Android app.  
+See [GithubMetaFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubMetaFlowableCallback.kt) and [GithubUserFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubUserFlowableCallback.kt).
 
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).  
 
@@ -174,20 +175,21 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ### Get data without [State](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
 
-If you don't need [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt).  
-[`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
-[`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) returns null instead of Exception.  
+If you don't need value flow and [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
+[`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
+[`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) returns null instead of Exception.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun get(type: AsDataType = AsDataType.Mix): DATA
+    suspend fun getData(from: GettingFrom = GettingFrom.Mix): DATA?
+    suspend fun requireData(from: GettingFrom = GettingFrom.Mix): DATA
 }
 ```
 
-`AsDataType` parameter specifies where to get the data.  
+[`GettingFrom`](library/src/main/java/com/kazakago/storeflowable/GettingFrom.kt) parameter specifies where to get the data.  
 
 ```kotlin
-enum class AsDataType {
+enum class GettingFrom {
     // Gets a combination of valid cache and remote. (Default behavior)
     Mix,
     // Gets only remotely.
@@ -197,15 +199,15 @@ enum class AsDataType {
 }
 ```
 
-However, use [`get()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getOrNull()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) only for one-shot data acquisition, and consider using [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
+However, use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
 
 ### Refresh data
 
-If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`asFlow()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
+If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>>
+    fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
 }
 ```
 
@@ -239,13 +241,13 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-### Paging support
+## Pagination support
 
-This library includes Paging support.  
+This library includes pagination support.  
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`PagingStoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/paging/PagingStoreFlowableResponder.kt) instead of [`StoreFlowableResponder<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableResponder.kt).
+Inherit [`PaginatingStoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowableCallback.kt) instead of [`StoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableCallback.kt).
 
 An example is shown below.  
 
@@ -253,7 +255,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListResponder : PagingStoreFlowableResponder<Unit, UserData> {
+class UserListFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<UserData>> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
@@ -262,29 +264,50 @@ class UserListResponder : PagingStoreFlowableResponder<Unit, UserData> {
 
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = UserListStateManager
 
-    override suspend fun loadData(): List<UserData>? {
+    override suspend fun loadDataFromCache(): List<UserData>? {
         return userListCache.load()
     }
 
-    override suspend fun saveData(data: List<UserData>?, additionalRequest: Boolean) {
-        userListCache.save(data)
+    override suspend fun saveDataToCache(newData: List<UserData>?) {
+        userListCache.save(newData)
     }
 
-    override suspend fun fetchOrigin(data: List<UserData>?, additionalRequest: Boolean): List<UserData> {
-        val page = if (additionalRequest) ((data?.size ?: 0) / 10 + 1) else 1
-        return userListApi.fetch(page)
+    override suspend fun saveAdditionalDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
+        val mergedData = (cachedData ?: emptyList()) + newData
+        userListCache.save(mergedData)
     }
 
-    override suspend fun needRefresh(data: List<UserData>): Boolean {
-        return data.last().isExpired()
+    override suspend fun fetchDataFromOrigin(): FetchingResult<List<UserData>> {
+        val fetchedData = userListApi.fetch(1)
+        return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
+    }
+
+    override suspend fun fetchAdditionalDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
+        val page = (cachedData?.size ?: 0) / 10 + 1
+        val fetchedData = userListApi.fetch(page)
+        return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
+    }
+
+    override suspend fun needRefresh(cachedData: List<UserData>): Boolean {
+        return cachedData.last().isExpired()
     }
 }
 ```
 
-You can have the data in a list. The retrieved remote data will be merged automatically.  
-`additionalRequest: Boolean` parameter indicates whether to load additionally. use if necessary.  
+You need to additionally implements `saveAdditionalDataToCache()` and `fetchAdditionalDataFromOrigin()`.  
+When saving the data, combine the cached data and the new data before saving.  
 
-The [GithubOrgsResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubOrgsResponder.kt) and [GithubReposResponder](sample/src/main/java/com/kazakago/storeflowable/sample/flowable/GithubReposResponder.kt) classes in [**sample module**](sample) implement paging.
+The [GithubOrgsFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableCallback.kt) and [GithubReposFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableCallback.kt) classes in [**example module**](example) implement pagination.
+
+### Request additional data
+
+You can request additional data for paginating using the [`requestAdditionalData()`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowable.kt) method.
+
+```kotlin
+interface PaginatingStoreFlowable<KEY, DATA> {
+    suspend fun requestAdditionalData(continueWhenError: Boolean = true)
+}
+```
 
 ## License
 

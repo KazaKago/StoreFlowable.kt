@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.core
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -14,10 +13,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowStateCombinerTest {
 
-    private lateinit var flowFixedExist: Flow<State<Int>>
-    private lateinit var flowFixedNotExist: Flow<State<Int>>
-    private lateinit var flowLoadingExist: Flow<State<Int>>
-    private lateinit var flowErrorExist: Flow<State<Int>>
+    private lateinit var flowFixedExist: FlowableState<Int>
+    private lateinit var flowFixedNotExist: FlowableState<Int>
+    private lateinit var flowLoadingExist: FlowableState<Int>
+    private lateinit var flowErrorExist: FlowableState<Int>
 
     @Before
     fun setup() {
@@ -28,7 +27,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedLoadingMethod() = runBlockingTest {
+    fun combineWithFixedLoading() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowLoadingExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -57,7 +56,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineFixedErrorMethod() = runBlockingTest {
+    fun combineWithFixedError() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 130
@@ -86,7 +85,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateCombineLoadingErrorMethod() = runBlockingTest {
+    fun combineWithLoadingError() = runBlockingTest {
         val combinedFlowState = flowLoadingExist.combineState(flowErrorExist) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 130
@@ -115,7 +114,7 @@ class FlowStateCombinerTest {
     }
 
     @Test
-    fun validateFixedFixedMethod() = runBlockingTest {
+    fun combineWithFixedFixed() = runBlockingTest {
         val combinedFlowState = flowFixedExist.combineState(flowFixedNotExist) { value1, value2 ->
             fail()
             value1 + value2

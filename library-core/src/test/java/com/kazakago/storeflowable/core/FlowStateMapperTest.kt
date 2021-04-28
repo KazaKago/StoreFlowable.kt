@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.core
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
@@ -14,7 +13,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowStateMapperTest {
 
-    private lateinit var flowFixedState: Flow<State<Int>>
+    private lateinit var flowFixedState: FlowableState<Int>
 
     @Before
     fun setup() {
@@ -22,7 +21,7 @@ class FlowStateMapperTest {
     }
 
     @Test
-    fun validateMapContentMethod() = runBlockingTest {
+    fun mapContent() = runBlockingTest {
         val mappedFlowFixedState = flowFixedState.mapContent { it + 70 }
         val mappedFixedState = mappedFlowFixedState.first()
         mappedFixedState shouldBeInstanceOf State.Fixed::class
