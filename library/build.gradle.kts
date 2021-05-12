@@ -17,7 +17,7 @@ tasks.withType(KotlinCompile::class).all {
 }
 
 val versionName: String by project
-setupPublishing(artifactId = "storeflowable", version = versionName)
+setupPublishing(version = versionName, artifactId = "storeflowable")
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
