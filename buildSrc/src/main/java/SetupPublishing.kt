@@ -40,7 +40,6 @@ fun Project.setupPublishing(
     }
     tasks.create("sourcesJar", Jar::class) {
         group = "publishing"
-        dependsOn("classes")
         archiveClassifier.set("sources")
         from(sourceSets["main"].allSource)
     }
