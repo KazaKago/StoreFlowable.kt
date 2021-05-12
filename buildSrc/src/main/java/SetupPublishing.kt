@@ -30,7 +30,7 @@ fun Project.setupPublishing(
     scmConnection: String = PublishingInfo.scmConnection,
     developerName: String = PublishingInfo.developerName,
     developerEmail: String = PublishingInfo.developerEmail,
-    developerUrl: String = PublishingInfo.developerUrl,
+    developerUrl: String = PublishingInfo.developerUrl
 ) {
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
