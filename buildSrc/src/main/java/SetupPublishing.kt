@@ -34,9 +34,8 @@ fun Project.setupPublishing(
 ) {
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
-        dependsOn("dokkaJavadoc")
         archiveClassifier.set("javadoc")
-        from(buildDir.resolve("dokka/javadoc"))
+        from(tasks["dokkaHtml"])
     }
     tasks.create("sourcesJar", Jar::class) {
         group = "publishing"
