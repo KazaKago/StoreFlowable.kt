@@ -1,6 +1,7 @@
 # StoreFlowable.kt
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.kazakago.storeflowable/storeflowable.svg)](https://search.maven.org/artifact/com.kazakago.storeflowable/storeflowable)
+[![javadoc](https://javadoc.io/badge2/com.kazakago.storeflowable/storeflowable/javadoc.svg)](https://javadoc.io/doc/com.kazakago.storeflowable/storeflowable)
 [![Test](https://github.com/KazaKago/StoreFlowable.kt/workflows/Test/badge.svg)](https://github.com/KazaKago/StoreFlowable.kt/actions?query=workflow%3ATest)
 [![License](https://img.shields.io/github/license/kazakago/storeflowable.kt.svg)](LICENSE)
 
