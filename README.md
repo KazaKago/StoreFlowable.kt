@@ -182,8 +182,8 @@ If you don't need value flow and [`State`](library-core/src/main/java/com/kazaka
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun getData(from: GettingFrom = GettingFrom.Mix): DATA?
-    suspend fun requireData(from: GettingFrom = GettingFrom.Mix): DATA
+    suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
+    suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 }
 ```
 
@@ -192,11 +192,11 @@ interface StoreFlowable<KEY, DATA> {
 ```kotlin
 enum class GettingFrom {
     // Gets a combination of valid cache and remote. (Default behavior)
-    Mix,
+    Both,
     // Gets only remotely.
-    FromOrigin,
+    Origin,
     // Gets only locally.
-    FromCache,
+    Cache,
 }
 ```
 

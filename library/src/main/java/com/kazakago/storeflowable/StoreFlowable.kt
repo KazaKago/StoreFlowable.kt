@@ -43,12 +43,12 @@ interface StoreFlowable<KEY, DATA> {
      *
      * Use [publish] if the state of your data is likely to change.
      *
-     * @param from Specifies where to get the data. Default value is [GettingFrom.Mix].
+     * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.
      * @see GettingFrom
      * @see requireData
      */
-    suspend fun getData(from: GettingFrom = GettingFrom.Mix): DATA?
+    suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
 
     /**
      * Returns valid data only once.
@@ -57,12 +57,12 @@ interface StoreFlowable<KEY, DATA> {
      *
      * Use [publish] if the state of your data is likely to change.
      *
-     * @param from Specifies where to get the data. Default value is [GettingFrom.Mix].
+     * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.
      * @see GettingFrom
      * @see getData
      */
-    suspend fun requireData(from: GettingFrom = GettingFrom.Mix): DATA
+    suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 
     /**
      * Deprecated, use [requireData].

@@ -40,9 +40,9 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
         return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
             .onStart {
                 when (from) {
-                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.FromCache -> Unit // do nothing.
+                    GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Origin, GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Cache, GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->

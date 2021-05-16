@@ -37,9 +37,9 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: S
         return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
             .onStart {
                 when (from) {
-                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    GettingFrom.FromCache -> Unit // do nothing.
+                    GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.Origin, GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.Cache, GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->
