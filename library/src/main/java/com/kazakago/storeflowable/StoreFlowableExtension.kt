@@ -1,53 +1,65 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableFactory
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 
 /**
- * Create [StoreFlowable] class from [StoreFlowableCallback].
+ * Create [StoreFlowable] class from [StoreFlowableFactory].
  *
  * @return Created StateFlowable.
  */
-fun <KEY, DATA> StoreFlowableCallback<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
-    return StoreFlowableImpl(this)
+fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
+    return StoreFlowableImpl(
+        key = key,
+        flowableDataStateManager = flowableDataStateManager,
+        cacheDataManager = this,
+        originDataManager = this,
+        needRefresh = { needRefresh(it) }
+    )
 }
 
 /**
- * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableCallback].
+ * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableFactory].
  *
  * @return Created PaginatingStoreFlowable.
  */
-fun <KEY, DATA> PaginatingStoreFlowableCallback<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
-    return PaginatingStoreFlowableImpl(this)
+fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
+    return PaginatingStoreFlowableImpl(
+        key = key,
+        flowableDataStateManager = flowableDataStateManager,
+        cacheDataManager = this,
+        originDataManager = this,
+        needRefresh = { needRefresh(it) }
+    )
 }
 
-@Deprecated("Use StoreFlowableCallback.create")
+@Deprecated("Use StoreFlowableFactory.create")
 fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
-    return StoreFlowableImpl(toStoreFlowableCallback())
+    return toStoreFlowableFactory().create()
 }
 
-private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallback(): StoreFlowableCallback<KEY, DATA> {
-    return object : StoreFlowableCallback<KEY, DATA> {
+private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableFactory(): StoreFlowableFactory<KEY, DATA> {
+    return object : StoreFlowableFactory<KEY, DATA> {
 
-        override val key = this@toStoreFlowableCallback.key
+        override val key = this@toStoreFlowableFactory.key
 
-        override val flowableDataStateManager = this@toStoreFlowableCallback.flowableDataStateManager
+        override val flowableDataStateManager = this@toStoreFlowableFactory.flowableDataStateManager
 
         override suspend fun loadDataFromCache(): DATA? {
-            return this@toStoreFlowableCallback.loadData()
+            return this@toStoreFlowableFactory.loadData()
         }
 
         override suspend fun saveDataToCache(newData: DATA?) {
-            this@toStoreFlowableCallback.saveData(newData)
+            this@toStoreFlowableFactory.saveData(newData)
         }
 
         override suspend fun fetchDataFromOrigin(): FetchingResult<DATA> {
-            return FetchingResult(this@toStoreFlowableCallback.fetchOrigin())
+            return FetchingResult(this@toStoreFlowableFactory.fetchOrigin())
         }
 
         override suspend fun needRefresh(cachedData: DATA): Boolean {
-            return this@toStoreFlowableCallback.needRefresh(cachedData)
+            return this@toStoreFlowableFactory.needRefresh(cachedData)
         }
     }
 }

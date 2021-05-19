@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable
 
-@Deprecated("Use StoreFlowableCallback")
+@Deprecated("Use StoreFlowableFactory")
 interface StoreFlowableResponder<KEY, DATA> {
 
     val key: KEY

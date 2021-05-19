@@ -7,18 +7,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 
-internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: StoreFlowableCallback<KEY, DATA>) : StoreFlowable<KEY, DATA> {
+internal class StoreFlowableImpl<KEY, DATA>(
+    private val key: KEY,
+    private val flowableDataStateManager: FlowableDataStateManager<KEY>,
+    cacheDataManager: CacheDataManager<DATA>,
+    originDataManager: OriginDataManager<DATA>,
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+) : StoreFlowable<KEY, DATA> {
 
     private val dataSelector = DataSelector(
-        key = storeFlowableCallback.key,
-        dataStateManager = storeFlowableCallback.flowableDataStateManager,
-        cacheDataManager = storeFlowableCallback,
-        originDataManager = storeFlowableCallback,
-        needRefresh = { storeFlowableCallback.needRefresh(it) }
+        key = key,
+        dataStateManager = flowableDataStateManager,
+        cacheDataManager = cacheDataManager,
+        originDataManager = originDataManager,
+        needRefresh = needRefresh,
     )
 
     override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
             }
@@ -34,20 +40,20 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: S
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 when (from) {
-                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
-                    GettingFrom.FromCache -> Unit // do nothing.
+                    GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.Origin, GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
+                    GettingFrom.Cache, GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->
                 val data = dataSelector.load()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                    is DataState.Fixed -> if (data != null && !needRefresh(data)) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit // do nothing.
-                    is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw dataState.exception
+                    is DataState.Error -> if (data != null && !needRefresh(data)) emit(data) else throw dataState.exception
                 }
             }
             .first()

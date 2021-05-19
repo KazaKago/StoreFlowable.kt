@@ -64,15 +64,15 @@ object UserStateManager : FlowableDataStateManager<UserId>()
 
 [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
 
-### 2. Create StoreFlowableCallback class
+### 2. Create StoreFlowableFactory class
 
-Next, create a class that implements [`StoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableCallback.kt).
+Next, create a class that implements [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 Put the type you want to use as a Data in `<DATA>`.  
 
 An example is shown below.  
 
 ```kotlin
-class UserFlowableCallback(userId: UserId) : StoreFlowableCallback<UserId, UserData> {
+class UserFlowableFactory(userId: UserId) : StoreFlowableFactory<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
@@ -111,19 +111,19 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableCallback<KEY, DATA>.create()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+After that, you can get the [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableFactory<KEY, DATA>.create()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.
 Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
 
 ```kotlin
 class UserRepository {
 
     fun followUserData(userId: UserId): FlowableState<UserData> {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableCallback(userId).create()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userId).create()
         return userFlowable.publish()
     }
 
     suspend fun updateUserData(userData: UserData) {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableCallback(userData.userId).create()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userData.userId).create()
         userFlowable.update(userData)
     }
 }
@@ -168,7 +168,7 @@ On Android, it is recommended to pass the data to [`LiveData`](https://developer
 ## Example
 
 Refer to the [**example module**](example) for details. This module works as an Android app.  
-See [GithubMetaFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubMetaFlowableCallback.kt) and [GithubUserFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubUserFlowableCallback.kt).
+See [GithubMetaFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubMetaFlowableFactory.kt) and [GithubUserFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubUserFlowableFactory.kt).
 
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).  
 
@@ -182,8 +182,8 @@ If you don't need value flow and [`State`](library-core/src/main/java/com/kazaka
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun getData(from: GettingFrom = GettingFrom.Mix): DATA?
-    suspend fun requireData(from: GettingFrom = GettingFrom.Mix): DATA
+    suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
+    suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 }
 ```
 
@@ -192,11 +192,11 @@ interface StoreFlowable<KEY, DATA> {
 ```kotlin
 enum class GettingFrom {
     // Gets a combination of valid cache and remote. (Default behavior)
-    Mix,
+    Both,
     // Gets only remotely.
-    FromOrigin,
+    Origin,
     // Gets only locally.
-    FromCache,
+    Cache,
 }
 ```
 
@@ -248,7 +248,7 @@ This library includes pagination support.
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`PaginatingStoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowableCallback.kt) instead of [`StoreFlowableCallback<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableCallback.kt).
+Inherit [`PaginatingStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 
 An example is shown below.  
 
@@ -256,7 +256,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<UserData>> {
+class UserListFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<UserData>> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
@@ -298,7 +298,7 @@ class UserListFlowableCallback : PaginatingStoreFlowableCallback<Unit, List<User
 You need to additionally implements `saveAdditionalDataToCache()` and `fetchAdditionalDataFromOrigin()`.  
 When saving the data, combine the cached data and the new data before saving.  
 
-The [GithubOrgsFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableCallback.kt) and [GithubReposFlowableCallback](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableCallback.kt) classes in [**example module**](example) implement pagination.
+The [GithubOrgsFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableFactory.kt) and [GithubReposFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableFactory.kt) classes in [**example module**](example) implement pagination.
 
 ### Request additional data
 

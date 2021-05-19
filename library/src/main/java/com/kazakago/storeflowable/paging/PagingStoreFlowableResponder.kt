@@ -2,7 +2,7 @@ package com.kazakago.storeflowable.paging
 
 import com.kazakago.storeflowable.FlowableDataStateManager
 
-@Deprecated("Use PaginatingStoreFlowableCallback")
+@Deprecated("Use PaginatingStoreFlowableFactory")
 interface PagingStoreFlowableResponder<KEY, DATA> {
 
     val key: KEY

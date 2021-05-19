@@ -1,7 +1,8 @@
 package com.kazakago.storeflowable.pagination
 
-import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.DataState
+import com.kazakago.storeflowable.FlowableDataStateManager
+import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
 import com.kazakago.storeflowable.mapState
@@ -10,18 +11,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 
-internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: PaginatingStoreFlowableCallback<KEY, DATA>) : PaginatingStoreFlowable<KEY, DATA> {
+internal class PaginatingStoreFlowableImpl<KEY, DATA>(
+    private val key: KEY,
+    private val flowableDataStateManager: FlowableDataStateManager<KEY>,
+    cacheDataManager: PaginatingCacheDataManager<DATA>,
+    originDataManager: PaginatingOriginDataManager<DATA>,
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+) : PaginatingStoreFlowable<KEY, DATA> {
 
     private val dataSelector = PaginatingDataSelector(
-        key = storeFlowableCallback.key,
-        dataStateManager = storeFlowableCallback.flowableDataStateManager,
-        cacheDataManager = storeFlowableCallback,
-        originDataManager = storeFlowableCallback,
-        needRefresh = { storeFlowableCallback.needRefresh(it) }
+        key = key,
+        dataStateManager = flowableDataStateManager,
+        cacheDataManager = cacheDataManager,
+        originDataManager = originDataManager,
+        needRefresh = needRefresh,
     )
 
     override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, additionalRequest = false)
             }
@@ -37,20 +44,20 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 when (from) {
-                    GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.FromCache -> Unit // do nothing.
+                    GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Origin, GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Cache, GettingFrom.FromCache -> Unit // do nothing.
                 }
             }
             .transform { dataState ->
                 val data = dataSelector.load()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                    is DataState.Fixed -> if (data != null && !needRefresh(data)) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit // do nothing.
-                    is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw dataState.exception
+                    is DataState.Error -> if (data != null && !needRefresh(data)) emit(data) else throw dataState.exception
                 }
             }
             .first()

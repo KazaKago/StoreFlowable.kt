@@ -4,7 +4,7 @@ import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
 
-@Deprecated("Use PaginatingStoreFlowable from PaginatingStoreFlowableCallback.create()")
+@Deprecated("Use PaginatingStoreFlowable from PaginatingStoreFlowableFactory.create()")
 internal class PagingStoreFlowableImpl<KEY, DATA>(private val paginatingStoreFlowable: PaginatingStoreFlowable<KEY, List<DATA>>) : PagingStoreFlowable<KEY, DATA> {
 
     override fun publish(forceRefresh: Boolean): FlowableState<List<DATA>> {

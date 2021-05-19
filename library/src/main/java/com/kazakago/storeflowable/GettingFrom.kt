@@ -11,13 +11,33 @@ enum class GettingFrom {
      * Use both origin and cache.
      * Returns a valid cache if it exists, otherwise try to get it from origin.
      */
-    Mix,
+    Both,
+
     /**
      * Always try to get data from origin.
      */
-    FromOrigin,
+    Origin,
+
     /**
      * Always try to get data from cache.
      */
+    Cache,
+
+    /**
+     * Use `Both`
+     */
+    @Deprecated("Use `Both`", ReplaceWith("Both"))
+    Mix,
+
+    /**
+     * Use `Origin`
+     */
+    @Deprecated("Use `Origin`", ReplaceWith("Origin"))
+    FromOrigin,
+
+    /**
+     * Use `Cache`
+     */
+    @Deprecated("Use `Cache`", ReplaceWith("Cache"))
     FromCache,
 }

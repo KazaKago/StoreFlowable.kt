@@ -19,8 +19,8 @@ private val Project.sourceSets: SourceSetContainer
     get() = (this as ExtensionAware).extensions.getByName("sourceSets") as SourceSetContainer
 
 fun Project.setupPublishing(
-    artifactId: String,
     version: String,
+    artifactId: String,
     groupId: String = PublishingInfo.groupId,
     projectName: String = PublishingInfo.projectName,
     projectDescription: String = PublishingInfo.projectDescription,
@@ -30,23 +30,21 @@ fun Project.setupPublishing(
     scmConnection: String = PublishingInfo.scmConnection,
     developerName: String = PublishingInfo.developerName,
     developerEmail: String = PublishingInfo.developerEmail,
-    developerUrl: String = PublishingInfo.developerUrl,
+    developerUrl: String = PublishingInfo.developerUrl
 ) {
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
-        dependsOn("dokkaJavadoc")
         archiveClassifier.set("javadoc")
-        from(buildDir.resolve("dokka/javadoc"))
+        from(tasks["dokkaHtml"])
     }
     tasks.create("sourcesJar", Jar::class) {
         group = "publishing"
-        dependsOn("classes")
         archiveClassifier.set("sources")
         from(sourceSets["main"].allSource)
     }
     publishing {
         publications {
-            create<MavenPublication>("mavenJava") {
+            create<MavenPublication>("maven") {
                 from(components["java"])
                 artifact(tasks["sourcesJar"])
                 artifact(tasks["javadocJar"])
