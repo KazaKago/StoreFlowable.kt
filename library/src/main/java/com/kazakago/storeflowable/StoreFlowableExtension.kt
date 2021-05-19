@@ -1,24 +1,24 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableFactory
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 
 /**
- * Create [StoreFlowable] class from [StoreFlowableCallback].
+ * Create [StoreFlowable] class from [StoreFlowableFactory].
  *
  * @return Created StateFlowable.
  */
-fun <KEY, DATA> StoreFlowableCallback<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
+fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(this)
 }
 
 /**
- * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableCallback].
+ * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableFactory].
  *
  * @return Created PaginatingStoreFlowable.
  */
-fun <KEY, DATA> PaginatingStoreFlowableCallback<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
+fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
     return PaginatingStoreFlowableImpl(this)
 }
 
@@ -27,8 +27,8 @@ fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, D
     return StoreFlowableImpl(toStoreFlowableCallback())
 }
 
-private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallback(): StoreFlowableCallback<KEY, DATA> {
-    return object : StoreFlowableCallback<KEY, DATA> {
+private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallback(): StoreFlowableFactory<KEY, DATA> {
+    return object : StoreFlowableFactory<KEY, DATA> {
 
         override val key = this@toStoreFlowableCallback.key
 

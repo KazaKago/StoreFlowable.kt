@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination
 
-import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.DataState
+import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.StateContent
 import com.kazakago.storeflowable.mapState
@@ -10,18 +10,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 
-internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableCallback: PaginatingStoreFlowableCallback<KEY, DATA>) : PaginatingStoreFlowable<KEY, DATA> {
+internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableFactory: PaginatingStoreFlowableFactory<KEY, DATA>) : PaginatingStoreFlowable<KEY, DATA> {
 
     private val dataSelector = PaginatingDataSelector(
-        key = storeFlowableCallback.key,
-        dataStateManager = storeFlowableCallback.flowableDataStateManager,
-        cacheDataManager = storeFlowableCallback,
-        originDataManager = storeFlowableCallback,
-        needRefresh = { storeFlowableCallback.needRefresh(it) }
+        key = storeFlowableFactory.key,
+        dataStateManager = storeFlowableFactory.flowableDataStateManager,
+        cacheDataManager = storeFlowableFactory,
+        originDataManager = storeFlowableFactory,
+        needRefresh = { storeFlowableFactory.needRefresh(it) },
     )
 
     override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return storeFlowableFactory.flowableDataStateManager.getFlow(storeFlowableFactory.key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, additionalRequest = false)
             }
@@ -37,7 +37,7 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return storeFlowableCallback.flowableDataStateManager.getFlow(storeFlowableCallback.key)
+        return storeFlowableFactory.flowableDataStateManager.getFlow(storeFlowableFactory.key)
             .onStart {
                 when (from) {
                     GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
@@ -48,9 +48,9 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(private val storeFlowableC
             .transform { dataState ->
                 val data = dataSelector.load()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                    is DataState.Fixed -> if (data != null && !storeFlowableFactory.needRefresh(data)) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit // do nothing.
-                    is DataState.Error -> if (data != null && !storeFlowableCallback.needRefresh(data)) emit(data) else throw dataState.exception
+                    is DataState.Error -> if (data != null && !storeFlowableFactory.needRefresh(data)) emit(data) else throw dataState.exception
                 }
             }
             .first()

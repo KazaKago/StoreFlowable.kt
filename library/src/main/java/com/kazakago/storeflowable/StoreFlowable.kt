@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Provides input / output methods that abstract the data acquisition destination.
  *
- * This class is generated from [StoreFlowableCallback.create].
+ * This class is generated from [StoreFlowableFactory.create].
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.

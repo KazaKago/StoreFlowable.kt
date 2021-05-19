@@ -2,7 +2,7 @@ package com.kazakago.storeflowable.paging
 
 import com.kazakago.storeflowable.AsDataType
 import com.kazakago.storeflowable.FetchingResult
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableCallback
+import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableFactory
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 
 @Deprecated("Use StoreFlowableCallback.create")
@@ -10,8 +10,8 @@ fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.create(): PagingStoreFlo
     return PagingStoreFlowableImpl(PaginatingStoreFlowableImpl(toPaginatingStoreFlowableCallback()))
 }
 
-private fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.toPaginatingStoreFlowableCallback(): PaginatingStoreFlowableCallback<KEY, List<DATA>> {
-    return object : PaginatingStoreFlowableCallback<KEY, List<DATA>> {
+private fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.toPaginatingStoreFlowableCallback(): PaginatingStoreFlowableFactory<KEY, List<DATA>> {
+    return object : PaginatingStoreFlowableFactory<KEY, List<DATA>> {
 
         override val key = this@toPaginatingStoreFlowableCallback.key
 
