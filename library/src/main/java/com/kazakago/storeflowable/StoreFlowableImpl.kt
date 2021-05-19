@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.transform
 
 internal class StoreFlowableImpl<KEY, DATA>(
     private val key: KEY,
-    private val dataStateManager: FlowableDataStateManager<KEY>,
+    private val flowableDataStateManager: FlowableDataStateManager<KEY>,
     cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
@@ -17,14 +17,14 @@ internal class StoreFlowableImpl<KEY, DATA>(
 
     private val dataSelector = DataSelector(
         key = key,
-        dataStateManager = dataStateManager,
+        dataStateManager = flowableDataStateManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
         needRefresh = needRefresh,
     )
 
     override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
-        return dataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
             }
@@ -40,7 +40,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return dataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(key)
             .onStart {
                 when (from) {
                     GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)

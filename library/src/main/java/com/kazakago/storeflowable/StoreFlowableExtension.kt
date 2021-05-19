@@ -12,7 +12,7 @@ import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(
         key = key,
-        dataStateManager = flowableDataStateManager,
+        flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = this,
         originDataManager = this,
         needRefresh = { needRefresh(it) }
@@ -27,7 +27,7 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
 fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
     return PaginatingStoreFlowableImpl(
         key = key,
-        dataStateManager = flowableDataStateManager,
+        flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = this,
         originDataManager = this,
         needRefresh = { needRefresh(it) }
