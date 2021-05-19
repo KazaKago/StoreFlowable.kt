@@ -10,7 +10,13 @@ import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
  * @return Created StateFlowable.
  */
 fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
-    return StoreFlowableImpl(this)
+    return StoreFlowableImpl(
+        key = key,
+        dataStateManager = flowableDataStateManager,
+        cacheDataManager = this,
+        originDataManager = this,
+        needRefresh = { needRefresh(it) }
+    )
 }
 
 /**
@@ -19,12 +25,18 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
  * @return Created PaginatingStoreFlowable.
  */
 fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
-    return PaginatingStoreFlowableImpl(this)
+    return PaginatingStoreFlowableImpl(
+        key = key,
+        dataStateManager = flowableDataStateManager,
+        cacheDataManager = this,
+        originDataManager = this,
+        needRefresh = { needRefresh(it) }
+    )
 }
 
 @Deprecated("Use StoreFlowableCallback.create")
 fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
-    return StoreFlowableImpl(toStoreFlowableCallback())
+    return toStoreFlowableCallback().create()
 }
 
 private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallback(): StoreFlowableFactory<KEY, DATA> {

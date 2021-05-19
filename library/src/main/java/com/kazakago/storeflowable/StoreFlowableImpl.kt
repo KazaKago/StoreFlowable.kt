@@ -7,18 +7,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 
-internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableFactory: StoreFlowableFactory<KEY, DATA>) : StoreFlowable<KEY, DATA> {
+internal class StoreFlowableImpl<KEY, DATA>(
+    private val key: KEY,
+    private val dataStateManager: FlowableDataStateManager<KEY>,
+    cacheDataManager: CacheDataManager<DATA>,
+    originDataManager: OriginDataManager<DATA>,
+    private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+) : StoreFlowable<KEY, DATA> {
 
     private val dataSelector = DataSelector(
-        key = storeFlowableFactory.key,
-        dataStateManager = storeFlowableFactory.flowableDataStateManager,
-        cacheDataManager = storeFlowableFactory,
-        originDataManager = storeFlowableFactory,
-        needRefresh = { storeFlowableFactory.needRefresh(it) }
+        key = key,
+        dataStateManager = dataStateManager,
+        cacheDataManager = cacheDataManager,
+        originDataManager = originDataManager,
+        needRefresh = needRefresh,
     )
 
     override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
-        return storeFlowableFactory.flowableDataStateManager.getFlow(storeFlowableFactory.key)
+        return dataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false)
             }
@@ -34,7 +40,7 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableFactory: St
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return storeFlowableFactory.flowableDataStateManager.getFlow(storeFlowableFactory.key)
+        return dataStateManager.getFlow(key)
             .onStart {
                 when (from) {
                     GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true)
@@ -45,9 +51,9 @@ internal class StoreFlowableImpl<KEY, DATA>(private val storeFlowableFactory: St
             .transform { dataState ->
                 val data = dataSelector.load()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null && !storeFlowableFactory.needRefresh(data)) emit(data) else throw NoSuchElementException()
+                    is DataState.Fixed -> if (data != null && !needRefresh(data)) emit(data) else throw NoSuchElementException()
                     is DataState.Loading -> Unit // do nothing.
-                    is DataState.Error -> if (data != null && !storeFlowableFactory.needRefresh(data)) emit(data) else throw dataState.exception
+                    is DataState.Error -> if (data != null && !needRefresh(data)) emit(data) else throw dataState.exception
                 }
             }
             .first()

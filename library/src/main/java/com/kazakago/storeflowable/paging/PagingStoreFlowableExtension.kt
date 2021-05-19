@@ -2,12 +2,12 @@ package com.kazakago.storeflowable.paging
 
 import com.kazakago.storeflowable.AsDataType
 import com.kazakago.storeflowable.FetchingResult
+import com.kazakago.storeflowable.create
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
 
 @Deprecated("Use StoreFlowableCallback.create")
 fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.create(): PagingStoreFlowable<KEY, DATA> {
-    return PagingStoreFlowableImpl(PaginatingStoreFlowableImpl(toPaginatingStoreFlowableCallback()))
+    return PagingStoreFlowableImpl(toPaginatingStoreFlowableCallback().create())
 }
 
 private fun <KEY, DATA> PagingStoreFlowableResponder<KEY, DATA>.toPaginatingStoreFlowableCallback(): PaginatingStoreFlowableFactory<KEY, List<DATA>> {
