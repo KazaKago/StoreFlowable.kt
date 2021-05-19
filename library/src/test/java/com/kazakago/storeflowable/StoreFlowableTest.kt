@@ -57,7 +57,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithNoCache() = runBlocking {
-//        SucceedTestFlowableCallback(dataCache = null).create().publish().toTest(this).use {
+//        SucceedTestFlowableFactory(dataCache = null).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -74,7 +74,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithValidCache() = runBlocking {
-//        SucceedTestFlowableCallback(dataCache = TestData.ValidData).create().publish().toTest(this).use {
+//        SucceedTestFlowableFactory(dataCache = TestData.ValidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 1
 //            it.history[0].let { state ->
@@ -87,7 +87,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowWithInvalidCache() = runBlocking {
-//        SucceedTestFlowableCallback(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
+//        SucceedTestFlowableFactory(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -104,7 +104,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithNoCache() = runBlocking {
-//        FailedTestFlowableCallback(dataCache = null).create().publish().toTest(this).use {
+//        FailedTestFlowableFactory(dataCache = null).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->
@@ -121,7 +121,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithValidCache() = runBlocking {
-//        FailedTestFlowableCallback(dataCache = TestData.ValidData).create().publish().toTest(this).use {
+//        FailedTestFlowableFactory(dataCache = TestData.ValidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 1
 //            it.history[0].let { state ->
@@ -134,7 +134,7 @@ class StoreFlowableTest {
 //
 //    @Test
 //    fun flowFailedWithInvalidCache() = runBlocking {
-//        FailedTestFlowableCallback(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
+//        FailedTestFlowableFactory(dataCache = TestData.InvalidData).create().publish().toTest(this).use {
 //            delay(100)
 //            it.history.size shouldBeEqualTo 2
 //            it.history[0].let { state ->

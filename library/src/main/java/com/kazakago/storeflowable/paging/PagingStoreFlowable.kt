@@ -2,7 +2,7 @@ package com.kazakago.storeflowable.paging
 
 import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
 
-@Deprecated("Use PaginatingStoreFlowable from PaginatingStoreFlowableCallback.create()")
+@Deprecated("Use PaginatingStoreFlowable from PaginatingStoreFlowableFactory.create()")
 interface PagingStoreFlowable<KEY, DATA> : PaginatingStoreFlowable<KEY, List<DATA>> {
 
     @Deprecated("Use requestAdditionalData", ReplaceWith("requestAdditionalData(continueWhenError)"))

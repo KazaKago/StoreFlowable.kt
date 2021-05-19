@@ -34,32 +34,32 @@ fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingSt
     )
 }
 
-@Deprecated("Use StoreFlowableCallback.create")
+@Deprecated("Use StoreFlowableFactory.create")
 fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
-    return toStoreFlowableCallback().create()
+    return toStoreFlowableFactory().create()
 }
 
-private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableCallback(): StoreFlowableFactory<KEY, DATA> {
+private fun <KEY, DATA> StoreFlowableResponder<KEY, DATA>.toStoreFlowableFactory(): StoreFlowableFactory<KEY, DATA> {
     return object : StoreFlowableFactory<KEY, DATA> {
 
-        override val key = this@toStoreFlowableCallback.key
+        override val key = this@toStoreFlowableFactory.key
 
-        override val flowableDataStateManager = this@toStoreFlowableCallback.flowableDataStateManager
+        override val flowableDataStateManager = this@toStoreFlowableFactory.flowableDataStateManager
 
         override suspend fun loadDataFromCache(): DATA? {
-            return this@toStoreFlowableCallback.loadData()
+            return this@toStoreFlowableFactory.loadData()
         }
 
         override suspend fun saveDataToCache(newData: DATA?) {
-            this@toStoreFlowableCallback.saveData(newData)
+            this@toStoreFlowableFactory.saveData(newData)
         }
 
         override suspend fun fetchDataFromOrigin(): FetchingResult<DATA> {
-            return FetchingResult(this@toStoreFlowableCallback.fetchOrigin())
+            return FetchingResult(this@toStoreFlowableFactory.fetchOrigin())
         }
 
         override suspend fun needRefresh(cachedData: DATA): Boolean {
-            return this@toStoreFlowableCallback.needRefresh(cachedData)
+            return this@toStoreFlowableFactory.needRefresh(cachedData)
         }
     }
 }

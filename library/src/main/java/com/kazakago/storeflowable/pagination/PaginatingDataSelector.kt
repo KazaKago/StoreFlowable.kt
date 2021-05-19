@@ -2,7 +2,10 @@ package com.kazakago.storeflowable.pagination
 
 import com.kazakago.storeflowable.DataState
 import com.kazakago.storeflowable.DataStateManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 internal class PaginatingDataSelector<KEY, DATA>(
     private val key: KEY,
