@@ -20,9 +20,7 @@ val versionName: String by project
 setupPublishing(version = versionName, artifactId = "storeflowable")
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     api(project(":library-core"))
-    implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
 
     testImplementation("junit:junit:4.13.2")
