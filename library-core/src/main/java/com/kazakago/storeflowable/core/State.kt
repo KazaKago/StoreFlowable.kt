@@ -13,28 +13,33 @@ package com.kazakago.storeflowable.core
  * @param T Types of data to be included.
  * @property content Indicates the existing or not existing of data by [StateContent].
  */
-sealed class State<out T>(val content: StateContent<T>) {
+sealed interface State<out T> {
+
+    /**
+     * Indicates the existing or not existing of data by [StateContent].
+     */
+    val content: StateContent<T>
 
     /**
      * No processing state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Fixed<out T>(content: StateContent<T>) : State<T>(content)
+    data class Fixed<out T>(override val content: StateContent<T>) : State<T>
 
     /**
      * Acquiring data state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Loading<out T>(content: StateContent<T>) : State<T>(content)
+    data class Loading<out T>(override val content: StateContent<T>) : State<T>
 
     /**
      * An error when processing state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Error<out T>(content: StateContent<T>, val exception: Exception) : State<T>(content)
+    data class Error<out T>(override val content: StateContent<T>, val exception: Exception) : State<T>
 
     /**
      * Provides state-specific callbacks.

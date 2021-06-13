@@ -5,19 +5,19 @@ package com.kazakago.storeflowable.core
  *
  * @param T Types of data to be included.
  */
-sealed class StateContent<out T> {
+sealed interface StateContent<out T> {
 
     /**
      * Data is exists.
      *
      * @property rawContent Included raw content.
      */
-    data class Exist<out T>(val rawContent: T) : StateContent<T>()
+    data class Exist<out T>(val rawContent: T) : StateContent<T>
 
     /**
      * Data does not exist.
      */
-    class NotExist<out T> : StateContent<T>()
+    class NotExist<out T> : StateContent<T>
 
     /**
      * Provides callbacks existing or not existing data.
