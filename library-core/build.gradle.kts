@@ -23,7 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.amshove.kluent:kluent:1.65")
+    testImplementation("org.amshove.kluent:kluent:1.67")
     testImplementation("io.mockk:mockk:1.11.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
 }
