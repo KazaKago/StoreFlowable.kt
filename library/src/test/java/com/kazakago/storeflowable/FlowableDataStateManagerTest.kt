@@ -25,10 +25,10 @@ class FlowableDataStateManagerTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
             it.history.size shouldBeEqualTo 1
             it.history[0] shouldBeInstanceOf DataState.Fixed::class
-            flowableDataStateManager.saveState("hoge", DataState.Loading())
+            flowableDataStateManager.save("hoge", DataState.Loading())
             it.history.size shouldBeEqualTo 2
             it.history[1] shouldBeInstanceOf DataState.Loading::class
-            flowableDataStateManager.saveState("hoge", DataState.Error(mockk()))
+            flowableDataStateManager.save("hoge", DataState.Error(mockk()))
             it.history.size shouldBeEqualTo 3
             it.history[2] shouldBeInstanceOf DataState.Error::class
         }
@@ -39,9 +39,9 @@ class FlowableDataStateManagerTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
             it.history.size shouldBeEqualTo 1
             it.history[0] shouldBeInstanceOf DataState.Fixed::class
-            flowableDataStateManager.saveState("hogehoge", DataState.Loading())
+            flowableDataStateManager.save("hogehoge", DataState.Loading())
             it.history.size shouldBeEqualTo 1
-            flowableDataStateManager.saveState("hugahuga", DataState.Error(mockk()))
+            flowableDataStateManager.save("hugahuga", DataState.Error(mockk()))
             it.history.size shouldBeEqualTo 1
         }
     }

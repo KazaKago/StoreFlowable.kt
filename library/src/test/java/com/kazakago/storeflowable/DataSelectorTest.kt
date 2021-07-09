@@ -24,11 +24,11 @@ class DataSelectorTest {
     private val dataSelector = DataSelector(
         key = "key",
         dataStateManager = object : DataStateManager<String> {
-            override fun loadState(key: String): DataState {
+            override fun load(key: String): DataState {
                 return dataState
             }
 
-            override fun saveState(key: String, state: DataState) {
+            override fun save(key: String, state: DataState) {
                 dataState = state
             }
         },

@@ -30,7 +30,7 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
      * @param key Key to get the specified data.
      * @return State of saved data.
      */
-    override fun loadState(key: KEY): DataState {
+    override fun load(key: KEY): DataState {
         return dataState.getOrCreate(key).value
     }
 
@@ -40,12 +40,12 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
      * @param key Key to get the specified data.
      * @param state State of saved data.
      */
-    override fun saveState(key: KEY, state: DataState) {
+    override fun save(key: KEY, state: DataState) {
         dataState.getOrCreate(key).value = state
     }
 
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed(appendingState = AdditionalDataState.Fixed(), prependingState = AdditionalDataState.Fixed())) })
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed(appendingDataState = AdditionalDataState.Fixed(), prependingDataState = AdditionalDataState.Fixed())) })
     }
 
     /**
