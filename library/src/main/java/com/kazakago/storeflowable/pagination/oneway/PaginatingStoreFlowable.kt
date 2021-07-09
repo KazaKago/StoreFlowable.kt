@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable.pagination
+package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.State
@@ -14,11 +14,11 @@ import com.kazakago.storeflowable.core.State
 interface PaginatingStoreFlowable<KEY, DATA> : StoreFlowable<KEY, DATA> {
 
     /**
-     * Request additional data.
+     * Request appending data.
      *
      * Do nothing if there is no additional data or if already data retrieving.
      *
      * @param continueWhenError Even if the data state is an [State.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
-    suspend fun requestAdditionalData(continueWhenError: Boolean = true)
+    suspend fun requestAppendingData(continueWhenError: Boolean = true)
 }

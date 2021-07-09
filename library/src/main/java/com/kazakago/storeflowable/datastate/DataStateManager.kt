@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.datastate
 
 internal interface DataStateManager<KEY> {
 

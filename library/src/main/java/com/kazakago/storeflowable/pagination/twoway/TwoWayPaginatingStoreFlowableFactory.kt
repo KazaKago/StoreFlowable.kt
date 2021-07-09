@@ -1,16 +1,16 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.pagination.twoway
 
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 
 /**
- * Abstract factory class for [StoreFlowable] class.
+ * Abstract factory class for [TwoWayPaginatingStoreFlowable] class.
  *
  * Create a class that implements origin or cache data Input / Output according to this interface.
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface StoreFlowableFactory<KEY, DATA> {
+interface TwoWayPaginatingStoreFlowableFactory<KEY, DATA> {
 
     /**
      * Key to which data to get.
@@ -41,11 +41,31 @@ interface StoreFlowableFactory<KEY, DATA> {
     suspend fun saveDataToCache(newData: DATA?)
 
     /**
+     * TODO
+     */
+    suspend fun saveAppendingDataToCache(cachedData: DATA?, newData: DATA)
+
+    /**
+     * TODO
+     */
+    suspend fun savePrependingDataToCache(cachedData: DATA?, newData: DATA)
+
+    /**
      * The latest data acquisition process from origin.
      *
-     * @return acquired data.
+     * @return [TwoWayFetchingResult] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(): DATA
+    suspend fun fetchDataFromOrigin(): TwoWayFetchingResult<DATA>
+
+    /**
+     * TODO
+     */
+    suspend fun fetchAppendingDataFromOrigin(cachedData: DATA?): AppendingFetchingResult<DATA>
+
+    /**
+     * TODO
+     */
+    suspend fun fetchPrependingDataFromOrigin(cachedData: DATA?): PrependingFetchingResult<DATA>
 
     /**
      * Determine if the cache is valid.

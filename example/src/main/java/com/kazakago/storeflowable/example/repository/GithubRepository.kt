@@ -10,6 +10,7 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
+import com.kazakago.storeflowable.pagination.oneway.create
 
 class GithubRepository {
 
@@ -35,7 +36,7 @@ class GithubRepository {
 
     suspend fun requestAdditionalOrgs(continueWhenError: Boolean) {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
-        githubOrgsFlowable.requestAdditionalData(continueWhenError)
+        githubOrgsFlowable.requestAppendingData(continueWhenError)
     }
 
     fun followUser(userName: String): FlowableState<GithubUser> {
@@ -60,6 +61,6 @@ class GithubRepository {
 
     suspend fun requestAdditionalRepos(userName: String, continueWhenError: Boolean) {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
-        githubReposFlowable.requestAdditionalData(continueWhenError)
+        githubReposFlowable.requestAppendingData(continueWhenError)
     }
 }

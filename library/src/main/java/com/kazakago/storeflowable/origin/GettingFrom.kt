@@ -1,10 +1,10 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.origin
 
 /**
  * This enum to specify where to get data when getting data.
  *
- * @see StoreFlowable.getData
- * @see StoreFlowable.requireData
+ * @see com.kazakago.storeflowable.StoreFlowable.getData
+ * @see com.kazakago.storeflowable.StoreFlowable.requireData
  */
 enum class GettingFrom {
     /**

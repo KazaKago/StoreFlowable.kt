@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.datastate
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +45,7 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
     }
 
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed()) })
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed(appendingState = AdditionalDataState.Fixed(), prependingState = AdditionalDataState.Fixed())) })
     }
 
     /**

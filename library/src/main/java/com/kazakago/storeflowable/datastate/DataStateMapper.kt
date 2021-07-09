@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.datastate
 
 import com.kazakago.storeflowable.core.State
 import com.kazakago.storeflowable.core.StateContent

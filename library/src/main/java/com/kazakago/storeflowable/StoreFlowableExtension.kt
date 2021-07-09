@@ -1,8 +1,8 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowable
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.PaginatingStoreFlowableImpl
+import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.OriginDataManager
 
 /**
  * Create [StoreFlowable] class from [StoreFlowableFactory].
@@ -13,23 +13,21 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
     return StoreFlowableImpl(
         key = key,
         flowableDataStateManager = flowableDataStateManager,
-        cacheDataManager = this,
-        originDataManager = this,
-        needRefresh = { needRefresh(it) }
-    )
-}
+        cacheDataManager = object : CacheDataManager<DATA> {
+            override suspend fun load() = loadDataFromCache()
+            override suspend fun save(newData: DATA?) = saveDataToCache(newData)
+            override suspend fun saveAppending(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+            override suspend fun savePrepending(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+        },
+        originDataManager = object : OriginDataManager<DATA> {
+            override suspend fun fetch(): InternalFetchingResult<DATA> {
+                val data = fetchDataFromOrigin()
+                return InternalFetchingResult(data = data, noMoreAppendingData = false, noMorePrependingData = false)
+            }
 
-/**
- * Create [PaginatingStoreFlowable] class from [PaginatingStoreFlowableFactory].
- *
- * @return Created PaginatingStoreFlowable.
- */
-fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingStoreFlowable<KEY, DATA> {
-    return PaginatingStoreFlowableImpl(
-        key = key,
-        flowableDataStateManager = flowableDataStateManager,
-        cacheDataManager = this,
-        originDataManager = this,
+            override suspend fun fetchAppending(cachedData: DATA?) = throw NotImplementedError()
+            override suspend fun fetchPrepending(cachedData: DATA?) = throw NotImplementedError()
+        },
         needRefresh = { needRefresh(it) }
     )
 }

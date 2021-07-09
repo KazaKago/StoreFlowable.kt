@@ -1,5 +1,10 @@
 package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.datastate.DataState
+import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.logic.DataSelector
+import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -28,16 +33,16 @@ class DataSelectorTest {
             }
         },
         cacheDataManager = object : CacheDataManager<TestData> {
-            override suspend fun loadDataFromCache(): TestData? {
+            override suspend fun loadData(): TestData? {
                 return dataCache
             }
 
-            override suspend fun saveDataToCache(newData: TestData?) {
+            override suspend fun saveData(newData: TestData?) {
                 dataCache = newData
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
-            override suspend fun fetchDataFromOrigin(): FetchingResult<TestData> {
+            override suspend fun fetchData(): FetchingResult<TestData> {
                 return FetchingResult(TestData.FetchedData)
             }
         },

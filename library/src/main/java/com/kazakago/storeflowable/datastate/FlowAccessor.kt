@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.datastate
 
 import kotlinx.coroutines.flow.Flow
 

@@ -2,6 +2,7 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.origin.GettingFrom
 import kotlinx.coroutines.flow.Flow
 
 /**

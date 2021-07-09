@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.example.flowable
 
-import com.kazakago.storeflowable.FetchingResult
-import com.kazakago.storeflowable.FlowableDataStateManager
+import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.StoreFlowableFactory
 import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
@@ -32,9 +31,8 @@ class GithubUserFlowableFactory(userName: String) : StoreFlowableFactory<String,
         githubCache.userCacheCreateAt[key] = LocalDateTime.now()
     }
 
-    override suspend fun fetchDataFromOrigin(): FetchingResult<GithubUser> {
-        val data = githubApi.getUser(key)
-        return FetchingResult(data = data)
+    override suspend fun fetchDataFromOrigin(): GithubUser {
+        return githubApi.getUser(key)
     }
 
     override suspend fun needRefresh(cachedData: GithubUser): Boolean {
