@@ -28,14 +28,6 @@ interface StoreFlowable<KEY, DATA> {
     fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
 
     /**
-     * Deprecated, use [publish].
-     *
-     * @see publish
-     */
-    @Deprecated("Use publish", ReplaceWith("publish(forceRefresh)"))
-    fun asFlow(forceRefresh: Boolean = false): Flow<State<DATA>> = publish()
-
-    /**
      * Returns valid data only once.
      *
      * If the data could not be retrieved, it returns null instead.
@@ -65,14 +57,6 @@ interface StoreFlowable<KEY, DATA> {
     suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 
     /**
-     * Deprecated, use [requireData].
-     *
-     * @see requireData
-     */
-    @Deprecated("Use requireData()", ReplaceWith("requireData(type)"))
-    suspend fun get(type: AsDataType = AsDataType.Mix): DATA = requireData(type)
-
-    /**
      * Checks if the published data is valid.
      *
      * If it is invalid, it will be reacquired from origin.
@@ -88,14 +72,6 @@ interface StoreFlowable<KEY, DATA> {
      * @param continueWhenError Even if the data state is an [State.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
     suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
-
-    /**
-     * Deprecated, use [refresh].
-     *
-     * @see refresh
-     */
-    @Deprecated("Use refresh", ReplaceWith("refresh()"))
-    suspend fun request() = refresh()
 
     /**
      * Treat the passed data as the latest acquired data.

@@ -47,16 +47,16 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 when (from) {
-                    GettingFrom.Both, GettingFrom.Mix -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.Origin, GettingFrom.FromOrigin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
-                    GettingFrom.Cache, GettingFrom.FromCache -> Unit // do nothing.
+                    GettingFrom.Both -> dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Origin -> dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, additionalRequest = false)
+                    GettingFrom.Cache -> Unit
                 }
             }
             .transform { dataState ->
                 val data = dataSelector.load()
                 when (dataState) {
                     is DataState.Fixed -> if (data != null && !needRefresh(data)) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit // do nothing.
+                    is DataState.Loading -> Unit
                     is DataState.Error -> if (data != null && !needRefresh(data)) emit(data) else throw dataState.exception
                 }
             }

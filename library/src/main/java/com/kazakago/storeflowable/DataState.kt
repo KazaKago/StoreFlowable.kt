@@ -17,6 +17,7 @@ sealed interface DataState {
     /**
      * Acquiring data state.
      */
+    @Suppress("CanSealedSubClassBeObject")
     class Loading : DataState
 
     /**

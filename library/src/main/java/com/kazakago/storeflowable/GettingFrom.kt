@@ -22,22 +22,4 @@ enum class GettingFrom {
      * Always try to get data from cache.
      */
     Cache,
-
-    /**
-     * Use `Both`
-     */
-    @Deprecated("Use `Both`", ReplaceWith("Both"))
-    Mix,
-
-    /**
-     * Use `Origin`
-     */
-    @Deprecated("Use `Origin`", ReplaceWith("Origin"))
-    FromOrigin,
-
-    /**
-     * Use `Cache`
-     */
-    @Deprecated("Use `Cache`", ReplaceWith("Cache"))
-    FromCache,
 }
