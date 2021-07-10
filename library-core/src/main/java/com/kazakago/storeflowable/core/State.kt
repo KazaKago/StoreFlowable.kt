@@ -8,8 +8,8 @@ import java.io.Serializable
  * This sealed class that represents the state of the data.
  *
  * The following three states are shown.
- * - [Fixed] has not been processed.
  * - [Loading] is acquiring data.
+ * - [Completed] has not been processed.
  * - [Error] is an error when processing.
  *
  * The entity of the data is stored in [StateContent] separately from this [State].
@@ -22,14 +22,14 @@ sealed interface State<out T> : Serializable {
     /**
      * Acquiring data state.
      *
-     * @param content Indicates the existing or not existing of data by [StateContent].
+     * @param content Indicates the existing or not existing of data.
      */
     data class Loading<out T>(val content: T?) : State<T>
 
     /**
      * No processing state.
      *
-     * @param content Indicates the existing or not existing of data.
+     * @param content Indicates the existing.
      */
     data class Completed<out T>(val content: T, val appending: AdditionalState, val prepending: AdditionalState) : State<T>
 

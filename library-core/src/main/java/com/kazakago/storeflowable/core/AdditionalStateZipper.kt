@@ -1,5 +1,8 @@
 package com.kazakago.storeflowable.core
 
+/**
+ * TODO
+ */
 fun AdditionalState.zip(additionalState2: AdditionalState): AdditionalState {
     return when (this) {
         is AdditionalState.Fixed -> when (additionalState2) {
