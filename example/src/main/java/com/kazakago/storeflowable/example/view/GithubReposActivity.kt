@@ -47,7 +47,7 @@ class GithubReposActivity : AppCompatActivity() {
 
         binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
         binding.githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAdditional()
+            githubReposViewModel.requestAddition()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             githubReposViewModel.refresh()
@@ -98,7 +98,7 @@ class GithubReposActivity : AppCompatActivity() {
 
     private fun createErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryAdditional() }
+            onRetry = { githubReposViewModel.retryAddition() }
         }
     }
 

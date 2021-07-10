@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubUser
 import com.kazakago.storeflowable.example.repository.GithubRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -22,11 +22,11 @@ class GithubUserViewModel(application: Application, private val userName: String
     }
 
     private val _githubUser = MutableStateFlow<GithubUser?>(null)
-    val githubUser: StateFlow<GithubUser?> get() = _githubUser
+    val githubUser = _githubUser.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading = _isLoading.asStateFlow()
     private val _error = MutableStateFlow<Exception?>(null)
-    val error: StateFlow<Exception?> get() = _error
+    val error = _error.asStateFlow()
     private val githubRepository = GithubRepository()
 
     init {

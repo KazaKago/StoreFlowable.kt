@@ -6,18 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.repository.GithubRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubMetaViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _githubMeta = MutableStateFlow<GithubMeta?>(null)
-    val githubMeta: StateFlow<GithubMeta?> get() = _githubMeta
+    val githubMeta = _githubMeta.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> get() = _isLoading
+    val isLoading = _isLoading.asStateFlow()
     private val _error = MutableStateFlow<Exception?>(null)
-    val error: StateFlow<Exception?> get() = _error
+    val error = _error.asStateFlow()
     private val githubRepository = GithubRepository()
 
     init {

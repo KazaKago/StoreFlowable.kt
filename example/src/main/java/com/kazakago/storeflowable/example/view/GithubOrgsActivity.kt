@@ -37,7 +37,7 @@ class GithubOrgsActivity : AppCompatActivity() {
 
         binding.githubOrgsRecyclerView.adapter = githubOrgsGroupAdapter
         binding.githubOrgsRecyclerView.addOnBottomReached {
-            githubOrgsViewModel.requestAdditional()
+            githubOrgsViewModel.requestAddition()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             githubOrgsViewModel.refresh()
@@ -84,7 +84,7 @@ class GithubOrgsActivity : AppCompatActivity() {
 
     private fun createErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubOrgsViewModel.retryAdditional() }
+            onRetry = { githubOrgsViewModel.retryAddition() }
         }
     }
 }
