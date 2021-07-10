@@ -1,11 +1,9 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.core.FlowableState
-import com.kazakago.storeflowable.core.StateContent
+import com.kazakago.storeflowable.core.pagination.oneway.FlowablePaginatingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
-import com.kazakago.storeflowable.datastate.mapState
 import com.kazakago.storeflowable.logic.DataSelector
 import com.kazakago.storeflowable.logic.RequestType
 import com.kazakago.storeflowable.origin.GettingFrom
@@ -31,15 +29,14 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(
         needRefresh = needRefresh,
     )
 
-    override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
+    override fun publish(forceRefresh: Boolean): FlowablePaginatingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
             }
             .map { dataState ->
                 val data = dataSelector.load()
-                val content = StateContent.wrap(data)
-                dataState.mapState(content)
+                dataState.toPaginatingState(data)
             }
     }
 

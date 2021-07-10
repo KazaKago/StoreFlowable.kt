@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable.example.repository
 
+import com.kazakago.storeflowable.core.pagination.oneway.FlowablePaginatingState
 import com.kazakago.storeflowable.core.FlowableState
 import com.kazakago.storeflowable.create
 import com.kazakago.storeflowable.example.flowable.GithubMetaFlowableFactory
@@ -24,7 +25,7 @@ class GithubRepository {
         githubMetaFlowable.refresh()
     }
 
-    fun followOrgs(): FlowableState<List<GithubOrg>> {
+    fun followOrgs(): FlowablePaginatingState<List<GithubOrg>> {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
         return githubOrgsFlowable.publish()
     }
@@ -49,7 +50,7 @@ class GithubRepository {
         githubUserFlowable.refresh()
     }
 
-    fun followRepos(userName: String): FlowableState<List<GithubRepo>> {
+    fun followRepos(userName: String): FlowablePaginatingState<List<GithubRepo>> {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
         return githubReposFlowable.publish()
     }

@@ -10,14 +10,11 @@ import kotlinx.coroutines.flow.map
  */
 fun <A, Z> FlowableState<A>.mapContent(transform: suspend (content: A) -> Z): FlowableState<Z> {
     return map {
-        val content = when (val content = it.content) {
-            is StateContent.Exist -> StateContent.Exist(transform(content.rawContent))
-            is StateContent.NotExist -> StateContent.NotExist<Z>()
-        }
         when (it) {
-            is State.Fixed -> State.Fixed(content)
-            is State.Loading -> State.Loading(content)
-            is State.Error -> State.Error(content, it.exception)
+            is State.Loading -> State.Loading()
+            is State.Refreshing -> State.Refreshing(transform(it.content))
+            is State.Completed -> State.Completed(transform(it.content))
+            is State.Error -> State.Error(it.exception)
         }
     }
 }

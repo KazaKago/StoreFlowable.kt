@@ -44,47 +44,25 @@ class GithubUserViewModel(application: Application, private val userName: String
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followUser(userName).collect {
             it.doAction(
-                onFixed = {
-                    it.content.doAction(
-                        onExist = { githubUser ->
-                            _githubUser.value = githubUser
-                            _isLoading.value = false
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubUser.value = null
-                            _isLoading.value = false
-                            _error.value = null
-                        }
-                    )
-                },
                 onLoading = {
-                    it.content.doAction(
-                        onExist = { githubUser ->
-                            _githubUser.value = githubUser
-                            _isLoading.value = true
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubUser.value = null
-                            _isLoading.value = true
-                            _error.value = null
-                        }
-                    )
+                    _githubUser.value = null
+                    _isLoading.value = true
+                    _error.value = null
+                },
+                onRefreshing = { githubUser ->
+                    _githubUser.value = githubUser
+                    _isLoading.value = true
+                    _error.value = null
+                },
+                onCompleted = { githubUser ->
+                    _githubUser.value = githubUser
+                    _isLoading.value = false
+                    _error.value = null
                 },
                 onError = { exception ->
-                    it.content.doAction(
-                        onExist = { githubUser ->
-                            _githubUser.value = githubUser
-                            _isLoading.value = false
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubUser.value = null
-                            _isLoading.value = false
-                            _error.value = exception
-                        }
-                    )
+                    _githubUser.value = null
+                    _isLoading.value = false
+                    _error.value = exception
                 }
             )
         }

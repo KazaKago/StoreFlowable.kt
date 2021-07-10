@@ -3,6 +3,7 @@ package com.kazakago.storeflowable.example.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.kazakago.storeflowable.core.pagination.oneway.AdditionalState
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.repository.GithubRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,59 +52,51 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followOrgs().collect {
             it.doAction(
-                onFixed = {
-                    it.content.doAction(
-                        onExist = { githubOrgs ->
-                            _githubOrgs.value = githubOrgs
-                            _isMainLoading.value = false
-                            _isAdditionalLoading.value = false
-                            _mainError.value = null
-                            _additionalError.value = null
-                        },
-                        onNotExist = {
-                            _githubOrgs.value = emptyList()
-                            _isMainLoading.value = true
-                            _isAdditionalLoading.value = false
-                            _mainError.value = null
-                            _additionalError.value = null
-                        }
-                    )
-                },
                 onLoading = {
-                    it.content.doAction(
-                        onExist = { githubOrgs ->
+                    _githubOrgs.value = emptyList()
+                    _isMainLoading.value = true
+                    _isAdditionalLoading.value = false
+                    _mainError.value = null
+                    _additionalError.value = null
+                },
+                onRefreshing = { githubOrgs ->
+                    _githubOrgs.value = githubOrgs
+                    _isMainLoading.value = false
+                    _isAdditionalLoading.value = false
+                    _mainError.value = null
+                    _additionalError.value = null
+                },
+                onCompleted = { githubOrgs ->
+                    _githubOrgs.value = githubOrgs
+                    _isMainLoading.value = false
+                    _isAdditionalLoading.value = false
+                    _mainError.value = null
+                    _additionalError.value = null
+                },
+                onError = { exception ->
+                    _githubOrgs.value = emptyList()
+                    _isMainLoading.value = false
+                    _isAdditionalLoading.value = false
+                    _mainError.value = exception
+                    _additionalError.value = null
+                },
+                onAddition = { githubOrgs, appending ->
+                    when (appending) {
+                        is AdditionalState.Loading -> {
                             _githubOrgs.value = githubOrgs
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = true
                             _mainError.value = null
                             _additionalError.value = null
-                        },
-                        onNotExist = {
-                            _githubOrgs.value = emptyList()
-                            _isMainLoading.value = true
-                            _isAdditionalLoading.value = false
-                            _mainError.value = null
-                            _additionalError.value = null
                         }
-                    )
-                },
-                onError = { exception ->
-                    it.content.doAction(
-                        onExist = { githubOrgs ->
+                        is AdditionalState.Error -> {
                             _githubOrgs.value = githubOrgs
                             _isMainLoading.value = false
                             _isAdditionalLoading.value = false
                             _mainError.value = null
-                            _additionalError.value = exception
-                        },
-                        onNotExist = {
-                            _githubOrgs.value = emptyList()
-                            _isMainLoading.value = false
-                            _isAdditionalLoading.value = false
-                            _mainError.value = exception
-                            _additionalError.value = null
+                            _additionalError.value = appending.exception
                         }
-                    )
+                    }
                 }
             )
         }

@@ -35,47 +35,25 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followMeta().collect {
             it.doAction(
-                onFixed = {
-                    it.content.doAction(
-                        onExist = { githubMeta ->
-                            _githubMeta.value = githubMeta
-                            _isLoading.value = false
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubMeta.value = null
-                            _isLoading.value = false
-                            _error.value = null
-                        }
-                    )
-                },
                 onLoading = {
-                    it.content.doAction(
-                        onExist = { githubMeta ->
-                            _githubMeta.value = githubMeta
-                            _isLoading.value = true
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubMeta.value = null
-                            _isLoading.value = true
-                            _error.value = null
-                        }
-                    )
+                    _githubMeta.value = null
+                    _isLoading.value = true
+                    _error.value = null
+                },
+                onRefreshing = { githubMeta ->
+                    _githubMeta.value = githubMeta
+                    _isLoading.value = true
+                    _error.value = null
+                },
+                onCompleted = { githubMeta ->
+                    _githubMeta.value = githubMeta
+                    _isLoading.value = false
+                    _error.value = null
                 },
                 onError = { exception ->
-                    it.content.doAction(
-                        onExist = { githubMeta ->
-                            _githubMeta.value = githubMeta
-                            _isLoading.value = false
-                            _error.value = null
-                        },
-                        onNotExist = {
-                            _githubMeta.value = null
-                            _isLoading.value = false
-                            _error.value = exception
-                        }
-                    )
+                    _githubMeta.value = null
+                    _isLoading.value = false
+                    _error.value = exception
                 }
             )
         }

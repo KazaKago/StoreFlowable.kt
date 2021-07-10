@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.State
-import com.kazakago.storeflowable.core.StateContent
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.origin.GettingFrom
 import kotlinx.coroutines.ExperimentalCoroutinesApi
