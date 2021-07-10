@@ -1,6 +1,8 @@
-package com.kazakago.storeflowable.core.pagination
+package com.kazakago.storeflowable.core
 
-sealed interface AdditionalState {
+import java.io.Serializable
+
+sealed interface AdditionalState : Serializable {
     data class Fixed(val noMoreAdditionalData: Boolean) : AdditionalState
     object Loading : AdditionalState
     data class Error(val exception: Exception) : AdditionalState

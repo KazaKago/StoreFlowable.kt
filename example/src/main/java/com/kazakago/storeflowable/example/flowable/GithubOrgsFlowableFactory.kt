@@ -5,7 +5,7 @@ import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubOrgsStateManager
 import com.kazakago.storeflowable.example.model.GithubOrg
-import com.kazakago.storeflowable.pagination.oneway.FetchingResult
+import com.kazakago.storeflowable.pagination.FetchingResult
 import com.kazakago.storeflowable.pagination.oneway.PaginatingStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -39,13 +39,13 @@ class GithubOrgsFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<Gith
 
     override suspend fun fetchDataFromOrigin(): FetchingResult<List<GithubOrg>> {
         val data = githubApi.getOrgs(null, PER_PAGE)
-        return FetchingResult(data = data, noMoreAppendingData = data.isEmpty())
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun fetchAppendingDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
         val since = cachedData?.lastOrNull()?.id
         val data = githubApi.getOrgs(since, PER_PAGE)
-        return FetchingResult(data = data, noMoreAppendingData = data.isEmpty())
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun needRefresh(cachedData: List<GithubOrg>): Boolean {

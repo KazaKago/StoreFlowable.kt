@@ -1,5 +1,9 @@
 package com.kazakago.storeflowable.core
 
+import com.kazakago.storeflowable.core.State.Error
+import com.kazakago.storeflowable.core.State.Loading
+import java.io.Serializable
+
 /**
  * This sealed class that represents the state of the data.
  *
@@ -13,21 +17,21 @@ package com.kazakago.storeflowable.core
  * @param T Types of data to be included.
  * @property content Indicates the existing or not existing of data by [StateContent].
  */
-sealed interface State<out T> {
+sealed interface State<out T> : Serializable {
 
     /**
      * Acquiring data state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Loading<out T>(val content: T?) : State<T>
+    data class Loading<out T>(val content: T?) : State<T>
 
     /**
      * No processing state.
      *
      * @param content Indicates the existing or not existing of data.
      */
-    data class Completed<out T>(val content: T) : State<T>
+    data class Completed<out T>(val content: T, val appending: AdditionalState, val prepending: AdditionalState) : State<T>
 
     /**
      * An error when processing state.
@@ -43,10 +47,10 @@ sealed interface State<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, appending: AdditionalState, prepending: AdditionalState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
-            is Completed -> onCompleted(content)
+            is Completed -> onCompleted(content, appending, prepending)
             is Error -> onError(exception)
         }
     }

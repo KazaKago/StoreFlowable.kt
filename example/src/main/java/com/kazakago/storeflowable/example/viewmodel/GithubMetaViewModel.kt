@@ -35,18 +35,12 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followMeta().collect {
             it.doAction(
-                onLoading = { githubMeta ->
-                    if (githubMeta != null) {
-                        _githubMeta.value = githubMeta
-                        _isLoading.value = true
-                        _error.value = null
-                    } else {
-                        _githubMeta.value = null
-                        _isLoading.value = true
-                        _error.value = null
-                    }
+                onLoading = {
+                    _githubMeta.value = null
+                    _isLoading.value = true
+                    _error.value = null
                 },
-                onCompleted = { githubMeta ->
+                onCompleted = { githubMeta, _, _ ->
                     _githubMeta.value = githubMeta
                     _isLoading.value = false
                     _error.value = null

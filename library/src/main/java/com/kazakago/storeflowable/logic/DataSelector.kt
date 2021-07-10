@@ -34,13 +34,13 @@ internal class DataSelector<KEY, DATA>(
                 RequestType.Refresh -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 RequestType.Append -> when (state.appendingDataState) {
                     is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
-                    is AdditionalDataState.FixedWithNoMoreData -> Unit
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
                     is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 }
                 RequestType.Prepend -> when (state.prependingDataState) {
                     is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
-                    is AdditionalDataState.FixedWithNoMoreData -> Unit
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
                     is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 }
@@ -86,9 +86,9 @@ internal class DataSelector<KEY, DATA>(
             }
             val state = dataStateManager.load(key)
             when (requestType) {
-                RequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreData() else AdditionalDataState.Fixed(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreData() else AdditionalDataState.Fixed()))
-                RequestType.Append -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreData() else AdditionalDataState.Fixed(), prependingDataState = state.prependingDataState()))
-                RequestType.Prepend -> dataStateManager.save(key, DataState.Fixed(appendingDataState = state.appendingDataState(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreData() else AdditionalDataState.Fixed()))
+                RequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed()))
+                RequestType.Append -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(), prependingDataState = state.prependingDataState()))
+                RequestType.Prepend -> dataStateManager.save(key, DataState.Fixed(appendingDataState = state.appendingDataState(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed()))
             }
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.save(null)

@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.example.flowable
 
-import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.StoreFlowableFactory
+import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubMetaStateManager

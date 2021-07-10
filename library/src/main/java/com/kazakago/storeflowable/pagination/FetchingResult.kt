@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable.pagination.oneway
+package com.kazakago.storeflowable.pagination
 
 /**
  * Result of Fetching from origin.
@@ -11,7 +11,7 @@ data class FetchingResult<DATA>(
      */
     val data: DATA,
     /**
-     * Set to `true` if you know at Pagination that there is no more appending data.
+     * Set to `true` if you know at Pagination that there is no more additional data.
      */
-    val noMoreAppendingData: Boolean,
+    val noMoreAdditionalData: Boolean,
 )

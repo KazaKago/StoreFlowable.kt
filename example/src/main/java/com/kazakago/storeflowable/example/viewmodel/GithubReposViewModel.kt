@@ -75,7 +75,7 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                         _additionalError.value = null
                     }
                 },
-                onCompleted = { githubRepos, appending ->
+                onCompleted = { githubRepos, appending, _ ->
                     appending.doAction(
                         onFixed = {
                             _githubRepos.value = githubRepos

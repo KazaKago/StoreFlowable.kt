@@ -5,7 +5,7 @@ import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubReposStateManager
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.pagination.oneway.FetchingResult
+import com.kazakago.storeflowable.pagination.FetchingResult
 import com.kazakago.storeflowable.pagination.oneway.PaginatingStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -39,13 +39,13 @@ class GithubReposFlowableFactory(userName: String) : PaginatingStoreFlowableFact
 
     override suspend fun fetchDataFromOrigin(): FetchingResult<List<GithubRepo>> {
         val data = githubApi.getRepos(key, 1, PER_PAGE)
-        return FetchingResult(data = data, noMoreAppendingData = data.isEmpty())
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun fetchAppendingDataFromOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
         val page = ((cachedData?.size ?: 0) / PER_PAGE + 1)
         val data = githubApi.getRepos(key, page, PER_PAGE)
-        return FetchingResult(data = data, noMoreAppendingData = data.isEmpty())
+        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
     }
 
     override suspend fun needRefresh(cachedData: List<GithubRepo>): Boolean {

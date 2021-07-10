@@ -66,7 +66,7 @@ class GithubOrgsViewModel(application: Application) : AndroidViewModel(applicati
                         _additionalError.value = null
                     }
                 },
-                onCompleted = { githubOrgs, appending ->
+                onCompleted = { githubOrgs, appending, _ ->
                     appending.doAction(
                         onFixed = {
                             _githubOrgs.value = githubOrgs

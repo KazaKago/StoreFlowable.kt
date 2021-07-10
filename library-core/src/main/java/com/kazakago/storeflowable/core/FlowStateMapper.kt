@@ -12,7 +12,7 @@ fun <A, Z> FlowableState<A>.mapContent(transform: suspend (content: A) -> Z): Fl
     return map {
         when (it) {
             is State.Loading -> State.Loading(if (it.content != null) transform(it.content) else null)
-            is State.Completed -> State.Completed(transform(it.content))
+            is State.Completed -> State.Completed(transform(it.content), it.appending, it.prepending)
             is State.Error -> State.Error(it.exception)
         }
     }

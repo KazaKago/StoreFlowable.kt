@@ -11,7 +11,7 @@ fun <A, B, Z> State<A>.zip(state2: State<B>, transform: (rawContent1: A, rawCont
     return when (this) {
         is State.Completed -> when (state2) {
             is State.Loading -> State.Loading(if (state2.content != null) transform(content, state2.content) else null)
-            is State.Completed -> State.Completed(transform(content, state2.content))
+            is State.Completed -> State.Completed(transform(content, state2.content), appending.zip(state2.appending), prepending.zip(state2.prepending))
             is State.Error -> State.Error(state2.exception)
         }
         is State.Loading -> when (state2) {

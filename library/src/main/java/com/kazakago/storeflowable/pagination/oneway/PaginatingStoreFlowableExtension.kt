@@ -22,12 +22,12 @@ fun <KEY, DATA> PaginatingStoreFlowableFactory<KEY, DATA>.create(): PaginatingSt
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAppendingData, noMorePrependingData = false)
+                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = true)
             }
 
             override suspend fun fetchAppending(cachedData: DATA?): InternalFetchingResult<DATA> {
                 val result = fetchAppendingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAppendingData, noMorePrependingData = false)
+                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = true)
             }
 
             override suspend fun fetchPrepending(cachedData: DATA?) = throw NotImplementedError()

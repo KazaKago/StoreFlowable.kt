@@ -22,7 +22,7 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {
                 val data = fetchDataFromOrigin()
-                return InternalFetchingResult(data = data, noMoreAppendingData = false, noMorePrependingData = false)
+                return InternalFetchingResult(data = data, noMoreAppendingData = true, noMorePrependingData = true)
             }
 
             override suspend fun fetchAppending(cachedData: DATA?) = throw NotImplementedError()

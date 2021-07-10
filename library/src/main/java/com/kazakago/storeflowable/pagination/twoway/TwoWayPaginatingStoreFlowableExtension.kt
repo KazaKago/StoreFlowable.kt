@@ -27,12 +27,12 @@ fun <KEY, DATA> TwoWayPaginatingStoreFlowableFactory<KEY, DATA>.create(): TwoWay
 
             override suspend fun fetchAppending(cachedData: DATA?): InternalFetchingResult<DATA> {
                 val result = fetchAppendingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAppendingData, noMorePrependingData = false)
+                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = false)
             }
 
             override suspend fun fetchPrepending(cachedData: DATA?): InternalFetchingResult<DATA> {
                 val result = fetchPrependingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = false, noMorePrependingData = result.noMorePrependingData)
+                return InternalFetchingResult(result.data, noMoreAppendingData = false, noMorePrependingData = result.noMoreAdditionalData)
             }
         },
         needRefresh = { needRefresh(it) }
