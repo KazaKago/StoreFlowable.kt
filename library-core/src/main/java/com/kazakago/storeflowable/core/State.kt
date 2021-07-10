@@ -43,7 +43,7 @@ sealed interface State<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
             is Completed -> onCompleted(content)

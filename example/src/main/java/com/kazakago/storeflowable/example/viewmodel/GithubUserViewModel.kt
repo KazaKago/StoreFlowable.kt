@@ -44,15 +44,16 @@ class GithubUserViewModel(application: Application, private val userName: String
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followUser(userName).collect {
             it.doAction(
-                onLoading = {
-                    _githubUser.value = null
-                    _isLoading.value = true
-                    _error.value = null
-                },
-                onRefreshing = { githubUser ->
-                    _githubUser.value = githubUser
-                    _isLoading.value = true
-                    _error.value = null
+                onLoading = { githubUser ->
+                    if (githubUser != null) {
+                        _githubUser.value = githubUser
+                        _isLoading.value = true
+                        _error.value = null
+                    } else {
+                        _githubUser.value = null
+                        _isLoading.value = true
+                        _error.value = null
+                    }
                 },
                 onCompleted = { githubUser ->
                     _githubUser.value = githubUser
