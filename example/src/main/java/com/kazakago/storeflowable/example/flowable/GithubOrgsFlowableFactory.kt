@@ -1,13 +1,12 @@
 package com.kazakago.storeflowable.example.flowable
 
-import com.kazakago.storeflowable.pagination.oneway.FetchingResult
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubOrgsStateManager
 import com.kazakago.storeflowable.example.model.GithubOrg
+import com.kazakago.storeflowable.pagination.oneway.FetchingResult
 import com.kazakago.storeflowable.pagination.oneway.PaginatingStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginatingStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
 

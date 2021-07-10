@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.core.pagination.twoway
 
-import com.kazakago.storeflowable.core.pagination.twoway.TwoWayPaginatingState.Error
-import com.kazakago.storeflowable.core.pagination.twoway.TwoWayPaginatingState.Loading
+import com.kazakago.storeflowable.core.pagination.AdditionalState
+import com.kazakago.storeflowable.core.pagination.twoway.TwoWayPaginatingState.*
 
 /**
  * This sealed class that represents the state of the data.
@@ -23,19 +23,14 @@ sealed interface TwoWayPaginatingState<out T> {
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Loading<out T> : TwoWayPaginatingState<T>
-
-    /**
-     * TODO
-     */
-    data class Refreshing<out T>(val content: T) : TwoWayPaginatingState<T>
+    class Loading<out T>(val content: T?) : TwoWayPaginatingState<T>
 
     /**
      * No processing state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    data class Completed<out T>(val content: T) : TwoWayPaginatingState<T>
+    data class Completed<out T>(val content: T, val appending: AdditionalState, val prepending: AdditionalState) : TwoWayPaginatingState<T>
 
     /**
      * An error when processing state.
@@ -43,11 +38,6 @@ sealed interface TwoWayPaginatingState<out T> {
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
     data class Error<out T>(val exception: Exception) : TwoWayPaginatingState<T>
-
-    /**
-     * TODO
-     */
-    data class Addition<out T>(val content: T, val appending: TwoWayAdditionalState, val prepending: TwoWayAdditionalState) : TwoWayPaginatingState<T>
 
     /**
      * Provides state-specific callbacks.
@@ -58,13 +48,11 @@ sealed interface TwoWayPaginatingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: (() -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V), onAddition: (content: T, appending: TwoWayAdditionalState, prepending: TwoWayAdditionalState) -> V): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T, appending: AdditionalState, prepending: AdditionalState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
-            is Loading -> onLoading()
-            is Refreshing -> onRefreshing(content)
-            is Completed -> onCompleted(content)
+            is Loading -> onLoading(content)
+            is Completed -> onCompleted(content, appending, prepending)
             is Error -> onError(exception)
-            is Addition -> onAddition(content, appending, prepending)
         }
     }
 }

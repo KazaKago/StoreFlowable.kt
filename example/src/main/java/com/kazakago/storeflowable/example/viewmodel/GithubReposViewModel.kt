@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.kazakago.storeflowable.core.pagination.oneway.AdditionalState
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.repository.GithubRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,26 +60,45 @@ class GithubReposViewModel(application: Application, private val userName: Strin
     private fun subscribe() = viewModelScope.launch {
         githubRepository.followRepos(userName).collect {
             it.doAction(
-                onLoading = {
-                    _githubRepos.value = emptyList()
-                    _isMainLoading.value = true
-                    _isAdditionalLoading.value = false
-                    _mainError.value = null
-                    _additionalError.value = null
+                onLoading = { githubRepos ->
+                    if (githubRepos != null) {
+                        _githubRepos.value = githubRepos
+                        _isMainLoading.value = false
+                        _isAdditionalLoading.value = false
+                        _mainError.value = null
+                        _additionalError.value = null
+                    } else {
+                        _githubRepos.value = emptyList()
+                        _isMainLoading.value = true
+                        _isAdditionalLoading.value = false
+                        _mainError.value = null
+                        _additionalError.value = null
+                    }
                 },
-                onRefreshing = { githubRepos ->
-                    _githubRepos.value = githubRepos
-                    _isMainLoading.value = false
-                    _isAdditionalLoading.value = false
-                    _mainError.value = null
-                    _additionalError.value = null
-                },
-                onCompleted = { githubRepos ->
-                    _githubRepos.value = githubRepos
-                    _isMainLoading.value = false
-                    _isAdditionalLoading.value = false
-                    _mainError.value = null
-                    _additionalError.value = null
+                onCompleted = { githubRepos, appending ->
+                    appending.doAction(
+                        onFixed = {
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = null
+                        },
+                        onLoading = {
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = true
+                            _mainError.value = null
+                            _additionalError.value = null
+                        },
+                        onError = { exception ->
+                            _githubRepos.value = githubRepos
+                            _isMainLoading.value = false
+                            _isAdditionalLoading.value = false
+                            _mainError.value = null
+                            _additionalError.value = exception
+                        }
+                    )
                 },
                 onError = { exception ->
                     _githubRepos.value = emptyList()
@@ -89,24 +107,6 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                     _mainError.value = exception
                     _additionalError.value = null
                 },
-                onAddition = { githubRepos, appending ->
-                    when (appending) {
-                        is AdditionalState.Loading -> {
-                            _githubRepos.value = githubRepos
-                            _isMainLoading.value = false
-                            _isAdditionalLoading.value = true
-                            _mainError.value = null
-                            _additionalError.value = null
-                        }
-                        is AdditionalState.Error -> {
-                            _githubRepos.value = githubRepos
-                            _isMainLoading.value = false
-                            _isAdditionalLoading.value = false
-                            _mainError.value = null
-                            _additionalError.value = appending.exception
-                        }
-                    }
-                }
             )
         }
     }

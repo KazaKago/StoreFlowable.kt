@@ -20,12 +20,7 @@ sealed interface State<out T> {
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Loading<out T> : State<T>
-
-    /**
-     * TODO
-     */
-    data class Refreshing<out T>(val content: T) : State<T>
+    class Loading<out T>(val content: T?) : State<T>
 
     /**
      * No processing state.
@@ -48,10 +43,9 @@ sealed interface State<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: (() -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
-            is Loading -> onLoading()
-            is Refreshing -> onRefreshing(content)
+            is Loading -> onLoading(content)
             is Completed -> onCompleted(content)
             is Error -> onError(exception)
         }

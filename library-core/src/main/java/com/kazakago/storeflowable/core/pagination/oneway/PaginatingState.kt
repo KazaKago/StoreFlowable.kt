@@ -1,5 +1,9 @@
 package com.kazakago.storeflowable.core.pagination.oneway
 
+import com.kazakago.storeflowable.core.pagination.AdditionalState
+import com.kazakago.storeflowable.core.pagination.oneway.PaginatingState.Error
+import com.kazakago.storeflowable.core.pagination.oneway.PaginatingState.Loading
+
 /**
  * This sealed class that represents the state of the data.
  *
@@ -20,19 +24,14 @@ sealed interface PaginatingState<out T> {
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    class Loading<out T> : PaginatingState<T>
-
-    /**
-     * TODO
-     */
-    data class Refreshing<out T>(val content: T) : PaginatingState<T>
+    class Loading<out T>(val content: T?) : PaginatingState<T>
 
     /**
      * No processing state.
      *
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
-    data class Completed<out T>(val content: T) : PaginatingState<T>
+    data class Completed<out T>(val content: T, val appending: AdditionalState) : PaginatingState<T>
 
     /**
      * An error when processing state.
@@ -40,11 +39,6 @@ sealed interface PaginatingState<out T> {
      * @param content Indicates the existing or not existing of data by [StateContent].
      */
     data class Error<out T>(val exception: Exception) : PaginatingState<T>
-
-    /**
-     * TODO
-     */
-    data class Addition<out T>(val content: T, val appending: AdditionalState) : PaginatingState<T>
 
     /**
      * Provides state-specific callbacks.
@@ -55,13 +49,11 @@ sealed interface PaginatingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: (() -> V), onRefreshing: ((content: T) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V), onAddition: (content: T, appending: AdditionalState) -> V): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, appending: AdditionalState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
-            is Loading -> onLoading()
-            is Refreshing -> onRefreshing(content)
-            is Completed -> onCompleted(content)
+            is Loading -> onLoading(content)
+            is Completed -> onCompleted(content, appending)
             is Error -> onError(exception)
-            is Addition -> onAddition(content, appending)
         }
     }
 }

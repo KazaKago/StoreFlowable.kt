@@ -10,26 +10,17 @@ package com.kazakago.storeflowable.core
 fun <A, B, Z> State<A>.zip(state2: State<B>, transform: (rawContent1: A, rawContent2: B) -> Z): State<Z> {
     return when (this) {
         is State.Completed -> when (state2) {
-            is State.Loading -> State.Loading()
-            is State.Refreshing -> State.Refreshing(transform(content, state2.content))
+            is State.Loading -> State.Loading(if (state2.content != null) transform(content, state2.content) else null)
             is State.Completed -> State.Completed(transform(content, state2.content))
             is State.Error -> State.Error(state2.exception)
         }
         is State.Loading -> when (state2) {
-            is State.Loading -> State.Loading()
-            is State.Refreshing -> State.Loading()
-            is State.Completed -> State.Loading()
-            is State.Error -> State.Error(state2.exception)
-        }
-        is State.Refreshing -> when (state2) {
-            is State.Loading -> State.Loading()
-            is State.Refreshing -> State.Refreshing(transform(content, state2.content))
-            is State.Completed -> State.Refreshing(transform(content, state2.content))
+            is State.Loading -> State.Loading(null)
+            is State.Completed -> State.Loading(null)
             is State.Error -> State.Error(state2.exception)
         }
         is State.Error -> when (state2) {
             is State.Loading -> State.Error(exception)
-            is State.Refreshing -> State.Error(exception)
             is State.Completed -> State.Error(exception)
             is State.Error -> State.Error(exception)
         }

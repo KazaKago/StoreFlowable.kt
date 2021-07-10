@@ -36,7 +36,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
             }
             .map { dataState ->
                 val data = dataSelector.load()
-                dataState.mapState(data)
+                dataState.toState(data)
             }
     }
 
