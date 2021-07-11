@@ -1,133 +1,312 @@
 package com.kazakago.storeflowable.core
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
-import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class StateZipperTest {
 
-    private lateinit var fixedExistState: State<Int>
-    private lateinit var loadingExistState: State<Int>
-    private lateinit var errorExistState: State<Int>
-    private lateinit var fixedNotExistState: State<Int>
+    private val loading: State<Int> = State.Loading(null)
+    private val loadingWithData: State<Int> = State.Loading(70)
+    private val completed: State<Int> = State.Completed(30, AdditionalState.Fixed(noMoreAdditionalData = true), AdditionalState.Fixed(noMoreAdditionalData = false))
+    private val error: State<Int> = State.Error(IllegalStateException())
 
-    @Before
-    fun setup() {
-        fixedExistState = State.Fixed(StateContent.wrap(30))
-        loadingExistState = State.Loading(StateContent.wrap(70))
-        errorExistState = State.Error(StateContent.wrap(130), IllegalStateException())
-        fixedNotExistState = State.Fixed(StateContent.wrap(null))
+    @Test
+    fun zip_Loading_Loading() = runBlockingTest {
+        val zippedState = loading.zip(loading) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo null
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
     }
 
     @Test
-    fun zipWithFixedLoading() {
-        val zippedState = fixedExistState.zip(loadingExistState) { value1, value2 ->
+    fun zip_Loading_LoadingWithData() = runBlockingTest {
+        val zippedState = loading.zip(loadingWithData) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo null
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_Loading_Completed() = runBlockingTest {
+        val zippedState = loading.zip(completed) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo null
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_Loading_Error() = runBlockingTest {
+        val zippedState = loading.zip(error) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_LoadingWithData_Loading() = runBlockingTest {
+        val zippedState = loadingWithData.zip(loading) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo null
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_LoadingWithData_LoadingWithData() = runBlockingTest {
+        val zippedState = loadingWithData.zip(loadingWithData) { value1, value2 ->
+            value1 shouldBeEqualTo 70
+            value2 shouldBeEqualTo 70
+            value1 + value2
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo 140
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_LoadingWithData_Completed() = runBlockingTest {
+        val zippedState = loadingWithData.zip(completed) { value1, value2 ->
+            value1 shouldBeEqualTo 70
+            value2 shouldBeEqualTo 30
+            value1 + value2
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo 100
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_LoadingWithData_Error() = runBlockingTest {
+        val zippedState = loadingWithData.zip(error) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_Completed_Loading() = runBlockingTest {
+        val zippedState = completed.zip(loading) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                it shouldBeEqualTo null
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                fail()
+            }
+        )
+    }
+
+    @Test
+    fun zip_Completed_LoadingWithData() = runBlockingTest {
+        val zippedState = completed.zip(loadingWithData) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
             value1 + value2
         }
         zippedState.doAction(
-            onFixed = {
-                fail()
-            },
             onLoading = {
-                // ok
-            },
-            onError = {
-                fail()
-            }
-        )
-        zippedState.content.doAction(
-            onExist = {
                 it shouldBeEqualTo 100
             },
-            onNotExist = {
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
                 fail()
             }
         )
     }
 
     @Test
-    fun zipWithFixedError() {
-        val zippedState = fixedExistState.zip(errorExistState) { value1, value2 ->
+    fun zip_Completed_Completed() = runBlockingTest {
+        val zippedState = completed.zip(completed) { value1, value2 ->
             value1 shouldBeEqualTo 30
-            value2 shouldBeEqualTo 130
+            value2 shouldBeEqualTo 30
             value1 + value2
         }
         zippedState.doAction(
-            onFixed = {
-                fail()
-            },
             onLoading = {
                 fail()
             },
-            onError = {
-                it shouldBeInstanceOf IllegalStateException::class
-            }
-        )
-        zippedState.content.doAction(
-            onExist = {
-                it shouldBeEqualTo 160
+            onCompleted = { content, _, _ ->
+                content shouldBeEqualTo 60
             },
-            onNotExist = {
+            onError = {
                 fail()
             }
         )
     }
 
     @Test
-    fun zipWithLoadingError() {
-        val zippedState = loadingExistState.zip(errorExistState) { value1, value2 ->
-            value1 shouldBeEqualTo 70
-            value2 shouldBeEqualTo 130
-            value1 + value2
-        }
-        zippedState.doAction(
-            onFixed = {
-                fail()
-            },
-            onLoading = {
-                fail()
-            },
-            onError = {
-                it shouldBeInstanceOf IllegalStateException::class
-            }
-        )
-        zippedState.content.doAction(
-            onExist = {
-                it shouldBeEqualTo 200
-            },
-            onNotExist = {
-                fail()
-            }
-        )
-    }
-
-    @Test
-    fun zipWithFixedFixedNotExist() {
-        val zippedState = fixedExistState.zip(fixedNotExistState) { value1, value2 ->
+    fun zip_Completed_Error() = runBlockingTest {
+        val zippedState = completed.zip(error) { _, _ ->
             fail()
-            value1 + value2
         }
         zippedState.doAction(
-            onFixed = {
-                //ok
-            },
             onLoading = {
                 fail()
             },
-            onError = {
-                fail()
-            }
-        )
-        zippedState.content.doAction(
-            onExist = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
-            onNotExist = {
-                // ok
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_Error_Loading() = runBlockingTest {
+        val zippedState = error.zip(loading) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_Error_LoadingWithData() = runBlockingTest {
+        val zippedState = error.zip(loadingWithData) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_Error_Completed() = runBlockingTest {
+        val zippedState = error.zip(completed) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
+            }
+        )
+    }
+
+    @Test
+    fun zip_Error_Error() = runBlockingTest {
+        val zippedState = error.zip(error) { _, _ ->
+            fail()
+        }
+        zippedState.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { _, _, _ ->
+                fail()
+            },
+            onError = {
+                it shouldBeInstanceOf IllegalStateException::class
             }
         )
     }

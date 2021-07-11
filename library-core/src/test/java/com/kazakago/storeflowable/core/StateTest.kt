@@ -1,29 +1,59 @@
 package com.kazakago.storeflowable.core
 
-import io.mockk.MockK
-import io.mockk.mockk
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
+import org.amshove.kluent.shouldBeTrue
 import org.junit.Assert.fail
 import org.junit.Test
 
 class StateTest {
 
     @Test
-    fun content() {
-        val state1 = State.Fixed(StateContent.Exist<MockK>(mockk()))
-        state1.content shouldBeInstanceOf StateContent.Exist::class
-        val state2 = State.Fixed(StateContent.NotExist<MockK>())
-        state2.content shouldBeInstanceOf StateContent.NotExist::class
+    fun doAction_Completed() {
+        val state = State.Completed(10, appending = AdditionalState.Loading, prepending = AdditionalState.Fixed(noMoreAdditionalData = true))
+        state.doAction(
+            onLoading = {
+                fail()
+            },
+            onCompleted = { content, appending, prepending ->
+                content shouldBeEqualTo 10
+                appending.doAction(
+                    onLoading = {
+                        // ok
+                    },
+                    onFixed = {
+                        fail()
+                    },
+                    onError = {
+                        fail()
+                    }
+                )
+                prepending.doAction(
+                    onLoading = {
+                        fail()
+                    },
+                    onFixed = {
+                        it.shouldBeTrue()
+                    },
+                    onError = {
+                        fail()
+                    }
+                )
+            },
+            onError = {
+                fail()
+            }
+        )
     }
 
     @Test
-    fun doActionWithFixed() {
-        val state = State.Fixed<MockK>(mockk())
+    fun doAction_Loading() {
+        val state = State.Loading<Int>(null)
         state.doAction(
-            onFixed = {
+            onLoading = {
                 // ok
             },
-            onLoading = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -33,29 +63,13 @@ class StateTest {
     }
 
     @Test
-    fun doActionLoading() {
-        val state = State.Loading<MockK>(mockk())
+    fun doAction_Error() {
+        val state = State.Error<Int>(IllegalStateException())
         state.doAction(
-            onFixed = {
-                fail()
-            },
             onLoading = {
-                // ok
-            },
-            onError = {
-                fail()
-            }
-        )
-    }
-
-    @Test
-    fun doActionError() {
-        val state = State.Error<MockK>(mockk(), IllegalStateException())
-        state.doAction(
-            onFixed = {
                 fail()
             },
-            onLoading = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {

@@ -2,34 +2,29 @@ package com.kazakago.storeflowable.core
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
-import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class FlowStateMapperTest {
 
-    private lateinit var flowFixedState: FlowableState<Int>
-
-    @Before
-    fun setup() {
-        flowFixedState = flow { emit(State.Fixed(StateContent.wrap(30))) }
-    }
+    private val flowCompleted: FlowableState<Int> = flowOf(State.Completed(30, appending = AdditionalState.Fixed(noMoreAdditionalData = true), prepending = AdditionalState.Fixed(noMoreAdditionalData = true)))
 
     @Test
     fun mapContent() = runBlockingTest {
-        val mappedFlowFixedState = flowFixedState.mapContent { it + 70 }
-        val mappedFixedState = mappedFlowFixedState.first()
-        mappedFixedState shouldBeInstanceOf State.Fixed::class
-        mappedFixedState.content.doAction(
-            onExist = {
-                it shouldBeEqualTo 100
+        val mappedFlowState = flowCompleted.mapContent { it + 70 }
+        val mappedState = mappedFlowState.first()
+        mappedState.doAction(
+            onLoading = {
+                fail()
             },
-            onNotExist = {
+            onCompleted = { content, _, _ ->
+                content shouldBeEqualTo 100
+            },
+            onError = {
                 fail()
             }
         )
