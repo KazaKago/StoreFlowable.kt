@@ -21,8 +21,8 @@ class DataSelectorPaginatingTest {
 
     companion object {
         private const val FORCE_REFRESH = false
-        private const val CLEAR_CACHE_BEFORE_FETCHING = false // No effect this tests.
-        private const val CLEAR_CACHE_WHEN_FETCH_FAILS = false // No effect this tests.
+        private const val CLEAR_CACHE_BEFORE_FETCHING = false
+        private const val CLEAR_CACHE_WHEN_FETCH_FAILS = false
         private const val CONTINUE_WHEN_ERROR = true
         private const val AWAIT_FETCHING = true
         private val REQUEST_TYPE = RequestType.Append
