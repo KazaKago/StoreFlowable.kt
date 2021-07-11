@@ -77,7 +77,7 @@ class DataSelectorTwoWayPaginatingTest {
                 return InternalFetchingResult(listOf(TestData.FetchedPrependingData), noMoreAppendingData = false, noMorePrependingData = false)
             }
         },
-        needRefresh = { false }
+        needRefresh = { it.firstOrNull()?.needRefresh ?: false }
     )
 
     private var dataState: DataState = DataState.Fixed(mockk(), mockk())
