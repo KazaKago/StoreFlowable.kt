@@ -52,7 +52,7 @@ class DataSelectorPaginatingTest {
             }
 
             override suspend fun save(newData: List<TestData>?) {
-                dataCache = newData
+                fail()
             }
 
             override suspend fun saveAppending(cachedData: List<TestData>?, newData: List<TestData>) {
@@ -65,7 +65,8 @@ class DataSelectorPaginatingTest {
         },
         originDataManager = object : OriginDataManager<List<TestData>> {
             override suspend fun fetch(): InternalFetchingResult<List<TestData>> {
-                return InternalFetchingResult(listOf(TestData.FetchedData), noMoreAppendingData = true, noMorePrependingData = true)
+                fail()
+                throw NotImplementedError()
             }
 
             override suspend fun fetchAppending(cachedData: List<TestData>?): InternalFetchingResult<List<TestData>> {
