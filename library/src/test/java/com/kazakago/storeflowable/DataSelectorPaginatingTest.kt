@@ -87,7 +87,7 @@ class DataSelectorPaginatingTest {
     @Test
     fun doStateAction_Fixed_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), mockk())
-        dataCache = emptyList()
+        dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
