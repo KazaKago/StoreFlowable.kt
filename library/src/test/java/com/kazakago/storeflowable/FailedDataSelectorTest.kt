@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
@@ -13,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
+import org.junit.Assert.fail
 import org.junit.Test
 import java.net.UnknownHostException
 
@@ -55,11 +55,11 @@ class FailedDataSelectorTest {
             }
 
             override suspend fun saveAppending(cachedData: TestData?, newData: TestData) {
-                throw NotImplementedError()
+                fail()
             }
 
             override suspend fun savePrepending(cachedData: TestData?, newData: TestData) {
-                throw NotImplementedError()
+                fail()
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
@@ -68,22 +68,24 @@ class FailedDataSelectorTest {
             }
 
             override suspend fun fetchAppending(cachedData: TestData?): InternalFetchingResult<TestData> {
+                fail()
                 throw NotImplementedError()
             }
 
             override suspend fun fetchPrepending(cachedData: TestData?): InternalFetchingResult<TestData> {
+                fail()
                 throw NotImplementedError()
             }
         },
         needRefresh = { it.needRefresh }
     )
 
-    private var dataState: DataState = DataState.Fixed(appendingDataState = AdditionalDataState.Fixed(), prependingDataState = AdditionalDataState.Fixed())
+    private var dataState: DataState = DataState.Fixed(mockk(), mockk())
     private var dataCache: TestData? = null
 
     @Test
     fun doStateAction_Fixed_NoCache() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -92,7 +94,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_ValidCache() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
@@ -101,7 +103,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_InvalidCache() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -110,7 +112,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_NoCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
         dataSelector.doStateAction(forceRefresh = true, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -119,7 +121,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_ValidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
         dataSelector.doStateAction(forceRefresh = true, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -128,7 +130,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_InvalidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
         dataSelector.doStateAction(forceRefresh = true, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -137,7 +139,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_NoCache_NonClearCacheBeforeFetching_NonClearCacheWhenFetchFails() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
@@ -146,7 +148,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_ValidCache_NonClearCacheBeforeFetching_NonClearCacheWhenFetchFails() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
         dataSelector.doStateAction(FORCE_REFRESH, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
@@ -155,7 +157,7 @@ class FailedDataSelectorTest {
 
     @Test
     fun doStateAction_Fixed_InvalidCache_NonClearCacheBeforeFetching_NonClearCacheWhenFetchFails() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
+        dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
         dataSelector.doStateAction(FORCE_REFRESH, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Error::class
