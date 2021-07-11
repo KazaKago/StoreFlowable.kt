@@ -17,7 +17,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class PaginatingDataSelectorTest {
+class DataSelectorPaginatingTest {
 
     companion object {
         private const val FORCE_REFRESH = false
