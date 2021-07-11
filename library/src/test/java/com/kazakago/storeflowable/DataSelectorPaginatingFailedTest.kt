@@ -15,9 +15,10 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
 import org.junit.Test
+import java.net.UnknownHostException
 
 @ExperimentalCoroutinesApi
-class DataSelectorPaginatingTest {
+class DataSelectorPaginatingFailedTest {
 
     companion object {
         private const val FORCE_REFRESH = false
@@ -70,7 +71,7 @@ class DataSelectorPaginatingTest {
             }
 
             override suspend fun fetchAppending(cachedData: List<TestData>?): InternalFetchingResult<List<TestData>> {
-                return InternalFetchingResult(listOf(TestData.FetchedAppendingData), noMoreAppendingData = false, noMorePrependingData = false)
+                throw UnknownHostException()
             }
 
             override suspend fun fetchPrepending(cachedData: List<TestData>?): InternalFetchingResult<List<TestData>> {
@@ -90,8 +91,8 @@ class DataSelectorPaginatingTest {
         dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -100,8 +101,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.ValidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.ValidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
     @Test
@@ -110,8 +111,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.InvalidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.InvalidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 
     @Test
@@ -180,8 +181,8 @@ class DataSelectorPaginatingTest {
         dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -190,8 +191,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.ValidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.ValidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
     @Test
@@ -200,8 +201,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.InvalidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.InvalidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 
     @Test
@@ -237,8 +238,8 @@ class DataSelectorPaginatingTest {
         dataCache = null
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -247,8 +248,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.ValidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.ValidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
     @Test
@@ -257,8 +258,8 @@ class DataSelectorPaginatingTest {
         dataCache = listOf(TestData.InvalidData)
         dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, REQUEST_TYPE)
         dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.InvalidData, TestData.FetchedAppendingData)
+        (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 
     @Test
