@@ -68,11 +68,8 @@ interface StoreFlowable<KEY, DATA> {
     /**
      * Forces a data refresh.
      * and the new data will be notified.
-     *
-     * @param clearCacheWhenFetchFails Delete cache if data refresh fails. Default value is `true`.
-     * @param continueWhenError Even if the data state is an [State.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
-    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
+    suspend fun refresh()
 
     /**
      * Treat the passed data as the latest acquired data.

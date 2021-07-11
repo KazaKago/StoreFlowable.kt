@@ -68,8 +68,8 @@ internal class StoreFlowableImpl<KEY, DATA>(
         dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
     }
 
-    override suspend fun refresh(clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean) {
-        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = clearCacheWhenFetchFails, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Refresh)
+    override suspend fun refresh() {
+        dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
     }
 
     override suspend fun update(newData: DATA?) {
