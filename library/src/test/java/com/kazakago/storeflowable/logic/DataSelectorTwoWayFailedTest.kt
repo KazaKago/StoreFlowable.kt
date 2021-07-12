@@ -83,17 +83,17 @@ class DataSelectorTwoWayFailedTest {
     private var dataCache: List<TestData>? = null
 
     @Test
-    fun doStateAction_Fixed_Fixed_Fixed_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -101,17 +101,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Fixed_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Fixed_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -119,17 +119,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Fixed_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Fixed_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -137,17 +137,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_FixedWithNoMoreData_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_FixedWithNoMoreData_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -155,17 +155,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_FixedWithNoMoreData_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_FixedWithNoMoreData_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -173,17 +173,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -191,17 +191,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Loading_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -209,17 +209,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Loading_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -227,17 +227,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Loading_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -245,17 +245,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Error_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Error_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(mockk()))
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -263,17 +263,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Error_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -281,17 +281,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Fixed_Error_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Fixed_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -299,17 +299,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Fixed_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -317,17 +317,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Fixed_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Fixed_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -335,17 +335,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Fixed_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Fixed_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -353,17 +353,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -371,17 +371,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -389,17 +389,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -407,17 +407,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Loading_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -425,17 +425,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Loading_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -443,17 +443,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Loading_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -461,17 +461,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Error_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Error_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error(mockk()))
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -479,17 +479,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Error_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -497,17 +497,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_FixedWithNoMoreData_Error_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_FixedWithNoMoreData_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -515,17 +515,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Fixed_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -533,17 +533,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Fixed_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Fixed_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -551,17 +551,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Fixed_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Fixed_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -569,17 +569,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_FixedWithNoMoreData_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_FixedWithNoMoreData_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -587,17 +587,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_FixedWithNoMoreData_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_FixedWithNoMoreData_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -605,17 +605,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -623,17 +623,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Loading_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -641,17 +641,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Loading_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -659,17 +659,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Loading_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -677,17 +677,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Error_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Error_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(mockk()))
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -695,17 +695,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Error_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -713,17 +713,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Loading_Error_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Loading_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -731,17 +731,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Fixed_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Fixed())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -749,17 +749,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Fixed_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Fixed_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -767,17 +767,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Fixed_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Fixed_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -785,17 +785,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_FixedWithNoMoreData_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_FixedWithNoMoreData_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -803,17 +803,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_FixedWithNoMoreData_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_FixedWithNoMoreData_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -821,17 +821,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.FixedWithNoMoreAdditionalData())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -839,17 +839,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Loading_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Loading())
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -857,17 +857,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Loading_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -875,17 +875,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Loading_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -893,17 +893,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Error_NoCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Error_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Error(mockk()))
         dataCache = null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo null
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -911,17 +911,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Error_ValidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
@@ -929,17 +929,17 @@ class DataSelectorTwoWayFailedTest {
     }
 
     @Test
-    fun doStateAction_Fixed_Error_Error_InvalidCache() = runBlockingTest {
+    fun requestAppendingAndPrepending_Fixed_Error_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), AdditionalDataState.Error(mockk()))
         dataCache = listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Append)
+        dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
 
-        dataSelector.doStateAction(FORCE_REFRESH, CLEAR_CACHE_BEFORE_FETCHING, CLEAR_CACHE_WHEN_FETCH_FAILS, CONTINUE_WHEN_ERROR, AWAIT_FETCHING, RequestType.Prepend)
+        dataSelector.requestPrependingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Error::class
         (dataState as DataState.Fixed).prependingDataState shouldBeInstanceOf AdditionalDataState.Error::class

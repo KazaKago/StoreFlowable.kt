@@ -19,8 +19,9 @@ internal class DataSelector<KEY, DATA>(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
-    suspend fun load(): DATA? {
-        return cacheDataManager.load()
+    suspend fun loadValidCacheOrNull(): DATA? {
+        val data = cacheDataManager.load() ?: return null
+        return if (!needRefresh(data)) data else null
     }
 
     suspend fun update(newData: DATA?) {
@@ -28,7 +29,27 @@ internal class DataSelector<KEY, DATA>(
         dataStateManager.save(key, DataState.Fixed(appendingDataState = AdditionalDataState.Fixed(), prependingDataState = AdditionalDataState.Fixed()))
     }
 
-    suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean, requestType: RequestType) {
+    suspend fun validate(forceRefresh: Boolean) {
+        doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
+    }
+
+    suspend fun validateAsync(forceRefresh: Boolean) {
+        doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
+    }
+
+    suspend fun refresh() {
+        doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
+    }
+
+    suspend fun requestAppendingData(continueWhenError: Boolean) {
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Append)
+    }
+
+    suspend fun requestPrependingData(continueWhenError: Boolean) {
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Prepend)
+    }
+
+    private suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean, requestType: RequestType) {
         when (val state = dataStateManager.load(key)) {
             is DataState.Fixed -> when (requestType) {
                 RequestType.Refresh -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
