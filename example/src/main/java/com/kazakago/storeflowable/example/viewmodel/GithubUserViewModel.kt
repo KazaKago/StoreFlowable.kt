@@ -49,7 +49,7 @@ class GithubUserViewModel(application: Application, private val userName: String
                     _isLoading.value = true
                     _error.value = null
                 },
-                onCompleted = { githubUser, _, _ ->
+                onCompleted = { githubUser ->
                     _githubUser.value = githubUser
                     _isLoading.value = false
                     _error.value = null

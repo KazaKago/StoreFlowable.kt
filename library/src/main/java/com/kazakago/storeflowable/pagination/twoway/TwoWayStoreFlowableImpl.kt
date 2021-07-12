@@ -1,7 +1,7 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.pagination.twoway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.core.FlowableLoadingState
+import com.kazakago.storeflowable.core.pagination.twoway.FlowableTwoWayLoadingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 
-internal class StoreFlowableImpl<KEY, DATA>(
+internal class TwoWayStoreFlowableImpl<KEY, DATA>(
     private val key: KEY,
     private val flowableDataStateManager: FlowableDataStateManager<KEY>,
     cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
-) : StoreFlowable<KEY, DATA> {
+) : TwoWayStoreFlowable<KEY, DATA> {
 
     private val dataSelector = DataSelector(
         key = key,
@@ -29,14 +29,14 @@ internal class StoreFlowableImpl<KEY, DATA>(
         needRefresh = needRefresh,
     )
 
-    override fun publish(forceRefresh: Boolean): FlowableLoadingState<DATA> {
+    override fun publish(forceRefresh: Boolean): FlowableTwoWayLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
             }
             .map { dataState ->
                 val data = dataSelector.load()
-                dataState.toLoadingState(data)
+                dataState.toTwoWayLoadingState(data)
             }
     }
 
@@ -70,6 +70,14 @@ internal class StoreFlowableImpl<KEY, DATA>(
 
     override suspend fun refresh() {
         dataSelector.doStateAction(forceRefresh = true, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
+    }
+
+    override suspend fun requestAppendingData(continueWhenError: Boolean) {
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Append)
+    }
+
+    override suspend fun requestPrependingData(continueWhenError: Boolean) {
+        dataSelector.doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Prepend)
     }
 
     override suspend fun update(newData: DATA?) {

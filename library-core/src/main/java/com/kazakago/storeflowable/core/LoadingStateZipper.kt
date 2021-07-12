@@ -11,7 +11,7 @@ fun <A, B, Z> LoadingState<A>.zip(state2: LoadingState<B>, transform: (rawConten
     return when (this) {
         is LoadingState.Completed -> when (state2) {
             is LoadingState.Loading -> LoadingState.Loading(if (state2.content != null) transform(content, state2.content) else null)
-            is LoadingState.Completed -> LoadingState.Completed(transform(content, state2.content), appending.zip(state2.appending), prepending.zip(state2.prepending))
+            is LoadingState.Completed -> LoadingState.Completed(transform(content, state2.content))
             is LoadingState.Error -> LoadingState.Error(state2.exception)
         }
         is LoadingState.Loading -> when (state2) {

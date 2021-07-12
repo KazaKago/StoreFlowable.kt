@@ -1,14 +1,11 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.core.State
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.origin.GettingFrom
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.coInvoking
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldThrow
 import org.junit.Test
 import java.net.UnknownHostException

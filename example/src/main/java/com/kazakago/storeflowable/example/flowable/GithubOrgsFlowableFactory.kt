@@ -6,11 +6,11 @@ import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubOrgsStateManager
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.pagination.FetchingResult
-import com.kazakago.storeflowable.pagination.oneway.PaginatingStoreFlowableFactory
+import com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubOrgsFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<GithubOrg>> {
+class GithubOrgsFlowableFactory : OneWayStoreFlowableFactory<Unit, List<GithubOrg>> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)

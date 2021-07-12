@@ -72,7 +72,7 @@ class GithubReposViewModel(application: Application, private val userName: Strin
                     _mainError.value = null
                     _additionalError.value = null
                 },
-                onCompleted = { githubRepos, appending, _ ->
+                onCompleted = { githubRepos, appending ->
                     appending.doAction(
                         onFixed = {
                             _isAdditionalLoading.value = false

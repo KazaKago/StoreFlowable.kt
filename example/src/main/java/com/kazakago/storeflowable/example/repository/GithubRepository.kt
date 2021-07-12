@@ -1,6 +1,7 @@
 package com.kazakago.storeflowable.example.repository
 
 import com.kazakago.storeflowable.core.FlowableLoadingState
+import com.kazakago.storeflowable.core.pagination.oneway.FlowableOneWayLoadingState
 import com.kazakago.storeflowable.create
 import com.kazakago.storeflowable.example.flowable.GithubMetaFlowableFactory
 import com.kazakago.storeflowable.example.flowable.GithubOrgsFlowableFactory
@@ -24,7 +25,7 @@ class GithubRepository {
         githubMetaFlowable.refresh()
     }
 
-    fun followOrgs(): FlowableLoadingState<List<GithubOrg>> {
+    fun followOrgs(): FlowableOneWayLoadingState<List<GithubOrg>> {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
         return githubOrgsFlowable.publish()
     }
@@ -49,7 +50,7 @@ class GithubRepository {
         githubUserFlowable.refresh()
     }
 
-    fun followRepos(userName: String): FlowableLoadingState<List<GithubRepo>> {
+    fun followRepos(userName: String): FlowableOneWayLoadingState<List<GithubRepo>> {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
         return githubReposFlowable.publish()
     }

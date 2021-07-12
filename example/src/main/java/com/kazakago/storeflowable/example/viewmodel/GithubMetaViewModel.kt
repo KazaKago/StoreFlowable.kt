@@ -40,7 +40,7 @@ class GithubMetaViewModel(application: Application) : AndroidViewModel(applicati
                     _isLoading.value = true
                     _error.value = null
                 },
-                onCompleted = { githubMeta, _, _ ->
+                onCompleted = { githubMeta ->
                     _githubMeta.value = githubMeta
                     _isLoading.value = false
                     _error.value = null
