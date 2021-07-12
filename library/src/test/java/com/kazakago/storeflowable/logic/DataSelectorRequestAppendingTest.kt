@@ -269,7 +269,7 @@ class DataSelectorRequestAppendingTest {
     }
 
     @Test
-    fun requestAppendingData_Error_NoCache_NonContinueWhenError() = runBlockingTest {
+    fun requestAppendingData_NonContinueWhenError_Error_NoCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = null
 
@@ -279,7 +279,7 @@ class DataSelectorRequestAppendingTest {
     }
 
     @Test
-    fun requestAppendingData_Error_ValidCache_NonContinueWhenError() = runBlockingTest {
+    fun requestAppendingData_NonContinueWhenError_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -289,7 +289,7 @@ class DataSelectorRequestAppendingTest {
     }
 
     @Test
-    fun requestAppendingData_Error_InvalidCache_NonContinueWhenError() = runBlockingTest {
+    fun requestAppendingData_NonContinueWhenError_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.InvalidData)
 

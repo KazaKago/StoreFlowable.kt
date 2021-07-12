@@ -77,7 +77,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
     }
@@ -87,7 +87,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeEqualTo TestData.ValidData
     }
@@ -97,37 +97,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
 
-        dataSelector.validate(forceRefresh = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Fixed_NoCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
-        dataCache = null
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Fixed_ValidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
-        dataCache = TestData.ValidData
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Fixed_InvalidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate(forceRefresh = true)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
     }
@@ -137,7 +107,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Loading()
         dataCache = null
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo null
     }
@@ -147,7 +117,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo TestData.ValidData
     }
@@ -157,37 +127,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Loading()
         dataCache = TestData.InvalidData
 
-        dataSelector.validate(forceRefresh = false)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.InvalidData
-    }
-
-    @Test
-    fun validate_Loading_NoCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = null
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Loading_ValidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = TestData.ValidData
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.ValidData
-    }
-
-    @Test
-    fun validate_Loading_InvalidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate(forceRefresh = true)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo TestData.InvalidData
     }
@@ -197,7 +137,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Error(mockk())
         dataCache = null
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
     }
@@ -207,7 +147,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.ValidData
 
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
     }
@@ -217,37 +157,7 @@ class DataSelectorValidateFailedTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 
-        dataSelector.validate(forceRefresh = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Error_NoCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = null
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Error_ValidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = TestData.ValidData
-
-        dataSelector.validate(forceRefresh = true)
-        dataState shouldBeInstanceOf DataState.Error::class
-        dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Error_InvalidCache_ForceRefresh() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate(forceRefresh = true)
+        dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
     }

@@ -31,7 +31,11 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
     override fun publish(forceRefresh: Boolean): FlowableOneWayLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
-                dataSelector.validateAsync(forceRefresh = forceRefresh)
+                if (forceRefresh) {
+                    dataSelector.refreshAsync(clearCacheBeforeFetching = true)
+                } else {
+                    dataSelector.validateAsync()
+                }
             }
             .map { dataState ->
                 val data = cacheDataManager.load()
@@ -47,8 +51,8 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 when (from) {
-                    GettingFrom.Both -> dataSelector.validate(forceRefresh = false)
-                    GettingFrom.Origin -> dataSelector.validate(forceRefresh = true)
+                    GettingFrom.Both -> dataSelector.validate()
+                    GettingFrom.Origin -> dataSelector.refresh(clearCacheBeforeFetching = true)
                     GettingFrom.Cache -> Unit
                 }
             }
@@ -64,11 +68,11 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
     }
 
     override suspend fun validate() {
-        dataSelector.validate(forceRefresh = false)
+        dataSelector.validate()
     }
 
     override suspend fun refresh() {
-        dataSelector.refresh()
+        dataSelector.refresh(clearCacheBeforeFetching = false)
     }
 
     override suspend fun requestAppendingData(continueWhenError: Boolean) {

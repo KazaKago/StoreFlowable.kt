@@ -14,7 +14,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class DataSelectorValidateTest {
+class DataSelectorUpdateTest {
 
     private enum class TestData(val needRefresh: Boolean) {
         ValidData(false),
@@ -72,92 +72,22 @@ class DataSelectorValidateTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun validate_Fixed_NoCache() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
-        dataCache = null
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
-    }
-
-    @Test
-    fun validate_Fixed_ValidCache() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+    fun update_data() = runBlockingTest {
+        dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.ValidData
-    }
-
-    @Test
-    fun validate_Fixed_InvalidCache() = runBlockingTest {
-        dataState = DataState.Fixed(mockk(), mockk())
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate()
+        dataSelector.update(TestData.FetchedData)
         dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeEqualTo TestData.FetchedData
     }
 
     @Test
-    fun validate_Loading_NoCache() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = null
+    fun update_null() = runBlockingTest {
+        dataState = DataState.Error(mockk())
+        dataCache = TestData.InvalidData
 
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
+        dataSelector.update(null)
+        dataState shouldBeInstanceOf DataState.Fixed::class
         dataCache shouldBeEqualTo null
-    }
-
-    @Test
-    fun validate_Loading_ValidCache() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = TestData.ValidData
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.ValidData
-    }
-
-    @Test
-    fun validate_Loading_InvalidCache() = runBlockingTest {
-        dataState = DataState.Loading()
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.InvalidData
-    }
-
-    @Test
-    fun validate_Error_NoCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = null
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
-    }
-
-    @Test
-    fun validate_Error_ValidCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = TestData.ValidData
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
-    }
-
-    @Test
-    fun validate_Error_InvalidCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
-        dataCache = TestData.InvalidData
-
-        dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
     }
 }
