@@ -11,7 +11,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowStateMapperTest {
 
-    private val flowCompleted: FlowableState<Int> = flowOf(State.Completed(30, appending = AdditionalState.Fixed(noMoreAdditionalData = true), prepending = AdditionalState.Fixed(noMoreAdditionalData = true)))
+    private val flowCompleted: FlowableLoadingState<Int> = flowOf(LoadingState.Completed(30, appending = AdditionalLoadingState.Fixed(noMoreAdditionalData = true), prepending = AdditionalLoadingState.Fixed(noMoreAdditionalData = true)))
 
     @Test
     fun mapContent() = runBlockingTest {

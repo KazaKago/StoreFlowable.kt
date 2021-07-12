@@ -12,10 +12,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowStateCombinerTest {
 
-    private val flowLoading: FlowableState<Int> = flowOf(State.Loading(null))
-    private val flowLoadingWithData: FlowableState<Int> = flowOf(State.Loading(70))
-    private val flowCompleted: FlowableState<Int> = flowOf(State.Completed(30, AdditionalState.Fixed(noMoreAdditionalData = true), AdditionalState.Fixed(noMoreAdditionalData = false)))
-    private val flowError: FlowableState<Int> = flowOf(State.Error(IllegalStateException()))
+    private val flowLoading: FlowableLoadingState<Int> = flowOf(LoadingState.Loading(null))
+    private val flowLoadingWithData: FlowableLoadingState<Int> = flowOf(LoadingState.Loading(70))
+    private val flowCompleted: FlowableLoadingState<Int> = flowOf(LoadingState.Completed(30, AdditionalLoadingState.Fixed(noMoreAdditionalData = true), AdditionalLoadingState.Fixed(noMoreAdditionalData = false)))
+    private val flowError: FlowableLoadingState<Int> = flowOf(LoadingState.Error(IllegalStateException()))
 
     @Test
     fun combine_Loading_Loading() = runBlockingTest {

@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.core.FlowableState
+import com.kazakago.storeflowable.core.FlowableLoadingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
@@ -30,7 +30,7 @@ internal class PaginatingStoreFlowableImpl<KEY, DATA>(
         needRefresh = needRefresh,
     )
 
-    override fun publish(forceRefresh: Boolean): FlowableState<DATA> {
+    override fun publish(forceRefresh: Boolean): FlowableLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 dataSelector.doStateAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)

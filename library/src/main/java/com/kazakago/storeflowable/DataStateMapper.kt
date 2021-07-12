@@ -1,59 +1,59 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.core.AdditionalState
-import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.core.AdditionalLoadingState
+import com.kazakago.storeflowable.core.LoadingState
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 
-internal fun <DATA> DataState.toState(content: DATA?): State<DATA> {
+internal fun <DATA> DataState.toState(content: DATA?): LoadingState<DATA> {
     return when (this) {
         is DataState.Fixed -> when (appendingDataState) {
             is AdditionalDataState.Fixed -> if (content != null) {
-                val appendingState = AdditionalState.Fixed(noMoreAdditionalData = false)
+                val appendingState = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)
                 when (prependingDataState) {
-                    is AdditionalDataState.Fixed -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = false))
-                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = true))
-                    is AdditionalDataState.Loading -> State.Completed(content, appendingState, AdditionalState.Loading)
-                    is AdditionalDataState.Error -> State.Completed(content, appendingState, AdditionalState.Error(prependingDataState.exception))
+                    is AdditionalDataState.Fixed -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                    is AdditionalDataState.Loading -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
+                    is AdditionalDataState.Error -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
                 }
             } else {
-                State.Loading(content)
+                LoadingState.Loading(content)
             }
             is AdditionalDataState.FixedWithNoMoreAdditionalData -> if (content != null) {
-                val appendingState = AdditionalState.Fixed(noMoreAdditionalData = true)
+                val appendingState = AdditionalLoadingState.Fixed(noMoreAdditionalData = true)
                 when (prependingDataState) {
-                    is AdditionalDataState.Fixed -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = false))
-                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = true))
-                    is AdditionalDataState.Loading -> State.Completed(content, appendingState, AdditionalState.Loading)
-                    is AdditionalDataState.Error -> State.Completed(content, appendingState, AdditionalState.Error(prependingDataState.exception))
+                    is AdditionalDataState.Fixed -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                    is AdditionalDataState.Loading -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
+                    is AdditionalDataState.Error -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
                 }
             } else {
-                State.Loading(content)
+                LoadingState.Loading(content)
             }
             is AdditionalDataState.Loading -> if (content != null) {
-                val appendingState = AdditionalState.Loading
+                val appendingState = AdditionalLoadingState.Loading
                 when (prependingDataState) {
-                    is AdditionalDataState.Fixed -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = false))
-                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> State.Completed(content, appendingState, AdditionalState.Fixed(noMoreAdditionalData = true))
-                    is AdditionalDataState.Loading -> State.Completed(content, appendingState, AdditionalState.Loading)
-                    is AdditionalDataState.Error -> State.Completed(content, appendingState, AdditionalState.Error(prependingDataState.exception))
+                    is AdditionalDataState.Fixed -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                    is AdditionalDataState.Loading -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
+                    is AdditionalDataState.Error -> LoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
                 }
             } else {
-                State.Loading(content)
+                LoadingState.Loading(content)
             }
             is AdditionalDataState.Error -> if (content != null) {
-                val prependingState = AdditionalState.Error(appendingDataState.exception)
+                val prependingState = AdditionalLoadingState.Error(appendingDataState.exception)
                 when (prependingDataState) {
-                    is AdditionalDataState.Fixed -> State.Completed(content, prependingState, AdditionalState.Fixed(noMoreAdditionalData = false))
-                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> State.Completed(content, prependingState, AdditionalState.Fixed(noMoreAdditionalData = true))
-                    is AdditionalDataState.Loading -> State.Completed(content, prependingState, AdditionalState.Loading)
-                    is AdditionalDataState.Error -> State.Completed(content, prependingState, AdditionalState.Error(prependingDataState.exception))
+                    is AdditionalDataState.Fixed -> LoadingState.Completed(content, prependingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                    is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, prependingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                    is AdditionalDataState.Loading -> LoadingState.Completed(content, prependingState, AdditionalLoadingState.Loading)
+                    is AdditionalDataState.Error -> LoadingState.Completed(content, prependingState, AdditionalLoadingState.Error(prependingDataState.exception))
                 }
             } else {
-                State.Error(appendingDataState.exception)
+                LoadingState.Error(appendingDataState.exception)
             }
         }
-        is DataState.Loading -> State.Loading(content)
-        is DataState.Error -> State.Error(exception)
+        is DataState.Loading -> LoadingState.Loading(content)
+        is DataState.Error -> LoadingState.Error(exception)
     }
 }

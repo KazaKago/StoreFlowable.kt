@@ -5,22 +5,22 @@ import java.io.Serializable
 /**
  * TODO
  */
-sealed interface AdditionalState : Serializable {
+sealed interface AdditionalLoadingState : Serializable {
 
     /**
      * TODO
      */
-    data class Fixed(val noMoreAdditionalData: Boolean) : AdditionalState
+    data class Fixed(val noMoreAdditionalData: Boolean) : AdditionalLoadingState
 
     /**
      * TODO
      */
-    object Loading : AdditionalState
+    object Loading : AdditionalLoadingState
 
     /**
      * TODO
      */
-    data class Error(val exception: Exception) : AdditionalState
+    data class Error(val exception: Exception) : AdditionalLoadingState
 
     /**
      * TODO

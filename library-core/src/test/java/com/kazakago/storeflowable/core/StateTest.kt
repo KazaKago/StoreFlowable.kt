@@ -10,7 +10,7 @@ class StateTest {
 
     @Test
     fun doAction_Completed() {
-        val state = State.Completed(10, appending = AdditionalState.Loading, prepending = AdditionalState.Fixed(noMoreAdditionalData = true))
+        val state = LoadingState.Completed(10, appending = AdditionalLoadingState.Loading, prepending = AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
         state.doAction(
             onLoading = {
                 fail()
@@ -48,7 +48,7 @@ class StateTest {
 
     @Test
     fun doAction_Loading() {
-        val state = State.Loading<Int>(null)
+        val state = LoadingState.Loading<Int>(null)
         state.doAction(
             onLoading = {
                 // ok
@@ -64,7 +64,7 @@ class StateTest {
 
     @Test
     fun doAction_Error() {
-        val state = State.Error<Int>(IllegalStateException())
+        val state = LoadingState.Error<Int>(IllegalStateException())
         state.doAction(
             onLoading = {
                 fail()

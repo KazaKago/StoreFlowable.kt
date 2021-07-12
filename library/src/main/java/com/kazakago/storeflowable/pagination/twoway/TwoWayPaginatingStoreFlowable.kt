@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.pagination.twoway
 
-import com.kazakago.storeflowable.core.State
+import com.kazakago.storeflowable.core.LoadingState
 import com.kazakago.storeflowable.pagination.oneway.PaginatingStoreFlowable
 
 /**
@@ -18,7 +18,7 @@ interface TwoWayPaginatingStoreFlowable<KEY, DATA> : PaginatingStoreFlowable<KEY
      *
      * Do nothing if there is no additional data or if already data retrieving.
      *
-     * @param continueWhenError Even if the data state is an [State.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
+     * @param continueWhenError Even if the data state is an [LoadingState.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
     suspend fun requestPrependingData(continueWhenError: Boolean = true)
 }

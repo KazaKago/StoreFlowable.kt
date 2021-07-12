@@ -10,10 +10,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class StateZipperTest {
 
-    private val loading: State<Int> = State.Loading(null)
-    private val loadingWithData: State<Int> = State.Loading(70)
-    private val completed: State<Int> = State.Completed(30, AdditionalState.Fixed(noMoreAdditionalData = true), AdditionalState.Fixed(noMoreAdditionalData = false))
-    private val error: State<Int> = State.Error(IllegalStateException())
+    private val loading: LoadingState<Int> = LoadingState.Loading(null)
+    private val loadingWithData: LoadingState<Int> = LoadingState.Loading(70)
+    private val completed: LoadingState<Int> = LoadingState.Completed(30, AdditionalLoadingState.Fixed(noMoreAdditionalData = true), AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+    private val error: LoadingState<Int> = LoadingState.Error(IllegalStateException())
 
     @Test
     fun zip_Loading_Loading() = runBlockingTest {
