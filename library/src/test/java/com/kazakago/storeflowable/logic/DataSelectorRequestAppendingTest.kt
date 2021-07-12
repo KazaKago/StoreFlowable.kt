@@ -15,7 +15,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class DataSelectorOneWayTest {
+class DataSelectorRequestAppendingTest {
 
     private enum class TestData(val needRefresh: Boolean) {
         ValidData(false),
@@ -77,6 +77,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Fixed_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -87,6 +88,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Fixed_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed(), mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -97,6 +99,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Fixed_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -107,6 +110,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_FixedWithNoMoreData_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -117,6 +121,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_FixedWithNoMoreData_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -127,6 +132,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
@@ -137,6 +143,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -147,6 +154,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -157,6 +165,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading(), mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Loading::class
@@ -167,6 +176,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Error_NoCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -177,6 +187,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -187,6 +198,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Fixed_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Fixed(AdditionalDataState.Error(mockk()), mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -197,6 +209,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Loading_NoCache() = runBlockingTest {
         dataState = DataState.Loading()
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo null
@@ -206,6 +219,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Loading_ValidCache() = runBlockingTest {
         dataState = DataState.Loading()
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
@@ -215,6 +229,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Loading_InvalidCache() = runBlockingTest {
         dataState = DataState.Loading()
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Loading::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
@@ -224,6 +239,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_NoCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -234,6 +250,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_ValidCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -244,6 +261,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_InvalidCache() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Fixed::class
         (dataState as DataState.Fixed).appendingDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
@@ -254,6 +272,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_NoCache_NonContinueWhenError() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = null
+
         dataSelector.requestAppendingData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo null
@@ -263,6 +282,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_ValidCache_NonContinueWhenError() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.ValidData)
+
         dataSelector.requestAppendingData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
@@ -272,6 +292,7 @@ class DataSelectorOneWayTest {
     fun requestAppendingData_Error_InvalidCache_NonContinueWhenError() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.InvalidData)
+
         dataSelector.requestAppendingData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)

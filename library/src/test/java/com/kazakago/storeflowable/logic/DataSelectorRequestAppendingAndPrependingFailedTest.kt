@@ -16,7 +16,7 @@ import org.junit.Test
 import java.net.UnknownHostException
 
 @ExperimentalCoroutinesApi
-class DataSelectorTwoWayFailedTest {
+class DataSelectorRequestAppendingAndPrependingFailedTest {
 
     companion object {
         private const val FORCE_REFRESH = false

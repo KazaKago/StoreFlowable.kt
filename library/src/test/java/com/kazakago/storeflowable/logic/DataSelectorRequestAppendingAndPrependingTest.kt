@@ -15,7 +15,7 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class DataSelectorTwoWayTest {
+class DataSelectorRequestAppendingAndPrependingTest {
 
     private enum class TestData(val needRefresh: Boolean) {
         ValidData(false),
