@@ -11,11 +11,13 @@ data class TwoWayFetchingResult<DATA>(
      */
     val data: DATA,
     /**
-     * Set to `true` if you know at Pagination that there is no more appending data.
+     * If you know at Pagination that there is no more appending data, set to `true`.
+     * Otherwise, set to `false`.
      */
     val noMoreAppendingData: Boolean,
     /**
-     * Set to `true` if you know at Pagination that there is no more prepending data.
+     * If you know at Pagination that there is no more prepending data, set to `true`.
+     * Otherwise, set to `false`.
      */
     val noMorePrependingData: Boolean,
 )

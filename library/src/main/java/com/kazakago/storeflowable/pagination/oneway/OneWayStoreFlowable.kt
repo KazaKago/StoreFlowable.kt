@@ -6,7 +6,7 @@ import com.kazakago.storeflowable.core.pagination.oneway.FlowableOneWayLoadingSt
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Provides input / output methods that abstract the data acquisition destination.
+ * Provides input / output methods that abstract the data acquisition destination for one-way pagination.
  *
  * This class is generated from [OneWayStoreFlowableFactory.create].
  *

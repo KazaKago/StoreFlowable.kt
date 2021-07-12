@@ -6,7 +6,7 @@ import com.kazakago.storeflowable.core.pagination.twoway.FlowableTwoWayLoadingSt
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Provides input / output methods that abstract the data acquisition destination.
+ * Provides input / output methods that abstract the data acquisition destination for two-way pagination.
  *
  * This class is generated from [TwoWayStoreFlowableFactory.create].
  *

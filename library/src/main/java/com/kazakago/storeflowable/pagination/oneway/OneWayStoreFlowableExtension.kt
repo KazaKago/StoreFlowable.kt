@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
 /**
  * Create [OneWayStoreFlowable] class from [OneWayStoreFlowableFactory].
  *
- * @return Created PaginatingStoreFlowable.
+ * @return Created [OneWayStoreFlowable].
  */
 fun <KEY, DATA> OneWayStoreFlowableFactory<KEY, DATA>.create(): OneWayStoreFlowable<KEY, DATA> {
     return OneWayStoreFlowableImpl(

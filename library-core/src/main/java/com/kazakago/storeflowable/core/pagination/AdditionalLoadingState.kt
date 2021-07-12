@@ -1,29 +1,43 @@
 package com.kazakago.storeflowable.core.pagination
 
+import com.kazakago.storeflowable.core.pagination.AdditionalLoadingState.*
 import java.io.Serializable
 
 /**
- * TODO
+ * This sealed class that represents the state of the additional pagination data.
+ *
+ * The following three states are shown.
+ * - [Fixed] has not been processed.
+ * - [Loading] is acquiring data.
+ * - [Error] is an error when processing.
  */
 sealed interface AdditionalLoadingState : Serializable {
 
     /**
-     * TODO
+     * No processing.
      */
     data class Fixed(val noMoreAdditionalData: Boolean) : AdditionalLoadingState
 
     /**
-     * TODO
+     * when data fetch is processing.
      */
     object Loading : AdditionalLoadingState
 
     /**
-     * TODO
+     * when data fetch is failure.
+     *
+     * @param exception Occurred exception.
      */
     data class Error(val exception: Exception) : AdditionalLoadingState
 
     /**
-     * TODO
+     * Provides state-specific callbacks.
+     * Same as `when (state) { ... }`.
+     *
+     * @param onFixed Callback for [onFixed].
+     * @param onLoading Callback for [Loading].
+     * @param onError Callback for [Error].
+     * @return Can return a value of any type.
      */
     fun <V> doAction(onFixed: ((noMoreAdditionalData: Boolean) -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {

@@ -3,9 +3,7 @@ package com.kazakago.storeflowable
 import com.kazakago.storeflowable.origin.GettingFrom
 
 /**
- * Provides input / output methods that abstract the data acquisition destination.
- *
- * This class is generated from [StoreFlowableFactory.create].
+ * Common function of [com.kazakago.storeflowable.StoreFlowable], [com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowable], [com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowable] interfaces.
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
@@ -18,7 +16,7 @@ interface BaseStoreFlowable<KEY, DATA> {
      * If the data could not be retrieved, it returns null instead.
      * and this method itself does not throw an [Exception].
      *
-     * Use [publish] if the state of your data is likely to change.
+     * Use `publish()` if the state of your data is likely to change.
      *
      * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.
@@ -32,7 +30,7 @@ interface BaseStoreFlowable<KEY, DATA> {
      *
      * If the data cannot be acquired, an [Exception] will be thrown.
      *
-     * Use [publish] if the state of your data is likely to change.
+     * Use `publish()` if the state of your data is likely to change.
      *
      * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.

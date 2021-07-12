@@ -1,7 +1,10 @@
 package com.kazakago.storeflowable.core.pagination
 
 /**
- * TODO
+ * Combine multiple [AdditionalLoadingState].
+ *
+ * @param additionalState2 The second [AdditionalLoadingState] to combine.
+ * @return Return [AdditionalLoadingState] containing the combined data.
  */
 fun AdditionalLoadingState.zip(additionalState2: AdditionalLoadingState): AdditionalLoadingState {
     return when (this) {

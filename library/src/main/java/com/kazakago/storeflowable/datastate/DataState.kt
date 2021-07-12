@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.datastate
 /**
  * Indicates the state of the data.
  *
- * This state is only used inside the [com.kazakago.storeflowable.StoreFlowable].
+ * This state is only used inside this library.
  */
 @Suppress("CanSealedSubClassBeObject")
 sealed class DataState {

@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
 /**
  * Create [TwoWayStoreFlowable] class from [TwoWayStoreFlowableFactory].
  *
- * @return Created TwoWayPaginatingStoreFlowable.
+ * @return Created [TwoWayStoreFlowable].
  */
 fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowable<KEY, DATA> {
     return TwoWayStoreFlowableImpl(

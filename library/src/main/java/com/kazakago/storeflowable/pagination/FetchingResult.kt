@@ -11,7 +11,8 @@ data class FetchingResult<DATA>(
      */
     val data: DATA,
     /**
-     * Set to `true` if you know at Pagination that there is no more additional data.
+     * If you know at Pagination that there is no more additional data, Set to `true`.
+     * Otherwise, specify `false`.
      */
     val noMoreAdditionalData: Boolean,
 )

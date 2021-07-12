@@ -12,29 +12,30 @@ import java.io.Serializable
  * - [Completed] has not been processed.
  * - [Error] is an error when processing.
  *
- * The entity of the data is stored in [StateContent] separately from this [TwoWayLoadingState].
- *
  * @param T Types of data to be included.
- * @property content Indicates the existing or not existing of data by [StateContent].
  */
 sealed interface TwoWayLoadingState<out T> : Serializable {
 
     /**
-     * Acquiring data state.
+     * when data fetch is processing.
      *
      * @param content Indicates the existing or not existing of data.
      */
     data class Loading<out T>(val content: T?) : TwoWayLoadingState<T>
 
     /**
-     * No processing state.
+     * When data fetch is successful.
      *
-     * @param content Indicates the existing.
+     * @param content Raw data.
+     * @param appending appending pagination state of the data.
+     * @param prepending prepending pagination state of the data.
      */
     data class Completed<out T>(val content: T, val appending: AdditionalLoadingState, val prepending: AdditionalLoadingState) : TwoWayLoadingState<T>
 
     /**
-     * An error when processing state.
+     * when data fetch is failure.
+     *
+     * @param exception Occurred exception.
      */
     data class Error<out T>(val exception: Exception) : TwoWayLoadingState<T>
 

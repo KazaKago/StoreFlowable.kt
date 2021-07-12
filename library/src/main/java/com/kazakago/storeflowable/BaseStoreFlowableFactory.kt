@@ -3,9 +3,7 @@ package com.kazakago.storeflowable
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 
 /**
- * Abstract factory class for [StoreFlowable] class.
- *
- * Create a class that implements origin or cache data Input / Output according to this interface.
+ * Common function of [com.kazakago.storeflowable.StoreFlowableFactory], [com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowableFactory], [com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowableFactory] interfaces.
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
