@@ -16,7 +16,7 @@ interface BaseStoreFlowable<KEY, DATA> {
      * If the data could not be retrieved, it returns null instead.
      * and this method itself does not throw an [Exception].
      *
-     * Use `publish()` if the state of your data is likely to change.
+     * Use [com.kazakago.storeflowable.StoreFlowable.publish] if the state of your data is likely to change.
      *
      * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.
@@ -30,7 +30,7 @@ interface BaseStoreFlowable<KEY, DATA> {
      *
      * If the data cannot be acquired, an [Exception] will be thrown.
      *
-     * Use `publish()` if the state of your data is likely to change.
+     * Use [com.kazakago.storeflowable.StoreFlowable.publish] if the state of your data is likely to change.
      *
      * @param from Specifies where to get the data. Default value is [GettingFrom.Both].
      * @return Returns the entity of the data.
