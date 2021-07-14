@@ -296,10 +296,10 @@ And then, You can get the state of additional loading from the `appending` param
 val userFlowable = UserFlowableFactory(userId).create()
 userFlowable.publish(userId).collect {
     it.doAction(
-        onLoading = { content: UserData? ->
+        onLoading = { contents: List<UserData>? ->
             // Whole (Initial) data loading.
         },
-        onCompleted = { content: UserData, appending: AdditionalLoadingState ->
+        onCompleted = { contents: List<UserData>, appending: AdditionalLoadingState ->
             appending.doAction(
                 onFixed = {
                     // No additional processing.
