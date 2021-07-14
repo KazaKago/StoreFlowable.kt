@@ -26,7 +26,7 @@ The following is the class structure of Repository pattern using this library.
 
 ![https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg](https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg)
 
-The following is an example of screen display using [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt).
+The following is an example of screen display using [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt).
 
 ![https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg](https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg)
 
@@ -34,13 +34,13 @@ The following is an example of screen display using [`State`](library-core/src/m
 
 Add the following gradle dependency exchanging x.x.x for the latest release.  
 
-```groovy
-implementation 'com.kazakago.storeflowable:storeflowable:x.x.x'
+```kotlin
+implementation("com.kazakago.storeflowable:storeflowable:x.x.x")
 ```
 
-Optional: if you use [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class and related functions only.  
-```groovy
-implementation 'com.kazakago.storeflowable:storeflowable-core:x.x.x'
+Optional: if you use [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class and related functions only.  
+```kotlin
+implementation("com.kazakago.storeflowable:storeflowable-core:x.x.x")
 ```
 
 ## Basic Usage
@@ -55,14 +55,14 @@ There are only 5 things you have to implement:
 
 ### 1. Create FlowableDataStateManager class
 
-First, create a class that inherits [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt).  
+First, create a class that inherits [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/datastate/FlowableDataStateManager.kt).  
 Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.  
 
 ```kotlin
 object UserStateManager : FlowableDataStateManager<UserId>()
 ```
 
-[`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
+[`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/datastate/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
 
 ### 2. Create StoreFlowableFactory class
 
@@ -94,9 +94,8 @@ class UserFlowableFactory(userId: UserId) : StoreFlowableFactory<UserId, UserDat
     }
 
     // Get data from remote server.
-    override suspend fun fetchDataFromOrigin(): FetchingResult<UserData> {
-        val data = userApi.fetch(key)
-        return FetchingResult(data = data)
+    override suspend fun fetchDataFromOrigin(): UserData {
+        return userApi.fetch(key)
     }
 
     // Whether the cache is valid.
@@ -117,7 +116,7 @@ Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/
 ```kotlin
 class UserRepository {
 
-    fun followUserData(userId: UserId): FlowableState<UserData> {
+    fun followUserData(userId: UserId): FlowableLoadingState<UserData> {
         val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userId).create()
         return userFlowable.publish()
     }
@@ -129,7 +128,7 @@ class UserRepository {
 }
 ```
 
-You can get the data in the form of [`FlowableState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableState.kt) (Same as `Flow<State<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+You can get the data in the form of [`FlowableLoadingState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
@@ -141,21 +140,13 @@ and branch the data state with `doAction()` method or `when` statement.
 private fun subscribe(userId: UserId) = viewModelScope.launch {
     userRepository.followUserData(userId).collect {
         it.doAction(
-            onFixed = {
+            onLoading = { content: UserData? ->
                 ...
             },
-            onLoading = {
+            onCompleted = { content: UserData ->
                 ...
             },
-            onError = { exception ->
-                ...
-            }
-        )
-        it.content.doAction(
-            onExist = { userData ->
-                ...
-            },
-            onNotExist = {
+            onError = { exception: Exception ->
                 ...
             }
         )
@@ -174,11 +165,11 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ## Advanced Usage
 
-### Get data without [State](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class
+### Get data without [LoadingState](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class
 
-If you don't need value flow and [`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class, you can use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
-[`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
-[`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) returns null instead of Exception.  
+If you don't need value flow and [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class, you can use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt).  
+[`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
+[`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) returns null instead of Exception.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
@@ -187,7 +178,7 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-[`GettingFrom`](library/src/main/java/com/kazakago/storeflowable/GettingFrom.kt) parameter specifies where to get the data.  
+[`GettingFrom`](library/src/main/java/com/kazakago/storeflowable/origin/GettingFrom.kt) parameter specifies where to get the data.  
 
 ```kotlin
 enum class GettingFrom {
@@ -200,7 +191,7 @@ enum class GettingFrom {
 }
 ```
 
-However, use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
+However, use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
 
 ### Refresh data
 
@@ -212,17 +203,17 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-Or you can use [`refresh()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you are already observing the `Flow`.  
+Or you can use [`refresh()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) if you are already observing the `Flow`.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    suspend fun refresh(clearCacheWhenFetchFails: Boolean = true, continueWhenError: Boolean = true)
+    suspend fun refresh()
 }
 ```
 
 ### Validate cache data
 
-Use [`validate()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you want to verify that the local cache is valid.  
+Use [`validate()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) if you want to verify that the local cache is valid.  
 If invalid, get new data remotely.  
 
 ```kotlin
@@ -233,7 +224,7 @@ interface StoreFlowable<KEY, DATA> {
 
 ### Update cache data
 
-If you want to update the local cache, use the [`update()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+If you want to update the local cache, use the [`update()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) method.  
 `Flow` observers will be notified.  
 
 ```kotlin
@@ -248,7 +239,7 @@ This library includes pagination support.
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`PaginatingStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
+Inherit [`OneWayStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 
 An example is shown below.  
 
@@ -256,7 +247,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<UserData>> {
+class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
@@ -273,7 +264,7 @@ class UserListFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<UserDa
         userListCache.save(newData)
     }
 
-    override suspend fun saveAdditionalDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
+    override suspend fun saveAppendingDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
         val mergedData = (cachedData ?: emptyList()) + newData
         userListCache.save(mergedData)
     }
@@ -283,7 +274,7 @@ class UserListFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<UserDa
         return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
     }
 
-    override suspend fun fetchAdditionalDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchAppendingDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
         val page = (cachedData?.size ?: 0) / 10 + 1
         val fetchedData = userListApi.fetch(page)
         return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
@@ -295,20 +286,72 @@ class UserListFlowableFactory : PaginatingStoreFlowableFactory<Unit, List<UserDa
 }
 ```
 
-You need to additionally implements `saveAdditionalDataToCache()` and `fetchAdditionalDataFromOrigin()`.  
+You need to additionally implements `saveAppendingDataToCache()` and `fetchAppendingDataFromOrigin()`.  
 When saving the data, combine the cached data and the new data before saving.  
 
-The [GithubOrgsFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableFactory.kt) and [GithubReposFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableFactory.kt) classes in [**example module**](example) implement pagination.
+And then, You can get the state of additional loading from the `appending` parameter of `onCompleted {}`.  
+
+```kotlin
+val userFlowable = UserFlowableFactory(userId).create()
+userFlowable.publish(userId).collect {
+    it.doAction(
+        onLoading = { content: UserData? ->
+            // Whole (Initial) data loading.
+        },
+        onCompleted = { content: UserData, appending: AdditionalLoadingState ->
+            appending.doAction(
+                onFixed = {
+                    // No additional processing.
+                },
+                onLoading = {
+                    // Additional data loading.
+                },
+                onError = { exception ->
+                    // Additional loading error.
+                }
+            )
+        },
+        onError = { exception: Exception ->
+            // Whole (Initial) data loading error.
+        }
+    )
+}
+```
 
 ### Request additional data
 
-You can request additional data for paginating using the [`requestAdditionalData()`](library/src/main/java/com/kazakago/storeflowable/pagination/PaginatingStoreFlowable.kt) method.
+You can request additional data for paginating using the [`requestAppendingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowable.kt) method.
 
 ```kotlin
-interface PaginatingStoreFlowable<KEY, DATA> {
-    suspend fun requestAdditionalData(continueWhenError: Boolean = true)
+interface OneWayStoreFlowable<KEY, DATA> {
+    suspend fun requestAppendingData(continueWhenError: Boolean = true)
 }
 ```
+
+## Pagination Example
+
+The [GithubOrgsFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubOrgsFlowableFactory.kt) and [GithubReposFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubReposFlowableFactory.kt) classes in [**example module**](example) implement pagination.
+
+## Two-Way pagination support
+
+This library also includes two-way pagination support.  
+
+Inherit [`TwoWayStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
+
+### Request appnding & prepending data
+
+You can request additional data for paginating using the [`requestAppendingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) [`requestPrependingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) method.
+
+```kotlin
+interface TwoWayStoreFlowable<KEY, DATA> {
+    suspend fun requestAppendingData(continueWhenError: Boolean = true)
+    suspend fun requestPrependingData(continueWhenError: Boolean = true)
+}
+```
+
+## Two-Way pagination Example
+
+The [GithubTwoWayReposFlowableFactory](example/src/main/java/com/kazakago/storeflowable/example/flowable/GithubTwoWayReposFlowableFactory.kt) classes in [**example module**](example) implement two-way pagination.
 
 ## License
 
