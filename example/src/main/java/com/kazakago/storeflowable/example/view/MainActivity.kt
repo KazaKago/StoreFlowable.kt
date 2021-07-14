@@ -20,12 +20,16 @@ class MainActivity : AppCompatActivity() {
             val intent = GithubOrgsActivity.createIntent(this)
             startActivity(intent)
         }
-        binding.reposButton.setOnClickListener {
-            val intent = GithubReposActivity.createIntent(this, binding.userNameInputEditText.text.toString())
+        binding.userButton.setOnClickListener {
+            val intent = GithubUserActivity.createIntent(this, binding.userName1InputEditText.text.toString())
             startActivity(intent)
         }
-        binding.userButton.setOnClickListener {
-            val intent = GithubUserActivity.createIntent(this, binding.userNameInputEditText.text.toString())
+        binding.reposButton.setOnClickListener {
+            val intent = GithubReposActivity.createIntent(this, binding.userName2InputEditText.text.toString())
+            startActivity(intent)
+        }
+        binding.repos2Button.setOnClickListener {
+            val intent = GithubTwoWayReposActivity.createIntent(this)
             startActivity(intent)
         }
     }

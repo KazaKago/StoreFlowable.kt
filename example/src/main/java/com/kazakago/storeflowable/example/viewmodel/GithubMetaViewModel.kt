@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.example.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.repository.GithubRepository
@@ -10,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class GithubMetaViewModel(application: Application) : AndroidViewModel(application) {
+class GithubMetaViewModel : ViewModel() {
 
     private val _githubMeta = MutableStateFlow<GithubMeta?>(null)
     val githubMeta = _githubMeta.asStateFlow()

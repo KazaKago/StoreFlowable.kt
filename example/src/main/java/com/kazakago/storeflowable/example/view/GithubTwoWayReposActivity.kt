@@ -8,48 +8,39 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.kazakago.storeflowable.example.databinding.ActivityGithubReposBinding
+import com.kazakago.storeflowable.example.databinding.ActivityGithubTwoWayReposBinding
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.view.items.ErrorItem
 import com.kazakago.storeflowable.example.view.items.GithubRepoItem
 import com.kazakago.storeflowable.example.view.items.LoadingItem
-import com.kazakago.storeflowable.example.viewmodel.GithubReposViewModel
+import com.kazakago.storeflowable.example.viewmodel.GithubTwoWayReposViewModel
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.coroutines.flow.collect
 
-class GithubReposActivity : AppCompatActivity() {
+class GithubTwoWayReposActivity : AppCompatActivity() {
 
     companion object {
-        fun createIntent(context: Context, userName: String): Intent {
-            return Intent(context, GithubReposActivity::class.java).apply {
-                putExtra(ParameterName.UserName.name, userName)
-            }
+        fun createIntent(context: Context): Intent {
+            return Intent(context, GithubTwoWayReposActivity::class.java)
         }
     }
 
-    private enum class ParameterName {
-        UserName
-    }
-
-    private val binding by lazy { ActivityGithubReposBinding.inflate(layoutInflater) }
+    private val binding by lazy { ActivityGithubTwoWayReposBinding.inflate(layoutInflater) }
     private val githubReposGroupAdapter = GroupAdapter<GroupieViewHolder>()
-    private val githubReposViewModel by viewModels<GithubReposViewModel> {
-        val githubUserName = intent.getStringExtra(ParameterName.UserName.name)!!
-        GithubReposViewModel.Factory(githubUserName)
-    }
+    private val githubReposViewModel by viewModels<GithubTwoWayReposViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
-        binding.githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAddition()
+        binding.githubReposRecyclerView.addOnTopReached {
+            githubReposViewModel.requestPrepending()
         }
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            githubReposViewModel.refresh()
+        binding.githubReposRecyclerView.addOnBottomReached {
+            githubReposViewModel.requestAppending()
         }
         binding.retryButton.setOnClickListener {
             githubReposViewModel.retry()
@@ -59,8 +50,10 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.reposStatus.collect { reposStatus ->
                 val items: List<Group> = mutableListOf<Group>().apply {
                     this += createGithubRepoItems(reposStatus.githubRepos)
-                    if (reposStatus.isAppendingLoading) this += createLoadingItem()
-                    reposStatus.appendingError?.let { this += createErrorItem(it) }
+                    if (reposStatus.isAppendingLoading) add(createLoadingItem())
+                    if (reposStatus.isPrependingLoading) add(0, createLoadingItem())
+                    reposStatus.appendingError?.let { add(createAppendingErrorItem(it)) }
+                    reposStatus.prependingError?.let { add(0, createPrependingErrorItem(it)) }
                 }
                 githubReposGroupAdapter.updateAsync(items)
             }
@@ -74,11 +67,6 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.mainError.collect {
                 binding.errorGroup.isVisible = (it != null)
                 binding.errorTextView.text = it?.toString()
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubReposViewModel.isRefreshing.collect {
-                binding.swipeRefreshLayout.isRefreshing = it
             }
         }
     }
@@ -95,9 +83,15 @@ class GithubReposActivity : AppCompatActivity() {
         return LoadingItem()
     }
 
-    private fun createErrorItem(exception: Exception): ErrorItem {
+    private fun createAppendingErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryAddition() }
+            onRetry = { githubReposViewModel.retryAppending() }
+        }
+    }
+
+    private fun createPrependingErrorItem(exception: Exception): ErrorItem {
+        return ErrorItem(exception).apply {
+            onRetry = { githubReposViewModel.retryPrepending() }
         }
     }
 

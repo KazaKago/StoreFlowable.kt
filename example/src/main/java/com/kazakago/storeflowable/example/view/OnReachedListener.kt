@@ -16,3 +16,14 @@ fun RecyclerView.addOnBottomReached(onBottom: () -> Unit) {
         }
     })
 }
+
+fun RecyclerView.addOnTopReached(onTop: () -> Unit) {
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+            if (layoutManager.findFirstVisibleItemPosition() <= 3) {
+                onTop()
+            }
+        }
+    })
+}

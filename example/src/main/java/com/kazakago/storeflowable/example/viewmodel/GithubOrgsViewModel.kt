@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.example.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.repository.GithubRepository
@@ -10,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class GithubOrgsViewModel(application: Application) : AndroidViewModel(application) {
+class GithubOrgsViewModel : ViewModel() {
 
     private val _githubOrgs = MutableStateFlow<List<GithubOrg>>(emptyList())
     val githubOrgs = _githubOrgs.asStateFlow()

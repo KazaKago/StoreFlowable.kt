@@ -2,16 +2,15 @@ package com.kazakago.storeflowable.example.repository
 
 import com.kazakago.storeflowable.core.FlowableLoadingState
 import com.kazakago.storeflowable.core.pagination.oneway.FlowableOneWayLoadingState
+import com.kazakago.storeflowable.core.pagination.twoway.FlowableTwoWayLoadingState
 import com.kazakago.storeflowable.create
-import com.kazakago.storeflowable.example.flowable.GithubMetaFlowableFactory
-import com.kazakago.storeflowable.example.flowable.GithubOrgsFlowableFactory
-import com.kazakago.storeflowable.example.flowable.GithubReposFlowableFactory
-import com.kazakago.storeflowable.example.flowable.GithubUserFlowableFactory
+import com.kazakago.storeflowable.example.flowable.*
 import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
 import com.kazakago.storeflowable.pagination.oneway.create
+import com.kazakago.storeflowable.pagination.twoway.create
 
 class GithubRepository {
 
@@ -64,4 +63,25 @@ class GithubRepository {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
         githubReposFlowable.requestAppendingData(continueWhenError)
     }
+
+    fun followTwoWayRepos(): FlowableTwoWayLoadingState<List<GithubRepo>> {
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        return githubReposFlowable.publish()
+    }
+
+    suspend fun refreshTwoWayRepos() {
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        githubReposFlowable.refresh()
+    }
+
+    suspend fun requestAppendingTwoWayRepos(continueWhenError: Boolean) {
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        githubReposFlowable.requestAppendingData(continueWhenError)
+    }
+
+    suspend fun requestPrependingTwoWayRepos(continueWhenError: Boolean) {
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        githubReposFlowable.requestPrependingData(continueWhenError)
+    }
+
 }

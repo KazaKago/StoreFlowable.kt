@@ -24,6 +24,7 @@
         <activity android:name=".view.GithubOrgsActivity" />
         <activity android:name=".view.GithubUserActivity" />
         <activity android:name=".view.GithubReposActivity" />
+        <activity android:name=".view.GithubTwoWayReposActivity" />
     </application>
 
 </manifest>

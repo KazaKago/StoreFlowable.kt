@@ -1,7 +1,5 @@
 package com.kazakago.storeflowable.example.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,12 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class GithubUserViewModel(application: Application, private val userName: String) : AndroidViewModel(application) {
+class GithubUserViewModel(private val userName: String) : ViewModel() {
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val application: Application, private val userName: String) : ViewModelProvider.Factory {
+    class Factory(private val userName: String) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return GithubUserViewModel(application, userName) as T
+            return GithubUserViewModel(userName) as T
         }
     }
 

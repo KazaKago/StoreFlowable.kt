@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.example.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.repository.GithubRepository
@@ -10,21 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class GithubReposViewModel(private val userName: String) : ViewModel() {
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(private val userName: String) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return GithubReposViewModel(userName) as T
-        }
-    }
+class GithubTwoWayReposViewModel : ViewModel() {
 
     private val _reposStatus = MutableStateFlow(ReposStatus())
     val reposStatus = _reposStatus.asStateFlow()
     private val _isMainLoading = MutableStateFlow(false)
     val isMainLoading = _isMainLoading.asStateFlow()
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
     private val _mainError = MutableStateFlow<Exception?>(null)
     val mainError = _mainError.asStateFlow()
     private val githubRepository = GithubRepository()
@@ -32,33 +22,37 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
     data class ReposStatus(
         var githubRepos: List<GithubRepo> = emptyList(),
         var isAppendingLoading: Boolean = false,
+        var isPrependingLoading: Boolean = false,
         var appendingError: Exception? = null,
+        var prependingError: Exception? = null,
     )
 
     init {
         subscribe()
     }
 
-    fun refresh() = viewModelScope.launch {
-        _isRefreshing.value = true
-        githubRepository.refreshRepos(userName)
-        _isRefreshing.value = false
-    }
-
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshRepos(userName)
+        githubRepository.refreshTwoWayRepos()
     }
 
-    fun requestAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, continueWhenError = false)
+    fun requestAppending() = viewModelScope.launch {
+        githubRepository.requestAppendingTwoWayRepos(continueWhenError = false)
     }
 
-    fun retryAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, continueWhenError = true)
+    fun requestPrepending() = viewModelScope.launch {
+        githubRepository.requestPrependingTwoWayRepos(continueWhenError = false)
+    }
+
+    fun retryAppending() = viewModelScope.launch {
+        githubRepository.requestAppendingTwoWayRepos(continueWhenError = true)
+    }
+
+    fun retryPrepending() = viewModelScope.launch {
+        githubRepository.requestPrependingTwoWayRepos(continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followRepos(userName).collect {
+        githubRepository.followTwoWayRepos().collect {
             it.doAction(
                 onLoading = { githubRepos ->
                     if (githubRepos != null) {
@@ -70,7 +64,7 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
                     }
                     _mainError.value = null
                 },
-                onCompleted = { githubRepos, appending ->
+                onCompleted = { githubRepos, appending, prepending ->
                     val reposStatus = ReposStatus(githubRepos = githubRepos)
                     appending.doAction(
                         onFixed = {},
@@ -79,6 +73,15 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
                         },
                         onError = { exception ->
                             reposStatus.appendingError = exception
+                        }
+                    )
+                    prepending.doAction(
+                        onFixed = {},
+                        onLoading = {
+                            reposStatus.isPrependingLoading = true
+                        },
+                        onError = { exception ->
+                            reposStatus.prependingError = exception
                         }
                     )
                     _reposStatus.value = reposStatus
