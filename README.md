@@ -24,11 +24,11 @@ Created according to the following 5 policies.
 
 The following is the class structure of Repository pattern using this library.  
 
-![https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg](https://user-images.githubusercontent.com/7742104/103459432-bbe5f900-4d52-11eb-829c-fba62cb0ea11.jpg)
+![https://user-images.githubusercontent.com/7742104/125610947-516c9508-f7fd-4466-81a8-c3ee159cb141.jpg](https://user-images.githubusercontent.com/7742104/125610947-516c9508-f7fd-4466-81a8-c3ee159cb141.jpg)
 
 The following is an example of screen display using [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt).
 
-![https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg](https://user-images.githubusercontent.com/7742104/103459431-bab4cc00-4d52-11eb-983a-2087dd3100a0.jpg)
+![https://user-images.githubusercontent.com/7742104/125610954-914075de-0d24-4e6b-b16c-7e3c0bbe2acb.jpg](https://user-images.githubusercontent.com/7742104/125610954-914075de-0d24-4e6b-b16c-7e3c0bbe2acb.jpg)
 
 ## Install
 
