@@ -271,14 +271,13 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
     }
 
     override suspend fun fetchDataFromOrigin(): FetchingResult<List<UserData>> {
-        val fetchedData = userListApi.fetch(1)
-        return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
+        val fetchedData = userListApi.fetch(null)
+        return FetchingResult(data = fetchedData, nextKey = fetchedData.nextToken)
     }
 
-    override suspend fun fetchNextDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
-        val page = (cachedData?.size ?: 0) / 10 + 1
-        val fetchedData = userListApi.fetch(page)
-        return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
+    override suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingResult<List<GithubOrg>> {
+        val fetchedData = userListApi.fetch(nextKey)
+        return FetchingResult(data = fetchedData, nextKey = fetchedData.nextToken)
     }
 
     override suspend fun needRefresh(cachedData: List<UserData>): Boolean {
