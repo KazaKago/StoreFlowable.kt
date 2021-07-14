@@ -21,10 +21,10 @@ class GithubTwoWayReposViewModel : ViewModel() {
 
     data class ReposStatus(
         var githubRepos: List<GithubRepo> = emptyList(),
-        var isAppendingLoading: Boolean = false,
-        var isPrependingLoading: Boolean = false,
-        var appendingError: Exception? = null,
-        var prependingError: Exception? = null,
+        var isNextLoading: Boolean = false,
+        var isPrevLoading: Boolean = false,
+        var nextError: Exception? = null,
+        var prevError: Exception? = null,
     )
 
     init {
@@ -35,20 +35,20 @@ class GithubTwoWayReposViewModel : ViewModel() {
         githubRepository.refreshTwoWayRepos()
     }
 
-    fun requestAppending() = viewModelScope.launch {
-        githubRepository.requestAppendingTwoWayRepos(continueWhenError = false)
+    fun requestNext() = viewModelScope.launch {
+        githubRepository.requestTwoWayNextRepos(continueWhenError = false)
     }
 
-    fun requestPrepending() = viewModelScope.launch {
-        githubRepository.requestPrependingTwoWayRepos(continueWhenError = false)
+    fun requestPrev() = viewModelScope.launch {
+        githubRepository.requestTwoWayPrevRepos(continueWhenError = false)
     }
 
-    fun retryAppending() = viewModelScope.launch {
-        githubRepository.requestAppendingTwoWayRepos(continueWhenError = true)
+    fun retryNext() = viewModelScope.launch {
+        githubRepository.requestTwoWayNextRepos(continueWhenError = true)
     }
 
-    fun retryPrepending() = viewModelScope.launch {
-        githubRepository.requestPrependingTwoWayRepos(continueWhenError = true)
+    fun retryPrev() = viewModelScope.launch {
+        githubRepository.requestTwoWayPrevRepos(continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
@@ -64,24 +64,24 @@ class GithubTwoWayReposViewModel : ViewModel() {
                     }
                     _mainError.value = null
                 },
-                onCompleted = { githubRepos, appending, prepending ->
+                onCompleted = { githubRepos, next, prev ->
                     val reposStatus = ReposStatus(githubRepos = githubRepos)
-                    appending.doAction(
+                    next.doAction(
                         onFixed = {},
                         onLoading = {
-                            reposStatus.isAppendingLoading = true
+                            reposStatus.isNextLoading = true
                         },
                         onError = { exception ->
-                            reposStatus.appendingError = exception
+                            reposStatus.nextError = exception
                         }
                     )
-                    prepending.doAction(
+                    prev.doAction(
                         onFixed = {},
                         onLoading = {
-                            reposStatus.isPrependingLoading = true
+                            reposStatus.isPrevLoading = true
                         },
                         onError = { exception ->
-                            reposStatus.prependingError = exception
+                            reposStatus.prevError = exception
                         }
                     )
                     _reposStatus.value = reposStatus

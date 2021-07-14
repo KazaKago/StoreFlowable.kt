@@ -62,8 +62,8 @@ class GithubOrgsViewModel : ViewModel() {
                     _mainError.value = null
                     _additionalError.value = null
                 },
-                onCompleted = { githubOrgs, appending ->
-                    appending.doAction(
+                onCompleted = { githubOrgs, next ->
+                    next.doAction(
                         onFixed = {
                             _isAdditionalLoading.value = false
                             _additionalError.value = null

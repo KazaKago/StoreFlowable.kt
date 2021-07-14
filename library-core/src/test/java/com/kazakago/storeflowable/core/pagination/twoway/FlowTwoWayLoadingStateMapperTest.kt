@@ -12,7 +12,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowTwoWayLoadingStateMapperTest {
 
-    private val flowCompleted: FlowableTwoWayLoadingState<Int> = flowOf(TwoWayLoadingState.Completed(30, appending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false), prepending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)))
+    private val flowCompleted: FlowableTwoWayLoadingState<Int> = flowOf(TwoWayLoadingState.Completed(30, next = AdditionalLoadingState.Fixed(noMoreAdditionalData = false), prev = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)))
 
     @Test
     fun mapContent() = runBlockingTest {

@@ -8,41 +8,41 @@ import com.kazakago.storeflowable.datastate.DataState
 internal fun <DATA> DataState.toTwoWayLoadingState(content: DATA?): TwoWayLoadingState<DATA> {
     return when (this) {
         is DataState.Fixed -> if (content != null) {
-            when (appendingDataState) {
+            when (nextDataState) {
                 is AdditionalDataState.Fixed -> {
-                    val appendingState = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)
-                    when (prependingDataState) {
-                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
-                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
-                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
+                    val nextState = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)
+                    when (prevDataState) {
+                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
+                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
                 }
                 is AdditionalDataState.FixedWithNoMoreAdditionalData -> {
-                    val appendingState = AdditionalLoadingState.Fixed(noMoreAdditionalData = true)
-                    when (prependingDataState) {
-                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
-                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
-                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
+                    val nextState = AdditionalLoadingState.Fixed(noMoreAdditionalData = true)
+                    when (prevDataState) {
+                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
+                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
                 }
                 is AdditionalDataState.Loading -> {
-                    val appendingState = AdditionalLoadingState.Loading
-                    when (prependingDataState) {
-                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
-                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Loading)
-                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, appendingState, AdditionalLoadingState.Error(prependingDataState.exception))
+                    val nextState = AdditionalLoadingState.Loading
+                    when (prevDataState) {
+                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
+                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
                 }
                 is AdditionalDataState.Error -> {
-                    val prependingState = AdditionalLoadingState.Error(appendingDataState.exception)
-                    when (prependingDataState) {
-                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, prependingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, prependingState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
-                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, prependingState, AdditionalLoadingState.Loading)
-                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, prependingState, AdditionalLoadingState.Error(prependingDataState.exception))
+                    val nextState = AdditionalLoadingState.Error(nextDataState.exception)
+                    when (prevDataState) {
+                        is AdditionalDataState.Fixed -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Loading -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
+                        is AdditionalDataState.Error -> TwoWayLoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
                 }
             }

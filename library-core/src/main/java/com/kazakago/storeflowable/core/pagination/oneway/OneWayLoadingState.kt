@@ -26,9 +26,9 @@ sealed interface OneWayLoadingState<out T> {
      * When data fetch is successful.
      *
      * @param content Raw data.
-     * @param appending appending pagination state of the data.
+     * @param next next pagination state of the data.
      */
-    data class Completed<out T>(val content: T, val appending: AdditionalLoadingState) : OneWayLoadingState<T>
+    data class Completed<out T>(val content: T, val next: AdditionalLoadingState) : OneWayLoadingState<T>
 
     /**
      * when data fetch is failure.
@@ -46,10 +46,10 @@ sealed interface OneWayLoadingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, appending: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
-            is Completed -> onCompleted(content, appending)
+            is Completed -> onCompleted(content, next)
             is Error -> onError(exception)
         }
     }

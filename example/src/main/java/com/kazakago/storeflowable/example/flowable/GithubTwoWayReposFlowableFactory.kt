@@ -4,8 +4,9 @@ import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubTwoWayReposStateManager
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.pagination.FetchingResult
-import com.kazakago.storeflowable.pagination.twoway.TwoWayFetchingResult
+import com.kazakago.storeflowable.pagination.twoway.FetchingNextResult
+import com.kazakago.storeflowable.pagination.twoway.FetchingPrevResult
+import com.kazakago.storeflowable.pagination.twoway.FetchingTwoWayResult
 import com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -35,31 +36,33 @@ class GithubTwoWayReposFlowableFactory : TwoWayStoreFlowableFactory<Unit, List<G
         githubCache.twoWayReposCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveAppendingDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
+    override suspend fun saveNextDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
         githubCache.twoWayReposCache = (cachedData ?: emptyList()) + newData
     }
 
-    override suspend fun savePrependingDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
+    override suspend fun savePrevDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
         githubCache.twoWayReposCache = newData + (cachedData ?: emptyList())
     }
 
-    override suspend fun fetchDataFromOrigin(): TwoWayFetchingResult<List<GithubRepo>> {
+    override suspend fun fetchDataFromOrigin(): FetchingTwoWayResult<List<GithubRepo>> {
         val data = githubApi.getRepos(GITHUB_USER_NAME, INITIAL_PAGE, PER_PAGE)
-        githubCache.twoWayReposNextPage = INITIAL_PAGE + 1
-        githubCache.twoWayReposPrevPage = INITIAL_PAGE - 1
-        return TwoWayFetchingResult(data = data, noMoreAppendingData = data.isEmpty(), noMorePrependingData = data.isEmpty())
+        return FetchingTwoWayResult(
+            data = data,
+            nextKey = if (data.isNotEmpty()) (INITIAL_PAGE + 1).toString() else null,
+            prevKey = if (INITIAL_PAGE > 1) (INITIAL_PAGE - 1).toString() else null,
+        )
     }
 
-    override suspend fun fetchAppendingDataFromOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
-        val data = githubApi.getRepos(GITHUB_USER_NAME, githubCache.twoWayReposNextPage, PER_PAGE)
-        githubCache.twoWayReposNextPage += 1
-        return FetchingResult(data = data, noMoreAdditionalData = data.isEmpty())
+    override suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingNextResult<List<GithubRepo>> {
+        val nextPage = nextKey.toInt()
+        val data = githubApi.getRepos(GITHUB_USER_NAME, nextPage, PER_PAGE)
+        return FetchingNextResult(data = data, nextKey = if (data.isNotEmpty()) (nextPage + 1).toString() else null)
     }
 
-    override suspend fun fetchPrependingDataFromOrigin(cachedData: List<GithubRepo>?): FetchingResult<List<GithubRepo>> {
-        val data = githubApi.getRepos(GITHUB_USER_NAME, githubCache.twoWayReposPrevPage, PER_PAGE)
-        githubCache.twoWayReposPrevPage -= 1
-        return FetchingResult(data = data, noMoreAdditionalData = githubCache.twoWayReposPrevPage <= 0)
+    override suspend fun fetchPrevDataFromOrigin(prevKey: String): FetchingPrevResult<List<GithubRepo>> {
+        val prevPage = prevKey.toInt()
+        val data = githubApi.getRepos(GITHUB_USER_NAME, prevPage, PER_PAGE)
+        return FetchingPrevResult(data = data, prevKey = if (prevPage > 1) (prevPage - 1).toString() else null)
     }
 
     override suspend fun needRefresh(cachedData: List<GithubRepo>): Boolean {

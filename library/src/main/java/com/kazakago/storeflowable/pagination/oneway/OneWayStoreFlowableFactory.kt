@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.BaseStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.FetchingResult
 
 /**
  * Abstract factory class for [OneWayStoreFlowable] class.
@@ -14,13 +13,13 @@ import com.kazakago.storeflowable.pagination.FetchingResult
 interface OneWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, DATA> {
 
     /**
-     * The appending data saving process to cache.
-     * You need to merge cached data & new fetched appending data.
+     * The next data saving process to cache.
+     * You need to merge cached data & new fetched next data.
      *
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun saveAppendingDataToCache(cachedData: DATA?, newData: DATA)
+    suspend fun saveNextDataToCache(cachedData: DATA?, newData: DATA)
 
     /**
      * The latest data acquisition process from origin.
@@ -30,9 +29,9 @@ interface OneWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, 
     suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
 
     /**
-     * Appending data acquisition process from origin.
+     * Next data acquisition process from origin.
      *
      * @return [FetchingResult] class including the acquired data.
      */
-    suspend fun fetchAppendingDataFromOrigin(cachedData: DATA?): FetchingResult<DATA>
+    suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingResult<DATA>
 }

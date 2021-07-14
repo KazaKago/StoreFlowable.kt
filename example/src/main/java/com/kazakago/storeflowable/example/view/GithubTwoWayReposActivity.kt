@@ -37,10 +37,10 @@ class GithubTwoWayReposActivity : AppCompatActivity() {
 
         binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
         binding.githubReposRecyclerView.addOnTopReached {
-            githubReposViewModel.requestPrepending()
+            githubReposViewModel.requestPrev()
         }
         binding.githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAppending()
+            githubReposViewModel.requestNext()
         }
         binding.retryButton.setOnClickListener {
             githubReposViewModel.retry()
@@ -50,10 +50,10 @@ class GithubTwoWayReposActivity : AppCompatActivity() {
             githubReposViewModel.reposStatus.collect { reposStatus ->
                 val items: List<Group> = mutableListOf<Group>().apply {
                     this += createGithubRepoItems(reposStatus.githubRepos)
-                    if (reposStatus.isAppendingLoading) add(createLoadingItem())
-                    if (reposStatus.isPrependingLoading) add(0, createLoadingItem())
-                    reposStatus.appendingError?.let { add(createAppendingErrorItem(it)) }
-                    reposStatus.prependingError?.let { add(0, createPrependingErrorItem(it)) }
+                    if (reposStatus.isNextLoading) add(createLoadingItem())
+                    if (reposStatus.isPrevLoading) add(0, createLoadingItem())
+                    reposStatus.nextError?.let { add(createNextErrorItem(it)) }
+                    reposStatus.prevError?.let { add(0, createPrevErrorItem(it)) }
                 }
                 githubReposGroupAdapter.updateAsync(items)
             }
@@ -83,15 +83,15 @@ class GithubTwoWayReposActivity : AppCompatActivity() {
         return LoadingItem()
     }
 
-    private fun createAppendingErrorItem(exception: Exception): ErrorItem {
+    private fun createNextErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryAppending() }
+            onRetry = { githubReposViewModel.retryNext() }
         }
     }
 
-    private fun createPrependingErrorItem(exception: Exception): ErrorItem {
+    private fun createPrevErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryPrepending() }
+            onRetry = { githubReposViewModel.retryPrev() }
         }
     }
 

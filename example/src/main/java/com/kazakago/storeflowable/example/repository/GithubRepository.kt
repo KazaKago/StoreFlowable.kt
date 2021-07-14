@@ -36,7 +36,7 @@ class GithubRepository {
 
     suspend fun requestAdditionalOrgs(continueWhenError: Boolean) {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
-        githubOrgsFlowable.requestAppendingData(continueWhenError)
+        githubOrgsFlowable.requestNextData(continueWhenError)
     }
 
     fun followUser(userName: String): FlowableLoadingState<GithubUser> {
@@ -59,9 +59,9 @@ class GithubRepository {
         githubReposFlowable.refresh()
     }
 
-    suspend fun requestAdditionalRepos(userName: String, continueWhenError: Boolean) {
+    suspend fun requestNextRepos(userName: String, continueWhenError: Boolean) {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
-        githubReposFlowable.requestAppendingData(continueWhenError)
+        githubReposFlowable.requestNextData(continueWhenError)
     }
 
     fun followTwoWayRepos(): FlowableTwoWayLoadingState<List<GithubRepo>> {
@@ -74,14 +74,14 @@ class GithubRepository {
         githubReposFlowable.refresh()
     }
 
-    suspend fun requestAppendingTwoWayRepos(continueWhenError: Boolean) {
+    suspend fun requestTwoWayNextRepos(continueWhenError: Boolean) {
         val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
-        githubReposFlowable.requestAppendingData(continueWhenError)
+        githubReposFlowable.requestNextData(continueWhenError)
     }
 
-    suspend fun requestPrependingTwoWayRepos(continueWhenError: Boolean) {
+    suspend fun requestTwoWayPrevRepos(continueWhenError: Boolean) {
         val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
-        githubReposFlowable.requestPrependingData(continueWhenError)
+        githubReposFlowable.requestPrevData(continueWhenError)
     }
 
 }

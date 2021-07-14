@@ -52,14 +52,4 @@ interface BaseStoreFlowable<KEY, DATA> {
      * and the new data will be notified.
      */
     suspend fun refresh()
-
-    /**
-     * Treat the passed data as the latest acquired data.
-     * and the new data will be notified.
-     *
-     * Use when new data is created or acquired externally.
-     *
-     * @param newData Latest data.
-     */
-    suspend fun update(newData: DATA?)
 }

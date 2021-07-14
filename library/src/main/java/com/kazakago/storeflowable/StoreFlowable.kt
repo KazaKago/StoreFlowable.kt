@@ -26,4 +26,14 @@ interface StoreFlowable<KEY, DATA> : BaseStoreFlowable<KEY, DATA> {
      * @return Returns a [Flow] containing the state of the data.
      */
     fun publish(forceRefresh: Boolean = false): FlowableLoadingState<DATA>
+
+    /**
+     * Treat the passed data as the latest acquired data.
+     * and the new data will be notified.
+     *
+     * Use when new data is created or acquired externally.
+     *
+     * @param newData Latest data.
+     */
+    suspend fun update(newData: DATA?)
 }

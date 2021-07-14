@@ -16,17 +16,17 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache()
             override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveAppending(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
-            override suspend fun savePrepending(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+            override suspend fun saveNext(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+            override suspend fun savePrev(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {
                 val data = fetchDataFromOrigin()
-                return InternalFetchingResult(data = data, noMoreAppendingData = true, noMorePrependingData = true)
+                return InternalFetchingResult(data = data, nextKey = null, prevKey = null)
             }
 
-            override suspend fun fetchAppending(cachedData: DATA?) = throw NotImplementedError()
-            override suspend fun fetchPrepending(cachedData: DATA?) = throw NotImplementedError()
+            override suspend fun fetchNext(nextKey: String) = throw NotImplementedError()
+            override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
         needRefresh = { needRefresh(it) }
     )

@@ -16,23 +16,23 @@ fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowa
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache()
             override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveAppending(cachedData: DATA?, newData: DATA) = saveAppendingDataToCache(cachedData, newData)
-            override suspend fun savePrepending(cachedData: DATA?, newData: DATA) = savePrependingDataToCache(cachedData, newData)
+            override suspend fun saveNext(cachedData: DATA?, newData: DATA) = saveNextDataToCache(cachedData, newData)
+            override suspend fun savePrev(cachedData: DATA?, newData: DATA) = savePrevDataToCache(cachedData, newData)
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAppendingData, noMorePrependingData = result.noMorePrependingData)
+                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = result.prevKey)
             }
 
-            override suspend fun fetchAppending(cachedData: DATA?): InternalFetchingResult<DATA> {
-                val result = fetchAppendingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = false)
+            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<DATA> {
+                val result = fetchNextDataFromOrigin(nextKey)
+                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchPrepending(cachedData: DATA?): InternalFetchingResult<DATA> {
-                val result = fetchPrependingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = false, noMorePrependingData = result.noMoreAdditionalData)
+            override suspend fun fetchPrev(prevKey: String): InternalFetchingResult<DATA> {
+                val result = fetchPrevDataFromOrigin(prevKey)
+                return InternalFetchingResult(result.data, nextKey = null, prevKey = result.prevKey)
             }
         },
         needRefresh = { needRefresh(it) }

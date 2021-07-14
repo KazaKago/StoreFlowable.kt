@@ -24,9 +24,21 @@ internal class DataSelector<KEY, DATA>(
         return if (!needRefresh(data)) data else null
     }
 
-    suspend fun update(newData: DATA?) {
+    suspend fun update(newData: DATA?, nextKey: String?, prevKey: String?) {
         cacheDataManager.save(newData)
-        dataStateManager.save(key, DataState.Fixed(appendingDataState = AdditionalDataState.Fixed(), prependingDataState = AdditionalDataState.Fixed()))
+        val nextDataState = if (nextKey != null) {
+            AdditionalDataState.Fixed(additionalRequestKey = nextKey)
+        } else {
+            val state = dataStateManager.load(key)
+            state.nextKeyOrNull()?.let { AdditionalDataState.Fixed(additionalRequestKey = it) } ?: AdditionalDataState.FixedWithNoMoreAdditionalData()
+        }
+        val prevDataState = if (prevKey != null) {
+            AdditionalDataState.Fixed(additionalRequestKey = prevKey)
+        } else {
+            val state = dataStateManager.load(key)
+            state.prevKeyOrNull()?.let { AdditionalDataState.Fixed(additionalRequestKey = it) } ?: AdditionalDataState.FixedWithNoMoreAdditionalData()
+        }
+        dataStateManager.save(key, DataState.Fixed(nextDataState = nextDataState, prevDataState = prevDataState))
     }
 
     suspend fun validate() {
@@ -45,50 +57,54 @@ internal class DataSelector<KEY, DATA>(
         doStateAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
     }
 
-    suspend fun requestAppendingData(continueWhenError: Boolean) {
-        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Append)
+    suspend fun requestNextData(continueWhenError: Boolean) {
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Next)
     }
 
-    suspend fun requestPrependingData(continueWhenError: Boolean) {
-        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Prepend)
+    suspend fun requestPrevData(continueWhenError: Boolean) {
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Prev)
     }
 
     private suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean, requestType: RequestType) {
         when (val state = dataStateManager.load(key)) {
             is DataState.Fixed -> when (requestType) {
-                RequestType.Refresh -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
-                RequestType.Append -> when (state.appendingDataState) {
-                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
+                RequestType.Refresh -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Refresh)
+                RequestType.Next -> when (val nextDataState = state.nextDataState) {
+                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Next(nextDataState.additionalRequestKey))
                     is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
-                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
+                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Next(nextDataState.additionalRequestKey))
                 }
-                RequestType.Prepend -> when (state.prependingDataState) {
-                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
+                RequestType.Prev -> when (val prevDataState = state.prevDataState) {
+                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Prev(prevDataState.additionalRequestKey))
                     is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
-                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
+                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Prev(prevDataState.additionalRequestKey))
                 }
             }
             is DataState.Loading -> Unit
-            is DataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
+            is DataState.Error -> when (requestType) {
+                RequestType.Refresh -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = ParameterizeRequestType.Refresh)
+                RequestType.Next -> Unit
+                RequestType.Prev -> Unit
+            }
         }
     }
 
-    private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: RequestType) {
+    private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: ParameterizeRequestType) {
         val cachedData = cacheDataManager.load()
-        if (cachedData == null || forceRefresh || (requestType == RequestType.Refresh && needRefresh(cachedData)) || requestType != RequestType.Refresh) {
+        if (cachedData == null || forceRefresh || (requestType is ParameterizeRequestType.Refresh && needRefresh(cachedData)) || requestType !is ParameterizeRequestType.Refresh) {
             prepareFetch(cachedData = cachedData, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
         }
     }
 
-    private suspend fun prepareFetch(cachedData: DATA?, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: RequestType) {
+    private suspend fun prepareFetch(cachedData: DATA?, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: ParameterizeRequestType) {
         if (clearCacheBeforeFetching) cacheDataManager.save(null)
         val state = dataStateManager.load(key)
         when (requestType) {
-            RequestType.Refresh -> dataStateManager.save(key, DataState.Loading())
-            RequestType.Append -> dataStateManager.save(key, DataState.Fixed(appendingDataState = AdditionalDataState.Loading(), prependingDataState = state.prependingDataState()))
-            RequestType.Prepend -> dataStateManager.save(key, DataState.Fixed(appendingDataState = state.appendingDataState(), prependingDataState = AdditionalDataState.Loading()))
+            is ParameterizeRequestType.Refresh -> dataStateManager.save(key, DataState.Loading())
+            is ParameterizeRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = AdditionalDataState.Loading(requestType.requestKey), prevDataState = state.prevDataStateOrNull()))
+            is ParameterizeRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Loading(requestType.requestKey)))
         }
         if (awaitFetching) {
             fetchNewData(cachedData = cachedData, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
@@ -97,31 +113,31 @@ internal class DataSelector<KEY, DATA>(
         }
     }
 
-    private suspend fun fetchNewData(cachedData: DATA?, clearCacheWhenFetchFails: Boolean, requestType: RequestType) {
+    private suspend fun fetchNewData(cachedData: DATA?, clearCacheWhenFetchFails: Boolean, requestType: ParameterizeRequestType) {
         try {
             val fetchingResult = when (requestType) {
-                RequestType.Refresh -> originDataManager.fetch()
-                RequestType.Append -> originDataManager.fetchAppending(cachedData)
-                RequestType.Prepend -> originDataManager.fetchPrepending(cachedData)
+                is ParameterizeRequestType.Refresh -> originDataManager.fetch()
+                is ParameterizeRequestType.Next -> originDataManager.fetchNext(requestType.requestKey)
+                is ParameterizeRequestType.Prev -> originDataManager.fetchPrev(requestType.requestKey)
             }
             when (requestType) {
-                RequestType.Refresh -> cacheDataManager.save(fetchingResult.data)
-                RequestType.Append -> cacheDataManager.saveAppending(cachedData, fetchingResult.data)
-                RequestType.Prepend -> cacheDataManager.savePrepending(cachedData, fetchingResult.data)
+                is ParameterizeRequestType.Refresh -> cacheDataManager.save(fetchingResult.data)
+                is ParameterizeRequestType.Next -> cacheDataManager.saveNext(cachedData, fetchingResult.data)
+                is ParameterizeRequestType.Prev -> cacheDataManager.savePrev(cachedData, fetchingResult.data)
             }
             val state = dataStateManager.load(key)
             when (requestType) {
-                RequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed()))
-                RequestType.Append -> dataStateManager.save(key, DataState.Fixed(appendingDataState = if (fetchingResult.noMoreAppendingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(), prependingDataState = state.prependingDataState()))
-                RequestType.Prepend -> dataStateManager.save(key, DataState.Fixed(appendingDataState = state.appendingDataState(), prependingDataState = if (fetchingResult.noMorePrependingData) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed()))
+                is ParameterizeRequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (fetchingResult.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.nextKey), prevDataState = if (fetchingResult.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.prevKey)))
+                is ParameterizeRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (fetchingResult.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.nextKey), prevDataState = state.prevDataStateOrNull()))
+                is ParameterizeRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = if (fetchingResult.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.prevKey)))
             }
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.save(null)
             val state = dataStateManager.load(key)
             when (requestType) {
-                RequestType.Refresh -> dataStateManager.save(key, DataState.Error(exception))
-                RequestType.Append -> dataStateManager.save(key, DataState.Fixed(appendingDataState = AdditionalDataState.Error(exception), prependingDataState = state.prependingDataState()))
-                RequestType.Prepend -> dataStateManager.save(key, DataState.Fixed(appendingDataState = state.appendingDataState(), prependingDataState = AdditionalDataState.Error(exception)))
+                is ParameterizeRequestType.Refresh -> dataStateManager.save(key, DataState.Error(exception))
+                is ParameterizeRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = AdditionalDataState.Error(requestType.requestKey, exception), prevDataState = state.prevDataStateOrNull()))
+                is ParameterizeRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Error(requestType.requestKey, exception)))
             }
         }
     }

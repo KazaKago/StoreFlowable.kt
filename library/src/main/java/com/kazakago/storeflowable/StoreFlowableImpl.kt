@@ -76,6 +76,6 @@ internal class StoreFlowableImpl<KEY, DATA>(
     }
 
     override suspend fun update(newData: DATA?) {
-        dataSelector.update(newData)
+        dataSelector.update(newData, nextKey = null, prevKey = null)
     }
 }

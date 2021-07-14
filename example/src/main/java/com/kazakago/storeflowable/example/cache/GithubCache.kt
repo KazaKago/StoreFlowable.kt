@@ -21,6 +21,4 @@ object GithubCache {
 
     var twoWayReposCache: List<GithubRepo>? = null
     var twoWayReposCacheCreatedAt: LocalDateTime? = null
-    var twoWayReposNextPage: Int = 0
-    var twoWayReposPrevPage: Int = 0
 }

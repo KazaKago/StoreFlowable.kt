@@ -45,7 +45,7 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
     }
 
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed(appendingDataState = AdditionalDataState.Fixed(), prependingDataState = AdditionalDataState.Fixed())) })
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed(nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData())) })
     }
 
     /**

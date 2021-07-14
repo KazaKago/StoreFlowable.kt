@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.twoway
 
 import com.kazakago.storeflowable.BaseStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.FetchingResult
+import com.kazakago.storeflowable.pagination.oneway.FetchingResult
 
 /**
  * Abstract factory class for [TwoWayStoreFlowable] class.
@@ -14,41 +14,41 @@ import com.kazakago.storeflowable.pagination.FetchingResult
 interface TwoWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, DATA> {
 
     /**
-     * The appending data saving process to cache.
-     * You need to merge cached data & new fetched appending data.
+     * The next data saving process to cache.
+     * You need to merge cached data & new fetched next data.
      *
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun saveAppendingDataToCache(cachedData: DATA?, newData: DATA)
+    suspend fun saveNextDataToCache(cachedData: DATA?, newData: DATA)
 
     /**
-     * The prepending data saving process to cache.
-     * You need to merge cached data & new fetched prepending data.
+     * The previous data saving process to cache.
+     * You need to merge cached data & new fetched previous data.
      *
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun savePrependingDataToCache(cachedData: DATA?, newData: DATA)
+    suspend fun savePrevDataToCache(cachedData: DATA?, newData: DATA)
 
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [TwoWayFetchingResult] class including the acquired data.
+     * @return [FetchingResult] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(): TwoWayFetchingResult<DATA>
+    suspend fun fetchDataFromOrigin(): FetchingTwoWayResult<DATA>
 
     /**
-     * Appending data acquisition process from origin.
+     * Next data acquisition process from origin.
      *
      * @return [FetchingResult] class including the acquired data.
      */
-    suspend fun fetchAppendingDataFromOrigin(cachedData: DATA?): FetchingResult<DATA>
+    suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingNextResult<DATA>
 
     /**
-     * Prepending data acquisition process from origin.
+     * Previous data acquisition process from origin.
      *
      * @return [FetchingResult] class including the acquired data.
      */
-    suspend fun fetchPrependingDataFromOrigin(cachedData: DATA?): FetchingResult<DATA>
+    suspend fun fetchPrevDataFromOrigin(prevKey: String): FetchingPrevResult<DATA>
 }

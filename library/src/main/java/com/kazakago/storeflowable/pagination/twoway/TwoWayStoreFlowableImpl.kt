@@ -75,15 +75,15 @@ internal class TwoWayStoreFlowableImpl<KEY, DATA>(
         dataSelector.refresh(clearCacheBeforeFetching = false)
     }
 
-    override suspend fun requestAppendingData(continueWhenError: Boolean) {
-        dataSelector.requestAppendingData(continueWhenError = continueWhenError)
+    override suspend fun requestNextData(continueWhenError: Boolean) {
+        dataSelector.requestNextData(continueWhenError = continueWhenError)
     }
 
-    override suspend fun requestPrependingData(continueWhenError: Boolean) {
-        dataSelector.requestPrependingData(continueWhenError = continueWhenError)
+    override suspend fun requestPrevData(continueWhenError: Boolean) {
+        dataSelector.requestPrevData(continueWhenError = continueWhenError)
     }
 
-    override suspend fun update(newData: DATA?) {
-        dataSelector.update(newData)
+    override suspend fun update(newData: DATA?, nextKey: String?, prevKey: String?) {
+        dataSelector.update(newData, nextKey = nextKey, prevKey = prevKey)
     }
 }

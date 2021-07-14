@@ -12,7 +12,7 @@ fun <A, Z> FlowableOneWayLoadingState<A>.mapContent(transform: suspend (content:
     return map {
         when (it) {
             is OneWayLoadingState.Loading -> OneWayLoadingState.Loading(if (it.content != null) transform(it.content) else null)
-            is OneWayLoadingState.Completed -> OneWayLoadingState.Completed(transform(it.content), it.appending)
+            is OneWayLoadingState.Completed -> OneWayLoadingState.Completed(transform(it.content), it.next)
             is OneWayLoadingState.Error -> OneWayLoadingState.Error(it.exception)
         }
     }

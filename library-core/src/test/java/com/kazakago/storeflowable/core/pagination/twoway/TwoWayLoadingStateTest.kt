@@ -11,14 +11,14 @@ class TwoWayLoadingStateTest {
 
     @Test
     fun doAction_Completed() {
-        val state = TwoWayLoadingState.Completed(10, appending = AdditionalLoadingState.Loading, prepending = AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+        val state = TwoWayLoadingState.Completed(10, next = AdditionalLoadingState.Loading, prev = AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
         state.doAction(
             onLoading = {
                 fail()
             },
-            onCompleted = { content, appending, prepending ->
+            onCompleted = { content, next, prev ->
                 content shouldBeEqualTo 10
-                appending.doAction(
+                next.doAction(
                     onLoading = {
                         // ok
                     },
@@ -29,7 +29,7 @@ class TwoWayLoadingStateTest {
                         fail()
                     }
                 )
-                prepending.doAction(
+                prev.doAction(
                     onLoading = {
                         fail()
                     },

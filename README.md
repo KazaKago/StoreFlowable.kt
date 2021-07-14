@@ -265,7 +265,7 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
         userListCache.save(newData)
     }
 
-    override suspend fun saveAppendingDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
+    override suspend fun saveNextDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
         val mergedData = (cachedData ?: emptyList()) + newData
         userListCache.save(mergedData)
     }
@@ -275,7 +275,7 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
         return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
     }
 
-    override suspend fun fetchAppendingDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchNextDataFromOrigin(cachedData: List<GithubOrg>?): FetchingResult<List<GithubOrg>> {
         val page = (cachedData?.size ?: 0) / 10 + 1
         val fetchedData = userListApi.fetch(page)
         return FetchingResult(data = fetchedData, noMoreAdditionalData = fetchedData.isEmpty())
@@ -287,10 +287,10 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
 }
 ```
 
-You need to additionally implements `saveAppendingDataToCache()` and `fetchAppendingDataFromOrigin()`.  
+You need to additionally implements `saveNextDataToCache()` and `fetchNextDataFromOrigin()`.  
 When saving the data, combine the cached data and the new data before saving.  
 
-And then, You can get the state of additional loading from the `appending` parameter of `onCompleted {}`.  
+And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.  
 
 ```kotlin
 val userFlowable = UserFlowableFactory(userId).create()
@@ -299,8 +299,8 @@ userFlowable.publish(userId).collect {
         onLoading = { contents: List<UserData>? ->
             // Whole (Initial) data loading.
         },
-        onCompleted = { contents: List<UserData>, appending: AdditionalLoadingState ->
-            appending.doAction(
+        onCompleted = { contents: List<UserData>, next: AdditionalLoadingState ->
+            next.doAction(
                 onFixed = {
                     // No additional processing.
                 },
@@ -321,11 +321,11 @@ userFlowable.publish(userId).collect {
 
 ### Request additional data
 
-You can request additional data for paginating using the [`requestAppendingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowable.kt) method.
+You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowable.kt) method.
 
 ```kotlin
 interface OneWayStoreFlowable<KEY, DATA> {
-    suspend fun requestAppendingData(continueWhenError: Boolean = true)
+    suspend fun requestNextData(continueWhenError: Boolean = true)
 }
 ```
 
@@ -339,14 +339,14 @@ This library also includes two-way pagination support.
 
 Inherit [`TwoWayStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 
-### Request appnding & prepending data
+### Request next & previous data
 
-You can request additional data for paginating using the [`requestAppendingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) [`requestPrependingData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) method.
+You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) [`requestPrevData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) method.
 
 ```kotlin
 interface TwoWayStoreFlowable<KEY, DATA> {
-    suspend fun requestAppendingData(continueWhenError: Boolean = true)
-    suspend fun requestPrependingData(continueWhenError: Boolean = true)
+    suspend fun requestNextData(continueWhenError: Boolean = true)
+    suspend fun requestPrevData(continueWhenError: Boolean = true)
 }
 ```
 

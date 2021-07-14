@@ -42,25 +42,25 @@ class DataSelectorValidateTest {
                 dataCache = newData
             }
 
-            override suspend fun saveAppending(cachedData: TestData?, newData: TestData) {
+            override suspend fun saveNext(cachedData: TestData?, newData: TestData) {
                 fail()
             }
 
-            override suspend fun savePrepending(cachedData: TestData?, newData: TestData) {
+            override suspend fun savePrev(cachedData: TestData?, newData: TestData) {
                 fail()
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetchingResult<TestData> {
-                return InternalFetchingResult(TestData.FetchedData, noMoreAppendingData = true, noMorePrependingData = true)
+                return InternalFetchingResult(TestData.FetchedData, nextKey = null, prevKey = null)
             }
 
-            override suspend fun fetchAppending(cachedData: TestData?): InternalFetchingResult<TestData> {
+            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<TestData> {
                 fail()
                 throw NotImplementedError()
             }
 
-            override suspend fun fetchPrepending(cachedData: TestData?): InternalFetchingResult<TestData> {
+            override suspend fun fetchPrev(prevKey: String): InternalFetchingResult<TestData> {
                 fail()
                 throw NotImplementedError()
             }

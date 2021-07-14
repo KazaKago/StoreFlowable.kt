@@ -15,7 +15,7 @@ class FlowOneWayLoadingStateCombinerTest {
 
     private val flowLoading: FlowableOneWayLoadingState<Int> = flowOf(OneWayLoadingState.Loading(null))
     private val flowLoadingWithData: FlowableOneWayLoadingState<Int> = flowOf(OneWayLoadingState.Loading(70))
-    private val flowCompleted: FlowableOneWayLoadingState<Int> = flowOf(OneWayLoadingState.Completed(30, appending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)))
+    private val flowCompleted: FlowableOneWayLoadingState<Int> = flowOf(OneWayLoadingState.Completed(30, next = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)))
     private val flowError: FlowableOneWayLoadingState<Int> = flowOf(OneWayLoadingState.Error(IllegalStateException()))
 
     @Test

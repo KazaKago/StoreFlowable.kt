@@ -59,8 +59,8 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.reposStatus.collect { reposStatus ->
                 val items: List<Group> = mutableListOf<Group>().apply {
                     this += createGithubRepoItems(reposStatus.githubRepos)
-                    if (reposStatus.isAppendingLoading) this += createLoadingItem()
-                    reposStatus.appendingError?.let { this += createErrorItem(it) }
+                    if (reposStatus.isNextLoading) this += createLoadingItem()
+                    reposStatus.nextError?.let { this += createErrorItem(it) }
                 }
                 githubReposGroupAdapter.updateAsync(items)
             }

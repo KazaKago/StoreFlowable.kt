@@ -16,21 +16,21 @@ fun <KEY, DATA> OneWayStoreFlowableFactory<KEY, DATA>.create(): OneWayStoreFlowa
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache()
             override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveAppending(cachedData: DATA?, newData: DATA) = saveAppendingDataToCache(cachedData, newData)
-            override suspend fun savePrepending(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+            override suspend fun saveNext(cachedData: DATA?, newData: DATA) = saveNextDataToCache(cachedData, newData)
+            override suspend fun savePrev(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = true)
+                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchAppending(cachedData: DATA?): InternalFetchingResult<DATA> {
-                val result = fetchAppendingDataFromOrigin(cachedData)
-                return InternalFetchingResult(result.data, noMoreAppendingData = result.noMoreAdditionalData, noMorePrependingData = true)
+            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<DATA> {
+                val result = fetchNextDataFromOrigin(nextKey)
+                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchPrepending(cachedData: DATA?) = throw NotImplementedError()
+            override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
         needRefresh = { needRefresh(it) }
     )

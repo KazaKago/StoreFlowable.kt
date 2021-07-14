@@ -13,7 +13,7 @@ class TwoWayLoadingStateZipperTest {
 
     private val loading: TwoWayLoadingState<Int> = TwoWayLoadingState.Loading(null)
     private val loadingWithData: TwoWayLoadingState<Int> = TwoWayLoadingState.Loading(70)
-    private val completed: TwoWayLoadingState<Int> = TwoWayLoadingState.Completed(30, appending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false), prepending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+    private val completed: TwoWayLoadingState<Int> = TwoWayLoadingState.Completed(30, next = AdditionalLoadingState.Fixed(noMoreAdditionalData = false), prev = AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
     private val error: TwoWayLoadingState<Int> = TwoWayLoadingState.Error(IllegalStateException())
 
     @Test

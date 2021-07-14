@@ -14,7 +14,7 @@ fun <A, B, Z> OneWayLoadingState<A>.zip(state2: OneWayLoadingState<B>, transform
     return when (this) {
         is OneWayLoadingState.Completed -> when (state2) {
             is OneWayLoadingState.Loading -> OneWayLoadingState.Loading(if (state2.content != null) transform(content, state2.content) else null)
-            is OneWayLoadingState.Completed -> OneWayLoadingState.Completed(transform(content, state2.content), appending.zip(state2.appending))
+            is OneWayLoadingState.Completed -> OneWayLoadingState.Completed(transform(content, state2.content), next.zip(state2.next))
             is OneWayLoadingState.Error -> OneWayLoadingState.Error(state2.exception)
         }
         is OneWayLoadingState.Loading -> when (state2) {

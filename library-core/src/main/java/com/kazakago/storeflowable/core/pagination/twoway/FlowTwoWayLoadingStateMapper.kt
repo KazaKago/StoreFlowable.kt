@@ -12,7 +12,7 @@ fun <A, Z> FlowableTwoWayLoadingState<A>.mapContent(transform: suspend (content:
     return map {
         when (it) {
             is TwoWayLoadingState.Loading -> TwoWayLoadingState.Loading(if (it.content != null) transform(it.content) else null)
-            is TwoWayLoadingState.Completed -> TwoWayLoadingState.Completed(transform(it.content), it.appending, it.prepending)
+            is TwoWayLoadingState.Completed -> TwoWayLoadingState.Completed(transform(it.content), it.next, it.prev)
             is TwoWayLoadingState.Error -> TwoWayLoadingState.Error(it.exception)
         }
     }

@@ -6,7 +6,7 @@ internal interface CacheDataManager<DATA> {
 
     suspend fun save(newData: DATA?)
 
-    suspend fun saveAppending(cachedData: DATA?, newData: DATA)
+    suspend fun saveNext(cachedData: DATA?, newData: DATA)
 
-    suspend fun savePrepending(cachedData: DATA?, newData: DATA)
+    suspend fun savePrev(cachedData: DATA?, newData: DATA)
 }

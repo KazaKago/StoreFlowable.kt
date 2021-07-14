@@ -13,7 +13,7 @@ class OneWayLoadingStateZipperTest {
 
     private val loading: OneWayLoadingState<Int> = OneWayLoadingState.Loading(null)
     private val loadingWithData: OneWayLoadingState<Int> = OneWayLoadingState.Loading(70)
-    private val completed: OneWayLoadingState<Int> = OneWayLoadingState.Completed(30, appending = AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
+    private val completed: OneWayLoadingState<Int> = OneWayLoadingState.Completed(30, next = AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
     private val error: OneWayLoadingState<Int> = OneWayLoadingState.Error(IllegalStateException())
 
     @Test

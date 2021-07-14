@@ -31,8 +31,8 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
 
     data class ReposStatus(
         var githubRepos: List<GithubRepo> = emptyList(),
-        var isAppendingLoading: Boolean = false,
-        var appendingError: Exception? = null,
+        var isNextLoading: Boolean = false,
+        var nextError: Exception? = null,
     )
 
     init {
@@ -50,11 +50,11 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
     }
 
     fun requestAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, continueWhenError = false)
+        githubRepository.requestNextRepos(userName, continueWhenError = false)
     }
 
     fun retryAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalRepos(userName, continueWhenError = true)
+        githubRepository.requestNextRepos(userName, continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
@@ -70,15 +70,15 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
                     }
                     _mainError.value = null
                 },
-                onCompleted = { githubRepos, appending ->
+                onCompleted = { githubRepos, next ->
                     val reposStatus = ReposStatus(githubRepos = githubRepos)
-                    appending.doAction(
+                    next.doAction(
                         onFixed = {},
                         onLoading = {
-                            reposStatus.isAppendingLoading = true
+                            reposStatus.isNextLoading = true
                         },
                         onError = { exception ->
-                            reposStatus.appendingError = exception
+                            reposStatus.nextError = exception
                         }
                     )
                     _reposStatus.value = reposStatus

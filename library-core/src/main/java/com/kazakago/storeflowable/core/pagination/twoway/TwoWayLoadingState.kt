@@ -27,10 +27,10 @@ sealed interface TwoWayLoadingState<out T> : Serializable {
      * When data fetch is successful.
      *
      * @param content Raw data.
-     * @param appending appending pagination state of the data.
-     * @param prepending prepending pagination state of the data.
+     * @param next next pagination state of the data.
+     * @param prev prev pagination state of the data.
      */
-    data class Completed<out T>(val content: T, val appending: AdditionalLoadingState, val prepending: AdditionalLoadingState) : TwoWayLoadingState<T>
+    data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : TwoWayLoadingState<T>
 
     /**
      * when data fetch is failure.
@@ -48,10 +48,10 @@ sealed interface TwoWayLoadingState<out T> : Serializable {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, appending: AdditionalLoadingState, prepending: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
-            is Completed -> onCompleted(content, appending, prepending)
+            is Completed -> onCompleted(content, next, prev)
             is Error -> onError(exception)
         }
     }

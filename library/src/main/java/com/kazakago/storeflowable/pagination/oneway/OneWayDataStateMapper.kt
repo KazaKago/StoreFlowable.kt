@@ -8,11 +8,11 @@ import com.kazakago.storeflowable.datastate.DataState
 internal fun <DATA> DataState.toOneWayLoadingState(content: DATA?): OneWayLoadingState<DATA> {
     return when (this) {
         is DataState.Fixed -> if (content != null) {
-            when (appendingDataState) {
+            when (nextDataState) {
                 is AdditionalDataState.Fixed -> OneWayLoadingState.Completed(content, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
                 is AdditionalDataState.FixedWithNoMoreAdditionalData -> OneWayLoadingState.Completed(content, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
                 is AdditionalDataState.Loading -> OneWayLoadingState.Completed(content, AdditionalLoadingState.Loading)
-                is AdditionalDataState.Error -> OneWayLoadingState.Completed(content, AdditionalLoadingState.Error(appendingDataState.exception))
+                is AdditionalDataState.Error -> OneWayLoadingState.Completed(content, AdditionalLoadingState.Error(nextDataState.exception))
             }
         } else {
             OneWayLoadingState.Loading(content)

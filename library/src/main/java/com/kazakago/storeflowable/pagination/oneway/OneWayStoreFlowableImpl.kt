@@ -75,11 +75,11 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
         dataSelector.refresh(clearCacheBeforeFetching = false)
     }
 
-    override suspend fun requestAppendingData(continueWhenError: Boolean) {
-        dataSelector.requestAppendingData(continueWhenError = continueWhenError)
+    override suspend fun requestNextData(continueWhenError: Boolean) {
+        dataSelector.requestNextData(continueWhenError = continueWhenError)
     }
 
-    override suspend fun update(newData: DATA?) {
-        dataSelector.update(newData)
+    override suspend fun update(newData: DATA?, nextKey: String?) {
+        dataSelector.update(newData, nextKey = nextKey, prevKey = null)
     }
 }

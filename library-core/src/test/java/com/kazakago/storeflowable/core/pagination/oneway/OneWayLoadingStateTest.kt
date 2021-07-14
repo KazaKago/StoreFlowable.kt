@@ -10,14 +10,14 @@ class OneWayLoadingStateTest {
 
     @Test
     fun doAction_Completed() {
-        val state = OneWayLoadingState.Completed(10, appending = AdditionalLoadingState.Loading)
+        val state = OneWayLoadingState.Completed(10, next = AdditionalLoadingState.Loading)
         state.doAction(
             onLoading = {
                 fail()
             },
-            onCompleted = { content, appending ->
+            onCompleted = { content, next ->
                 content shouldBeEqualTo 10
-                appending.doAction(
+                next.doAction(
                     onLoading = {
                         // ok
                     },
