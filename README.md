@@ -129,7 +129,7 @@ class UserRepository {
 ```
 
 You can get the data in the form of [`FlowableLoadingState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
-[`State`](library-core/src/main/java/com/kazakago/storeflowable/core/State.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
+[`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
 
@@ -154,7 +154,8 @@ private fun subscribe(userId: UserId) = viewModelScope.launch {
 }
 ```
 
-On Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.  
+On Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) or [`StateFlow`](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.  
+Also, when displaying in the [`RecyclerView`](https://developer.android.com/jetpack/androidx/releases/recyclerview), use the difference update function. See [`DiffUtil`](https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil).  
 
 ## Example
 
