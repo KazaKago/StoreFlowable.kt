@@ -28,7 +28,7 @@ The following is the class structure of Repository pattern using this library.
 
 The following is an example of screen display using [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt).
 
-![https://user-images.githubusercontent.com/7742104/125610954-914075de-0d24-4e6b-b16c-7e3c0bbe2acb.jpg](https://user-images.githubusercontent.com/7742104/125610954-914075de-0d24-4e6b-b16c-7e3c0bbe2acb.jpg)
+![https://user-images.githubusercontent.com/7742104/125714730-381eee65-4126-4ee8-991a-7fc64dfb325c.jpg](https://user-images.githubusercontent.com/7742104/125714730-381eee65-4126-4ee8-991a-7fc64dfb325c.jpg)
 
 ## Install
 
