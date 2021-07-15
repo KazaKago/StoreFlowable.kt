@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable.origin
+package com.kazakago.storeflowable
 
 /**
  * This enum to specify where to get data when getting data.

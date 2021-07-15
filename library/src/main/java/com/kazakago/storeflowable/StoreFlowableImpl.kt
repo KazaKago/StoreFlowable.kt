@@ -5,7 +5,6 @@ import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
-import com.kazakago.storeflowable.origin.GettingFrom
 import com.kazakago.storeflowable.origin.OriginDataManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
