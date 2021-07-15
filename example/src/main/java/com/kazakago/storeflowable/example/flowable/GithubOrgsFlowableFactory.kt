@@ -5,7 +5,7 @@ import com.kazakago.storeflowable.example.api.GithubApi
 import com.kazakago.storeflowable.example.cache.GithubCache
 import com.kazakago.storeflowable.example.cache.GithubOrgsStateManager
 import com.kazakago.storeflowable.example.model.GithubOrg
-import com.kazakago.storeflowable.pagination.oneway.FetchingResult
+import com.kazakago.storeflowable.pagination.oneway.Fetched
 import com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -37,14 +37,20 @@ class GithubOrgsFlowableFactory : OneWayStoreFlowableFactory<Unit, List<GithubOr
         githubCache.orgsCache = (cachedData ?: emptyList()) + newData
     }
 
-    override suspend fun fetchDataFromOrigin(): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchDataFromOrigin(): Fetched<List<GithubOrg>> {
         val data = githubApi.getOrgs(null, PER_PAGE)
-        return FetchingResult(data = data, nextKey = data.lastOrNull()?.id?.toString())
+        return Fetched(
+            data = data,
+            nextKey = data.lastOrNull()?.id?.toString(),
+        )
     }
 
-    override suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<List<GithubOrg>> {
         val data = githubApi.getOrgs(nextKey.toLong(), PER_PAGE)
-        return FetchingResult(data = data, nextKey = data.lastOrNull()?.id?.toString())
+        return Fetched(
+            data = data,
+            nextKey = data.lastOrNull()?.id?.toString(),
+        )
     }
 
     override suspend fun needRefresh(cachedData: List<GithubOrg>): Boolean {

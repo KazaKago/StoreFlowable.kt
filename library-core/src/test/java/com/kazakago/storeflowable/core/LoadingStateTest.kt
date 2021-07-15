@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable.core
 
+import io.mockk.mockk
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -9,12 +10,12 @@ class LoadingStateTest {
 
     @Test
     fun doAction_Completed() {
-        val state = LoadingState.Completed(10)
+        val state = LoadingState.Completed(10, mockk(), mockk())
         state.doAction(
             onLoading = {
                 fail()
             },
-            onCompleted = { content ->
+            onCompleted = { content, _, _ ->
                 content shouldBeEqualTo 10
             },
             onError = {
@@ -30,7 +31,7 @@ class LoadingStateTest {
             onLoading = {
                 // ok
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -46,7 +47,7 @@ class LoadingStateTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {

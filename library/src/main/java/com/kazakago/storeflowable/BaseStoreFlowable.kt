@@ -1,6 +1,9 @@
 package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.core.FlowLoadingState
+import com.kazakago.storeflowable.core.LoadingState
 import com.kazakago.storeflowable.origin.GettingFrom
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Common function of [com.kazakago.storeflowable.StoreFlowable], [com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowable], [com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowable] interfaces.
@@ -9,6 +12,19 @@ import com.kazakago.storeflowable.origin.GettingFrom
  * @param DATA Specify the type of data to be handled.
  */
 interface BaseStoreFlowable<KEY, DATA> {
+
+    /**
+     * Returns a [FlowLoadingState] that can continuously receive changes in the state of the data.
+     *
+     * If the data has not been acquired yet, new data will be automatically acquired when this [Flow] is collected.
+     *
+     * The error when retrieving data is included in [LoadingState.Error].
+     * and this method itself does not throw an [Exception].
+     *
+     * @param forceRefresh Set to `true` if you want to forcibly retrieve data from origin when collecting. Default value is `false`.
+     * @return Returns a [Flow] containing the state of the data.
+     */
+    fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
 
     /**
      * Returns valid data only once.

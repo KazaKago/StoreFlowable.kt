@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.core.FlowableLoadingState
+import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
@@ -28,7 +28,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
         needRefresh = needRefresh,
     )
 
-    override fun publish(forceRefresh: Boolean): FlowableLoadingState<DATA> {
+    override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 if (forceRefresh) {

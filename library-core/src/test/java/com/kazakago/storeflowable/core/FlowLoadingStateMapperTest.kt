@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable.core
 
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -11,7 +12,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowLoadingStateMapperTest {
 
-    private val flowCompleted: FlowableLoadingState<Int> = flowOf(LoadingState.Completed(30))
+    private val flowCompleted: FlowLoadingState<Int> = flowOf(LoadingState.Completed(30, mockk(), mockk()))
 
     @Test
     fun mapContent() = runBlockingTest {
@@ -21,8 +22,8 @@ class FlowLoadingStateMapperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
-                it shouldBeEqualTo 100
+            onCompleted = { content, _, _ ->
+                content shouldBeEqualTo 100
             },
             onError = {
                 fail()

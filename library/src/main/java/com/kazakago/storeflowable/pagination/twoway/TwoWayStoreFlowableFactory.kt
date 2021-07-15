@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.twoway
 
 import com.kazakago.storeflowable.BaseStoreFlowableFactory
-import com.kazakago.storeflowable.pagination.oneway.FetchingResult
+import com.kazakago.storeflowable.pagination.oneway.Fetched
 
 /**
  * Abstract factory class for [TwoWayStoreFlowable] class.
@@ -34,21 +34,21 @@ interface TwoWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, 
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(): FetchingTwoWayResult<DATA>
+    suspend fun fetchDataFromOrigin(): FetchedInitial<DATA>
 
     /**
      * Next data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingNextResult<DATA>
+    suspend fun fetchNextDataFromOrigin(nextKey: String): FetchedNext<DATA>
 
     /**
      * Previous data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchPrevDataFromOrigin(prevKey: String): FetchingPrevResult<DATA>
+    suspend fun fetchPrevDataFromOrigin(prevKey: String): FetchedPrev<DATA>
 }

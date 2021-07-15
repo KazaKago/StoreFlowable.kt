@@ -25,8 +25,10 @@ sealed interface LoadingState<out T> {
      * When data fetch is successful.
      *
      * @param content Raw data.
+     * @param next next pagination state of the data. If not pagination, Always returned [com.kazakago.storeflowable.core.AdditionalLoadingState.Fixed] state.
+     * @param prev prev pagination state of the data. If not pagination, Always returned [com.kazakago.storeflowable.core.AdditionalLoadingState.Fixed] state.
      */
-    data class Completed<out T>(val content: T) : LoadingState<T>
+    data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>
 
     /**
      * when data fetch is failure.
@@ -44,10 +46,10 @@ sealed interface LoadingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T) -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
-            is Completed -> onCompleted(content)
+            is Completed -> onCompleted(content, next, prev)
             is Error -> onError(exception)
         }
     }

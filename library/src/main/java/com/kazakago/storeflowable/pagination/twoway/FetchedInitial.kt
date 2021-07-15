@@ -1,11 +1,11 @@
 package com.kazakago.storeflowable.pagination.twoway
 
 /**
- * Result of fetching from origin.
+ * Result of initial fetching from origin.
  *
  * @param DATA Specify the type of data to be handled.
  */
-data class FetchingTwoWayResult<DATA>(
+data class FetchedInitial<DATA>(
     /**
      * Set the acquired raw data.
      */

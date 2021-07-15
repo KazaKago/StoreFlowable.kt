@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable.core.pagination
+package com.kazakago.storeflowable.core
 
 /**
  * Combine multiple [AdditionalLoadingState].

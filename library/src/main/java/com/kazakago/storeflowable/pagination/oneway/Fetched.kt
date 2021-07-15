@@ -5,7 +5,7 @@ package com.kazakago.storeflowable.pagination.oneway
  *
  * @param DATA Specify the type of data to be handled.
  */
-data class FetchingResult<DATA>(
+data class Fetched<DATA>(
     /**
      * Set the acquired raw data.
      */

@@ -47,7 +47,7 @@ class GithubUserViewModel(private val userName: String) : ViewModel() {
                     _isLoading.value = true
                     _error.value = null
                 },
-                onCompleted = { githubUser ->
+                onCompleted = { githubUser, _, _ ->
                     _githubUser.value = githubUser
                     _isLoading.value = false
                     _error.value = null

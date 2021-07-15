@@ -24,14 +24,14 @@ interface OneWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, 
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(): FetchingResult<DATA>
+    suspend fun fetchDataFromOrigin(): Fetched<DATA>
 
     /**
      * Next data acquisition process from origin.
      *
-     * @return [FetchingResult] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingResult<DATA>
+    suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<DATA>
 }

@@ -70,7 +70,7 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
                     }
                     _mainError.value = null
                 },
-                onCompleted = { githubRepos, next ->
+                onCompleted = { githubRepos, next, _ ->
                     val reposStatus = ReposStatus(githubRepos = githubRepos)
                     next.doAction(
                         onFixed = {},

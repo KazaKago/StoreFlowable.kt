@@ -3,14 +3,14 @@ package com.kazakago.storeflowable.core
 import kotlinx.coroutines.flow.combine
 
 /**
- * Combine multiple [FlowableLoadingState].
+ * Combine multiple [FlowLoadingState].
  *
- * @param flowableState2 The second [FlowableLoadingState] to combine.
+ * @param flowState2 The second [FlowLoadingState] to combine.
  * @param transform This callback that returns the result of combining the data.
- * @return Return [FlowableLoadingState] containing the combined data.
+ * @return Return [FlowLoadingState] containing the combined data.
  */
-fun <A, B, Z> FlowableLoadingState<A>.combineState(flowableState2: FlowableLoadingState<B>, transform: (rawContent1: A, rawContent2: B) -> Z): FlowableLoadingState<Z> {
-    return combine(flowableState2) { state1, state2 ->
+fun <A, B, Z> FlowLoadingState<A>.combineState(flowState2: FlowLoadingState<B>, transform: (rawContent1: A, rawContent2: B) -> Z): FlowLoadingState<Z> {
+    return combine(flowState2) { state1, state2 ->
         state1.zip(state2) { rawContent, other ->
             transform(rawContent, other)
         }
@@ -18,61 +18,61 @@ fun <A, B, Z> FlowableLoadingState<A>.combineState(flowableState2: FlowableLoadi
 }
 
 /**
- * Combine multiple [FlowableLoadingState].
+ * Combine multiple [FlowLoadingState].
  *
- * @param flowableState2 The second [FlowableLoadingState] to combine.
- * @param flowableState3 The third [FlowableLoadingState] to combine.
+ * @param flowState2 The second [FlowLoadingState] to combine.
+ * @param flowState3 The third [FlowLoadingState] to combine.
  * @param transform This callback that returns the result of combining the data.
- * @return Return [FlowableLoadingState] containing the combined data.
+ * @return Return [FlowLoadingState] containing the combined data.
  * @see combineState
  */
-fun <A, B, C, Z> FlowableLoadingState<A>.combineState(flowableState2: FlowableLoadingState<B>, flowableState3: FlowableLoadingState<C>, transform: (rawContent1: A, rawContent2: B, rawContent3: C) -> Z): FlowableLoadingState<Z> {
-    return combineState(flowableState2) { rawContent, other ->
+fun <A, B, C, Z> FlowLoadingState<A>.combineState(flowState2: FlowLoadingState<B>, flowState3: FlowLoadingState<C>, transform: (rawContent1: A, rawContent2: B, rawContent3: C) -> Z): FlowLoadingState<Z> {
+    return combineState(flowState2) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState3) { rawContent, other ->
+    }.combineState(flowState3) { rawContent, other ->
         transform(rawContent.t0, rawContent.t1, other)
     }
 }
 
 /**
- * Combine multiple [FlowableLoadingState].
+ * Combine multiple [FlowLoadingState].
  *
- * @param flowableState2 The second [FlowableLoadingState] to combine.
- * @param flowableState3 The third [FlowableLoadingState] to combine.
- * @param flowableState4 The fourth [FlowableLoadingState] to combine.
+ * @param flowState2 The second [FlowLoadingState] to combine.
+ * @param flowState3 The third [FlowLoadingState] to combine.
+ * @param flowState4 The fourth [FlowLoadingState] to combine.
  * @param transform This callback that returns the result of combining the data.
- * @return Return [FlowableLoadingState] containing the combined data.
+ * @return Return [FlowLoadingState] containing the combined data.
  * @see combineState
  */
-fun <A, B, C, D, Z> FlowableLoadingState<A>.combineState(flowableState2: FlowableLoadingState<B>, flowableState3: FlowableLoadingState<C>, flowableState4: FlowableLoadingState<D>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D) -> Z): FlowableLoadingState<Z> {
-    return combineState(flowableState2) { rawContent, other ->
+fun <A, B, C, D, Z> FlowLoadingState<A>.combineState(flowState2: FlowLoadingState<B>, flowState3: FlowLoadingState<C>, flowState4: FlowLoadingState<D>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D) -> Z): FlowLoadingState<Z> {
+    return combineState(flowState2) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState3) { rawContent, other ->
+    }.combineState(flowState3) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState4) { rawContent, other ->
+    }.combineState(flowState4) { rawContent, other ->
         transform(rawContent.t0, rawContent.t1, rawContent.t2, other)
     }
 }
 
 /**
- * Combine multiple [FlowableLoadingState].
+ * Combine multiple [FlowLoadingState].
  *
- * @param flowableState2 The second [FlowableLoadingState] to combine.
- * @param flowableState3 The third [FlowableLoadingState] to combine.
- * @param flowableState4 The fourth [FlowableLoadingState] to combine.
- * @param flowableState5 The fifth [FlowableLoadingState] to combine.
+ * @param flowState2 The second [FlowLoadingState] to combine.
+ * @param flowState3 The third [FlowLoadingState] to combine.
+ * @param flowState4 The fourth [FlowLoadingState] to combine.
+ * @param flowState5 The fifth [FlowLoadingState] to combine.
  * @param transform This callback that returns the result of combining the data.
- * @return Return [FlowableLoadingState] containing the combined data.
+ * @return Return [FlowLoadingState] containing the combined data.
  * @see combineState
  */
-fun <A, B, C, D, E, Z> FlowableLoadingState<A>.combineState(flowableState2: FlowableLoadingState<B>, flowableState3: FlowableLoadingState<C>, flowableState4: FlowableLoadingState<D>, flowableState5: FlowableLoadingState<E>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D, rawContent5: E) -> Z): FlowableLoadingState<Z> {
-    return combineState(flowableState2) { rawContent, other ->
+fun <A, B, C, D, E, Z> FlowLoadingState<A>.combineState(flowState2: FlowLoadingState<B>, flowState3: FlowLoadingState<C>, flowState4: FlowLoadingState<D>, flowState5: FlowLoadingState<E>, transform: (rawContent1: A, rawContent2: B, rawContent3: C, rawContent4: D, rawContent5: E) -> Z): FlowLoadingState<Z> {
+    return combineState(flowState2) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState3) { rawContent, other ->
+    }.combineState(flowState3) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState4) { rawContent, other ->
+    }.combineState(flowState4) { rawContent, other ->
         rawContent U other
-    }.combineState(flowableState5) { rawContent, other ->
+    }.combineState(flowState5) { rawContent, other ->
         transform(rawContent.t0, rawContent.t1, rawContent.t2, rawContent.t3, other)
     }
 }

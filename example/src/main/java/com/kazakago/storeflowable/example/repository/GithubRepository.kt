@@ -1,8 +1,6 @@
 package com.kazakago.storeflowable.example.repository
 
-import com.kazakago.storeflowable.core.FlowableLoadingState
-import com.kazakago.storeflowable.core.pagination.oneway.FlowableOneWayLoadingState
-import com.kazakago.storeflowable.core.pagination.twoway.FlowableTwoWayLoadingState
+import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.create
 import com.kazakago.storeflowable.example.flowable.*
 import com.kazakago.storeflowable.example.model.GithubMeta
@@ -14,7 +12,7 @@ import com.kazakago.storeflowable.pagination.twoway.create
 
 class GithubRepository {
 
-    fun followMeta(): FlowableLoadingState<GithubMeta> {
+    fun followMeta(): FlowLoadingState<GithubMeta> {
         val githubMetaFlowable = GithubMetaFlowableFactory().create()
         return githubMetaFlowable.publish()
     }
@@ -24,7 +22,7 @@ class GithubRepository {
         githubMetaFlowable.refresh()
     }
 
-    fun followOrgs(): FlowableOneWayLoadingState<List<GithubOrg>> {
+    fun followOrgs(): FlowLoadingState<List<GithubOrg>> {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
         return githubOrgsFlowable.publish()
     }
@@ -39,7 +37,7 @@ class GithubRepository {
         githubOrgsFlowable.requestNextData(continueWhenError)
     }
 
-    fun followUser(userName: String): FlowableLoadingState<GithubUser> {
+    fun followUser(userName: String): FlowLoadingState<GithubUser> {
         val githubUserFlowable = GithubUserFlowableFactory(userName).create()
         return githubUserFlowable.publish()
     }
@@ -49,7 +47,7 @@ class GithubRepository {
         githubUserFlowable.refresh()
     }
 
-    fun followRepos(userName: String): FlowableOneWayLoadingState<List<GithubRepo>> {
+    fun followRepos(userName: String): FlowLoadingState<List<GithubRepo>> {
         val githubReposFlowable = GithubReposFlowableFactory(userName).create()
         return githubReposFlowable.publish()
     }
@@ -64,7 +62,7 @@ class GithubRepository {
         githubReposFlowable.requestNextData(continueWhenError)
     }
 
-    fun followTwoWayRepos(): FlowableTwoWayLoadingState<List<GithubRepo>> {
+    fun followTwoWayRepos(): FlowLoadingState<List<GithubRepo>> {
         val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
         return githubReposFlowable.publish()
     }

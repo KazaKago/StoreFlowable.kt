@@ -39,7 +39,7 @@ class GithubMetaViewModel : ViewModel() {
                     _isLoading.value = true
                     _error.value = null
                 },
-                onCompleted = { githubMeta ->
+                onCompleted = { githubMeta, _, _ ->
                     _githubMeta.value = githubMeta
                     _isLoading.value = false
                     _error.value = null

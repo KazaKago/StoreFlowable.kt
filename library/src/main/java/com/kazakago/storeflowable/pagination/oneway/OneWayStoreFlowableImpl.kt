@@ -1,12 +1,13 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.core.pagination.oneway.FlowableOneWayLoadingState
+import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.FlowableDataStateManager
 import com.kazakago.storeflowable.logic.DataSelector
 import com.kazakago.storeflowable.origin.GettingFrom
 import com.kazakago.storeflowable.origin.OriginDataManager
+import com.kazakago.storeflowable.toLoadingState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -28,7 +29,7 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
         needRefresh = needRefresh,
     )
 
-    override fun publish(forceRefresh: Boolean): FlowableOneWayLoadingState<DATA> {
+    override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
                 if (forceRefresh) {
@@ -39,7 +40,7 @@ internal class OneWayStoreFlowableImpl<KEY, DATA>(
             }
             .map { dataState ->
                 val data = cacheDataManager.load()
-                dataState.toOneWayLoadingState(data)
+                dataState.toLoadingState(data)
             }
     }
 

@@ -12,10 +12,10 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FlowLoadingStateCombinerTest {
 
-    private val flowLoading: FlowableLoadingState<Int> = flowOf(LoadingState.Loading(null))
-    private val flowLoadingWithData: FlowableLoadingState<Int> = flowOf(LoadingState.Loading(70))
-    private val flowCompleted: FlowableLoadingState<Int> = flowOf(LoadingState.Completed(30))
-    private val flowError: FlowableLoadingState<Int> = flowOf(LoadingState.Error(IllegalStateException()))
+    private val flowLoading: FlowLoadingState<Int> = flowOf(LoadingState.Loading(null))
+    private val flowLoadingWithData: FlowLoadingState<Int> = flowOf(LoadingState.Loading(70))
+    private val flowCompleted: FlowLoadingState<Int> = flowOf(LoadingState.Completed(30, AdditionalLoadingState.Fixed(true), AdditionalLoadingState.Fixed(true)))
+    private val flowError: FlowLoadingState<Int> = flowOf(LoadingState.Error(IllegalStateException()))
 
     @Test
     fun combine_Loading_Loading() = runBlockingTest {
@@ -27,7 +27,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -46,7 +46,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -65,7 +65,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -84,7 +84,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -103,7 +103,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -124,7 +124,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo 140
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -145,7 +145,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo 100
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -164,7 +164,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -183,7 +183,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -204,7 +204,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 it shouldBeEqualTo 100
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -225,7 +225,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = { content ->
+            onCompleted = { content, _, _ ->
                 content shouldBeEqualTo 60
             },
             onError = {
@@ -244,7 +244,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -263,7 +263,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -282,7 +282,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -301,7 +301,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -320,7 +320,7 @@ class FlowLoadingStateCombinerTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {

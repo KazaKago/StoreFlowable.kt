@@ -12,7 +12,7 @@ class LoadingStateZipperTest {
 
     private val loading: LoadingState<Int> = LoadingState.Loading(null)
     private val loadingWithData: LoadingState<Int> = LoadingState.Loading(70)
-    private val completed: LoadingState<Int> = LoadingState.Completed(30)
+    private val completed: LoadingState<Int> = LoadingState.Completed(30, AdditionalLoadingState.Fixed(true), AdditionalLoadingState.Fixed(true))
     private val error: LoadingState<Int> = LoadingState.Error(IllegalStateException())
 
     @Test
@@ -24,7 +24,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -42,7 +42,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -60,7 +60,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -78,7 +78,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -96,7 +96,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -116,7 +116,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo 140
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -136,7 +136,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo 100
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -154,7 +154,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -172,7 +172,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo null
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -192,7 +192,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 it shouldBeEqualTo 100
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -212,8 +212,8 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
-                it shouldBeEqualTo 60
+            onCompleted = { content, _, _ ->
+                content shouldBeEqualTo 60
             },
             onError = {
                 fail()
@@ -230,7 +230,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -248,7 +248,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -266,7 +266,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -284,7 +284,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {
@@ -302,7 +302,7 @@ class LoadingStateZipperTest {
             onLoading = {
                 fail()
             },
-            onCompleted = {
+            onCompleted = { _, _, _ ->
                 fail()
             },
             onError = {

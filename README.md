@@ -143,7 +143,7 @@ private fun subscribe(userId: UserId) = viewModelScope.launch {
             onLoading = { content: UserData? ->
                 ...
             },
-            onCompleted = { content: UserData ->
+            onCompleted = { content: UserData, _, _ ->
                 ...
             },
             onError = { exception: Exception ->
@@ -270,14 +270,14 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
         userListCache.save(mergedData)
     }
 
-    override suspend fun fetchDataFromOrigin(): FetchingResult<List<UserData>> {
+    override suspend fun fetchDataFromOrigin(): Fetched<List<UserData>> {
         val fetchedData = userListApi.fetch(null)
-        return FetchingResult(data = fetchedData, nextKey = fetchedData.nextToken)
+        return Fetched(data = fetchedData, nextKey = fetchedData.nextToken)
     }
 
-    override suspend fun fetchNextDataFromOrigin(nextKey: String): FetchingResult<List<GithubOrg>> {
+    override suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<List<GithubOrg>> {
         val fetchedData = userListApi.fetch(nextKey)
-        return FetchingResult(data = fetchedData, nextKey = fetchedData.nextToken)
+        return Fetched(data = fetchedData, nextKey = fetchedData.nextToken)
     }
 
     override suspend fun needRefresh(cachedData: List<UserData>): Boolean {
@@ -298,7 +298,7 @@ userFlowable.publish(userId).collect {
         onLoading = { contents: List<UserData>? ->
             // Whole (Initial) data loading.
         },
-        onCompleted = { contents: List<UserData>, next: AdditionalLoadingState ->
+        onCompleted = { contents: List<UserData>, next: AdditionalLoadingState, _ ->
             next.doAction(
                 onFixed = {
                     // No additional processing.

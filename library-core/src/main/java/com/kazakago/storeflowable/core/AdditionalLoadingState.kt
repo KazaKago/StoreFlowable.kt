@@ -1,6 +1,6 @@
-package com.kazakago.storeflowable.core.pagination
+package com.kazakago.storeflowable.core
 
-import com.kazakago.storeflowable.core.pagination.AdditionalLoadingState.*
+import com.kazakago.storeflowable.core.AdditionalLoadingState.*
 import java.io.Serializable
 
 /**
