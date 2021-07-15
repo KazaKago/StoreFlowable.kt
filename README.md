@@ -155,7 +155,6 @@ private fun subscribe(userId: UserId) = viewModelScope.launch {
 ```
 
 On Android, it is recommended to pass the data to [`LiveData`](https://developer.android.com/topic/libraries/architecture/livedata) or [`StateFlow`](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) with [`ViewModel`](https://developer.android.com/topic/libraries/architecture/viewmodel) and display it on the UI.  
-Also, when displaying in the [`RecyclerView`](https://developer.android.com/jetpack/androidx/releases/recyclerview), use the difference update function. See [`DiffUtil`](https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil).  
 
 ## Example
 
@@ -317,6 +316,8 @@ userFlowable.publish(userId).collect {
     )
 }
 ```
+
+On Android, To display in the [`RecyclerView`](https://developer.android.com/jetpack/androidx/releases/recyclerview), Please use the difference update function. See also [`DiffUtil`](https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil).  
 
 ### Request additional data
 
