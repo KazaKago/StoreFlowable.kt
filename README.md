@@ -178,7 +178,7 @@ interface StoreFlowable<KEY, DATA> {
 }
 ```
 
-[`GettingFrom`](library/src/main/java/com/kazakago/storeflowable/origin/GettingFrom.kt) parameter specifies where to get the data.  
+[`GettingFrom`](library/src/main/java/com/kazakago/storeflowable/GettingFrom.kt) parameter specifies where to get the data.  
 
 ```kotlin
 enum class GettingFrom {
@@ -285,7 +285,7 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
 }
 ```
 
-You need to additionally implements `saveNextDataToCache()` and `fetchNextDataFromOrigin()`.  
+You need to additionally implements [`saveNextDataToCache()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt) and [`fetchNextDataFromOrigin()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt).  
 When saving the data, combine the cached data and the new data before saving.  
 
 And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.  
