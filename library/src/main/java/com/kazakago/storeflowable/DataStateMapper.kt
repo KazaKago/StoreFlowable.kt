@@ -10,19 +10,19 @@ internal fun <DATA> DataState.toLoadingState(content: DATA?): LoadingState<DATA>
         is DataState.Fixed -> if (content != null) {
             when (nextDataState) {
                 is AdditionalDataState.Fixed -> {
-                    val nextState = AdditionalLoadingState.Fixed(noMoreAdditionalData = false)
+                    val nextState = AdditionalLoadingState.Fixed(canRequestAdditionalData = true)
                     when (prevDataState) {
-                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = true))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = false))
                         is AdditionalDataState.Loading -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
                         is AdditionalDataState.Error -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
                 }
                 is AdditionalDataState.FixedWithNoMoreAdditionalData -> {
-                    val nextState = AdditionalLoadingState.Fixed(noMoreAdditionalData = true)
+                    val nextState = AdditionalLoadingState.Fixed(canRequestAdditionalData = false)
                     when (prevDataState) {
-                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = true))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = false))
                         is AdditionalDataState.Loading -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
                         is AdditionalDataState.Error -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
@@ -30,8 +30,8 @@ internal fun <DATA> DataState.toLoadingState(content: DATA?): LoadingState<DATA>
                 is AdditionalDataState.Loading -> {
                     val nextState = AdditionalLoadingState.Loading
                     when (prevDataState) {
-                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = true))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = false))
                         is AdditionalDataState.Loading -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
                         is AdditionalDataState.Error -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }
@@ -39,8 +39,8 @@ internal fun <DATA> DataState.toLoadingState(content: DATA?): LoadingState<DATA>
                 is AdditionalDataState.Error -> {
                     val nextState = AdditionalLoadingState.Error(nextDataState.exception)
                     when (prevDataState) {
-                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = false))
-                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(noMoreAdditionalData = true))
+                        is AdditionalDataState.Fixed -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = true))
+                        is AdditionalDataState.FixedWithNoMoreAdditionalData -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Fixed(canRequestAdditionalData = false))
                         is AdditionalDataState.Loading -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Loading)
                         is AdditionalDataState.Error -> LoadingState.Completed(content, nextState, AdditionalLoadingState.Error(prevDataState.exception))
                     }

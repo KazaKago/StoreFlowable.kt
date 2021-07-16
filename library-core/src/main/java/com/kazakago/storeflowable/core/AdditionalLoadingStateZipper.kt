@@ -9,7 +9,7 @@ package com.kazakago.storeflowable.core
 fun AdditionalLoadingState.zip(additionalState2: AdditionalLoadingState): AdditionalLoadingState {
     return when (this) {
         is AdditionalLoadingState.Fixed -> when (additionalState2) {
-            is AdditionalLoadingState.Fixed -> AdditionalLoadingState.Fixed(noMoreAdditionalData = noMoreAdditionalData && additionalState2.noMoreAdditionalData)
+            is AdditionalLoadingState.Fixed -> AdditionalLoadingState.Fixed(canRequestAdditionalData = canRequestAdditionalData || additionalState2.canRequestAdditionalData)
             is AdditionalLoadingState.Loading -> AdditionalLoadingState.Loading
             is AdditionalLoadingState.Error -> AdditionalLoadingState.Error(additionalState2.exception)
         }

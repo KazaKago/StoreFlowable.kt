@@ -15,8 +15,10 @@ sealed interface AdditionalLoadingState : Serializable {
 
     /**
      * No processing.
+     *
+     * @param canRequestAdditionalData Whether additional fetching is possible from the origin.
      */
-    data class Fixed(val noMoreAdditionalData: Boolean) : AdditionalLoadingState
+    data class Fixed(val canRequestAdditionalData: Boolean) : AdditionalLoadingState
 
     /**
      * when data fetch is processing.
@@ -39,9 +41,9 @@ sealed interface AdditionalLoadingState : Serializable {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onFixed: ((noMoreAdditionalData: Boolean) -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
+    fun <V> doAction(onFixed: ((canRequestAdditionalData: Boolean) -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
-            is Fixed -> onFixed(noMoreAdditionalData)
+            is Fixed -> onFixed(canRequestAdditionalData)
             is Loading -> onLoading()
             is Error -> onError(exception)
         }
