@@ -264,9 +264,8 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
         userListCache.save(newData)
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<UserData>?, newData: List<UserData>) {
-        val mergedData = (cachedData ?: emptyList()) + newData
-        userListCache.save(mergedData)
+    override suspend fun saveNextDataToCache(cachedData: List<UserData>, newData: List<UserData>) {
+        userListCache.save(cachedData + newData)
     }
 
     override suspend fun fetchDataFromOrigin(): Fetched<List<UserData>> {
@@ -299,7 +298,7 @@ userFlowable.publish(userId).collect {
         },
         onCompleted = { contents: List<UserData>, next: AdditionalLoadingState, _ ->
             next.doAction(
-                onFixed = {
+                onFixed = { canRequestAdditionalData ->
                     // No additional processing.
                 },
                 onLoading = {
