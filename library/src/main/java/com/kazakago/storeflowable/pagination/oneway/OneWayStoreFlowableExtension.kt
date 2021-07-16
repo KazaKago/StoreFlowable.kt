@@ -16,8 +16,8 @@ fun <KEY, DATA> OneWayStoreFlowableFactory<KEY, DATA>.create(): OneWayStoreFlowa
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache()
             override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveNext(cachedData: DATA?, newData: DATA) = saveNextDataToCache(cachedData, newData)
-            override suspend fun savePrev(cachedData: DATA?, newData: DATA) = throw NotImplementedError()
+            override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData)
+            override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetchingResult<DATA> {

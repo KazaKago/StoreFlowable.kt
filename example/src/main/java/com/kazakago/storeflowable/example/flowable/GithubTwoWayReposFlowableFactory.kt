@@ -36,12 +36,12 @@ class GithubTwoWayReposFlowableFactory : TwoWayStoreFlowableFactory<Unit, List<G
         githubCache.twoWayReposCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
-        githubCache.twoWayReposCache = (cachedData ?: emptyList()) + newData
+    override suspend fun saveNextDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>) {
+        githubCache.twoWayReposCache = cachedData + newData
     }
 
-    override suspend fun savePrevDataToCache(cachedData: List<GithubRepo>?, newData: List<GithubRepo>) {
-        githubCache.twoWayReposCache = newData + (cachedData ?: emptyList())
+    override suspend fun savePrevDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>) {
+        githubCache.twoWayReposCache = newData + cachedData
     }
 
     override suspend fun fetchDataFromOrigin(): FetchedInitial<List<GithubRepo>> {

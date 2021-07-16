@@ -20,7 +20,7 @@ interface TwoWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, 
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun saveNextDataToCache(cachedData: DATA?, newData: DATA)
+    suspend fun saveNextDataToCache(cachedData: DATA, newData: DATA)
 
     /**
      * The previous data saving process to cache.
@@ -29,7 +29,7 @@ interface TwoWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, 
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun savePrevDataToCache(cachedData: DATA?, newData: DATA)
+    suspend fun savePrevDataToCache(cachedData: DATA, newData: DATA)
 
     /**
      * The latest data acquisition process from origin.

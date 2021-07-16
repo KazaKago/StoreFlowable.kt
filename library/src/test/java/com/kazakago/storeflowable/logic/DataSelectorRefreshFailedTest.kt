@@ -43,11 +43,11 @@ class DataSelectorRefreshFailedTest {
                 dataCache = newData
             }
 
-            override suspend fun saveNext(cachedData: TestData?, newData: TestData) {
+            override suspend fun saveNext(cachedData: TestData, newData: TestData) {
                 fail()
             }
 
-            override suspend fun savePrev(cachedData: TestData?, newData: TestData) {
+            override suspend fun savePrev(cachedData: TestData, newData: TestData) {
                 fail()
             }
         },
@@ -79,6 +79,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -89,6 +90,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -99,6 +101,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -139,6 +142,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -149,6 +153,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -159,6 +164,7 @@ class DataSelectorRefreshFailedTest {
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 }

@@ -43,11 +43,11 @@ class DataSelectorValidateFailedTest {
                 dataCache = newData
             }
 
-            override suspend fun saveNext(cachedData: TestData?, newData: TestData) {
+            override suspend fun saveNext(cachedData: TestData, newData: TestData) {
                 fail()
             }
 
-            override suspend fun savePrev(cachedData: TestData?, newData: TestData) {
+            override suspend fun savePrev(cachedData: TestData, newData: TestData) {
                 fail()
             }
         },
@@ -79,6 +79,7 @@ class DataSelectorValidateFailedTest {
 
         dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -99,6 +100,7 @@ class DataSelectorValidateFailedTest {
 
         dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -139,6 +141,7 @@ class DataSelectorValidateFailedTest {
 
         dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -149,6 +152,7 @@ class DataSelectorValidateFailedTest {
 
         dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -159,6 +163,7 @@ class DataSelectorValidateFailedTest {
 
         dataSelector.validate()
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
         dataCache shouldBeEqualTo null
     }
 }

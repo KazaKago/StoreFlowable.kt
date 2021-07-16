@@ -33,8 +33,8 @@ class GithubOrgsFlowableFactory : OneWayStoreFlowableFactory<Unit, List<GithubOr
         githubCache.orgsCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<GithubOrg>?, newData: List<GithubOrg>) {
-        githubCache.orgsCache = (cachedData ?: emptyList()) + newData
+    override suspend fun saveNextDataToCache(cachedData: List<GithubOrg>, newData: List<GithubOrg>) {
+        githubCache.orgsCache = cachedData + newData
     }
 
     override suspend fun fetchDataFromOrigin(): Fetched<List<GithubOrg>> {

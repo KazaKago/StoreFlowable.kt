@@ -1,9 +1,5 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.core.FlowLoadingState
-import com.kazakago.storeflowable.core.LoadingState
-import kotlinx.coroutines.flow.Flow
-
 /**
  * Provides input / output methods that abstract the data acquisition destination.
  *

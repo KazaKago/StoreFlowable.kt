@@ -4,6 +4,8 @@ import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.exception.AdditionalRequestOnErrorStateException
+import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
 import com.kazakago.storeflowable.origin.InternalFetchingResult
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
@@ -45,11 +47,11 @@ class DataSelectorRequestNextFailedTest {
                 fail()
             }
 
-            override suspend fun saveNext(cachedData: List<TestData>?, newData: List<TestData>) {
-                dataCache = (cachedData ?: emptyList()) + newData
+            override suspend fun saveNext(cachedData: List<TestData>, newData: List<TestData>) {
+                dataCache = cachedData + newData
             }
 
-            override suspend fun savePrev(cachedData: List<TestData>?, newData: List<TestData>) {
+            override suspend fun savePrev(cachedData: List<TestData>, newData: List<TestData>) {
                 fail()
             }
         },
@@ -80,8 +82,8 @@ class DataSelectorRequestNextFailedTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -179,8 +181,8 @@ class DataSelectorRequestNextFailedTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Error::class
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -243,6 +245,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -253,6 +256,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
@@ -263,6 +267,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 
@@ -273,6 +278,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo null
     }
 
@@ -283,6 +289,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
@@ -293,6 +300,7 @@ class DataSelectorRequestNextFailedTest {
 
         dataSelector.requestNextData(continueWhenError = false)
         dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 }

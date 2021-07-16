@@ -41,11 +41,11 @@ class DataSelectorLoadTest {
                 dataCache = newData
             }
 
-            override suspend fun saveNext(cachedData: TestData?, newData: TestData) {
+            override suspend fun saveNext(cachedData: TestData, newData: TestData) {
                 fail()
             }
 
-            override suspend fun savePrev(cachedData: TestData?, newData: TestData) {
+            override suspend fun savePrev(cachedData: TestData, newData: TestData) {
                 fail()
             }
         },

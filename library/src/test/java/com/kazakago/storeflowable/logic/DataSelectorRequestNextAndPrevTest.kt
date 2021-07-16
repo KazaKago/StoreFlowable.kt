@@ -4,6 +4,8 @@ import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.exception.AdditionalRequestOnErrorStateException
+import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
 import com.kazakago.storeflowable.origin.InternalFetchingResult
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
@@ -45,12 +47,12 @@ class DataSelectorRequestNextAndPrevTest {
                 fail()
             }
 
-            override suspend fun saveNext(cachedData: List<TestData>?, newData: List<TestData>) {
-                dataCache = (cachedData ?: emptyList()) + newData
+            override suspend fun saveNext(cachedData: List<TestData>, newData: List<TestData>) {
+                dataCache = cachedData + newData
             }
 
-            override suspend fun savePrev(cachedData: List<TestData>?, newData: List<TestData>) {
-                dataCache = newData + (cachedData ?: emptyList())
+            override suspend fun savePrev(cachedData: List<TestData>, newData: List<TestData>) {
+                dataCache = newData + cachedData
             }
         },
         originDataManager = object : OriginDataManager<List<TestData>> {
@@ -79,16 +81,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData, TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -133,16 +133,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -187,16 +185,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -241,16 +237,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Error::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData, TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -301,10 +295,9 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -463,10 +456,9 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -517,10 +509,9 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -679,10 +670,9 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -727,16 +717,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData, TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -781,16 +769,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.FixedWithNoMoreAdditionalData::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -835,16 +821,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Loading::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
@@ -889,16 +873,14 @@ class DataSelectorRequestNextAndPrevTest {
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Error::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnNullException::class
+        dataCache shouldBeEqualTo null
 
         dataSelector.requestPrevData(continueWhenError = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        (dataState as DataState.Fixed).prevDataState shouldBeInstanceOf AdditionalDataState.Fixed::class
-        dataCache shouldBeEqualTo listOf(TestData.FetchedPrevData, TestData.FetchedNextData)
+        dataState shouldBeInstanceOf DataState.Error::class
+        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataCache shouldBeEqualTo null
     }
 
     @Test
