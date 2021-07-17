@@ -25,8 +25,8 @@ sealed interface LoadingState<out T> {
      * When data fetch is successful.
      *
      * @param content Raw data.
-     * @param next next pagination state of the data. If not pagination, Always returned [com.kazakago.storeflowable.core.AdditionalLoadingState.Fixed] state.
-     * @param prev prev pagination state of the data. If not pagination, Always returned [com.kazakago.storeflowable.core.AdditionalLoadingState.Fixed] state.
+     * @param next next pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
+     * @param prev prev pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
      */
     data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>
 
