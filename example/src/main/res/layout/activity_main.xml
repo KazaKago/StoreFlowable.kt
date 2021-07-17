@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="The valid time of the fetched data is 1 minute."
-        android:textSize="11sp"
+        android:text="This example accesses the Github API.\nThe valid time of these fetched data is 1 minute."
+        android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
