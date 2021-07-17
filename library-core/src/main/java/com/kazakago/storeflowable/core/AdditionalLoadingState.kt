@@ -1,7 +1,6 @@
 package com.kazakago.storeflowable.core
 
 import com.kazakago.storeflowable.core.AdditionalLoadingState.*
-import java.io.Serializable
 
 /**
  * This sealed class that represents the state of the additional pagination data.
@@ -11,7 +10,7 @@ import java.io.Serializable
  * - [Loading] is acquiring data.
  * - [Error] is an error when processing.
  */
-sealed interface AdditionalLoadingState : Serializable {
+sealed interface AdditionalLoadingState {
 
     /**
      * No processing.
