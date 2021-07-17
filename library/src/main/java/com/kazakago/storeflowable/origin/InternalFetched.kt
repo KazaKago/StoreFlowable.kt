@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.origin
 
-internal data class InternalFetchingResult<DATA>(
+internal data class InternalFetched<DATA>(
     val data: DATA,
     val nextKey: String?,
     val prevKey: String?,

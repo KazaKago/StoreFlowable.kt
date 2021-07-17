@@ -137,29 +137,29 @@ internal class DataSelector<KEY, DATA>(
 
     private suspend fun fetchNewData(clearCacheWhenFetchFails: Boolean, requestType: KeyedRequestType) {
         try {
-            val fetchingResult = when (requestType) {
+            val result = when (requestType) {
                 is KeyedRequestType.Refresh -> originDataManager.fetch()
                 is KeyedRequestType.Next -> originDataManager.fetchNext(requestType.requestKey)
                 is KeyedRequestType.Prev -> originDataManager.fetchPrev(requestType.requestKey)
             }
             when (requestType) {
                 is KeyedRequestType.Refresh -> {
-                    cacheDataManager.save(fetchingResult.data)
+                    cacheDataManager.save(result.data)
                 }
                 is KeyedRequestType.Next -> {
                     val cachedData = cacheDataManager.load() ?: throw AdditionalRequestOnNullException()
-                    cacheDataManager.saveNext(cachedData, fetchingResult.data)
+                    cacheDataManager.saveNext(cachedData, result.data)
                 }
                 is KeyedRequestType.Prev -> {
                     val cachedData = cacheDataManager.load() ?: throw AdditionalRequestOnNullException()
-                    cacheDataManager.savePrev(cachedData, fetchingResult.data)
+                    cacheDataManager.savePrev(cachedData, result.data)
                 }
             }
             val state = dataStateManager.load(key)
             when (requestType) {
-                is KeyedRequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (fetchingResult.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.nextKey), prevDataState = if (fetchingResult.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.prevKey)))
-                is KeyedRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (fetchingResult.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.nextKey), prevDataState = state.prevDataStateOrNull()))
-                is KeyedRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = if (fetchingResult.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = fetchingResult.prevKey)))
+                is KeyedRequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
+                is KeyedRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = state.prevDataStateOrNull()))
+                is KeyedRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
             }
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.save(null)

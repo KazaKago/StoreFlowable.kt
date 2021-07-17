@@ -6,7 +6,7 @@ import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.exception.AdditionalRequestOnErrorStateException
 import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
-import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,17 +56,17 @@ class DataSelectorRequestNextAndPrevTest {
             }
         },
         originDataManager = object : OriginDataManager<List<TestData>> {
-            override suspend fun fetch(): InternalFetchingResult<List<TestData>> {
+            override suspend fun fetch(): InternalFetched<List<TestData>> {
                 fail()
                 throw NotImplementedError()
             }
 
-            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<List<TestData>> {
-                return InternalFetchingResult(listOf(TestData.FetchedNextData), nextKey = "KEY", prevKey = null)
+            override suspend fun fetchNext(nextKey: String): InternalFetched<List<TestData>> {
+                return InternalFetched(listOf(TestData.FetchedNextData), nextKey = "KEY", prevKey = null)
             }
 
-            override suspend fun fetchPrev(prevKey: String): InternalFetchingResult<List<TestData>> {
-                return InternalFetchingResult(listOf(TestData.FetchedPrevData), nextKey = null, prevKey = "KEY")
+            override suspend fun fetchPrev(prevKey: String): InternalFetched<List<TestData>> {
+                return InternalFetched(listOf(TestData.FetchedPrevData), nextKey = null, prevKey = "KEY")
             }
         },
         needRefresh = { it.firstOrNull()?.needRefresh ?: false }

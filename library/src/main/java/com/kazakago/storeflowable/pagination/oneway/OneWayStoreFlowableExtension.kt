@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 
 /**
@@ -20,14 +20,14 @@ fun <KEY, DATA> OneWayStoreFlowableFactory<KEY, DATA>.create(): OneWayStoreFlowa
             override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
-            override suspend fun fetch(): InternalFetchingResult<DATA> {
+            override suspend fun fetch(): InternalFetched<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
+                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<DATA> {
+            override suspend fun fetchNext(nextKey: String): InternalFetched<DATA> {
                 val result = fetchNextDataFromOrigin(nextKey)
-                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
+                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()

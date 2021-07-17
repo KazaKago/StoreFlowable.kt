@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
-import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,16 +51,16 @@ class DataSelectorValidateTest {
             }
         },
         originDataManager = object : OriginDataManager<TestData> {
-            override suspend fun fetch(): InternalFetchingResult<TestData> {
-                return InternalFetchingResult(TestData.FetchedData, nextKey = null, prevKey = null)
+            override suspend fun fetch(): InternalFetched<TestData> {
+                return InternalFetched(TestData.FetchedData, nextKey = null, prevKey = null)
             }
 
-            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<TestData> {
+            override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
                 fail()
                 throw NotImplementedError()
             }
 
-            override suspend fun fetchPrev(prevKey: String): InternalFetchingResult<TestData> {
+            override suspend fun fetchPrev(prevKey: String): InternalFetched<TestData> {
                 fail()
                 throw NotImplementedError()
             }

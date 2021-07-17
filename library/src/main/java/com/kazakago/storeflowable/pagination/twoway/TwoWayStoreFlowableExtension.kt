@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.twoway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 
 /**
@@ -20,19 +20,19 @@ fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowa
             override suspend fun savePrev(cachedData: DATA, newData: DATA) = savePrevDataToCache(cachedData, newData)
         },
         originDataManager = object : OriginDataManager<DATA> {
-            override suspend fun fetch(): InternalFetchingResult<DATA> {
+            override suspend fun fetch(): InternalFetched<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = result.prevKey)
+                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = result.prevKey)
             }
 
-            override suspend fun fetchNext(nextKey: String): InternalFetchingResult<DATA> {
+            override suspend fun fetchNext(nextKey: String): InternalFetched<DATA> {
                 val result = fetchNextDataFromOrigin(nextKey)
-                return InternalFetchingResult(result.data, nextKey = result.nextKey, prevKey = null)
+                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchPrev(prevKey: String): InternalFetchingResult<DATA> {
+            override suspend fun fetchPrev(prevKey: String): InternalFetched<DATA> {
                 val result = fetchPrevDataFromOrigin(prevKey)
-                return InternalFetchingResult(result.data, nextKey = null, prevKey = result.prevKey)
+                return InternalFetched(result.data, nextKey = null, prevKey = result.prevKey)
             }
         },
         needRefresh = { needRefresh(it) }

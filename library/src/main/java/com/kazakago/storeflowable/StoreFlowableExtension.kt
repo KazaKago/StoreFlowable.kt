@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.cache.CacheDataManager
-import com.kazakago.storeflowable.origin.InternalFetchingResult
+import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 
 /**
@@ -20,9 +20,9 @@ fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DAT
             override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
-            override suspend fun fetch(): InternalFetchingResult<DATA> {
+            override suspend fun fetch(): InternalFetched<DATA> {
                 val data = fetchDataFromOrigin()
-                return InternalFetchingResult(data = data, nextKey = null, prevKey = null)
+                return InternalFetched(data = data, nextKey = null, prevKey = null)
             }
 
             override suspend fun fetchNext(nextKey: String) = throw NotImplementedError()
