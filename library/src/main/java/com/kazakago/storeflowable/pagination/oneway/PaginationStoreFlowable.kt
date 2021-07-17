@@ -1,26 +1,26 @@
-package com.kazakago.storeflowable.pagination.twoway
+package com.kazakago.storeflowable.pagination.oneway
 
+import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.LoadingState
-import com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowable
 
 /**
- * Provides input / output methods that abstract the data acquisition destination for two-way pagination.
+ * Provides input / output methods that abstract the data acquisition destination for one-way pagination.
  *
- * This class is generated from [TwoWayStoreFlowableFactory.create].
+ * This class is generated from [PaginationStoreFlowableFactory.create].
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayStoreFlowable<KEY, DATA> : OneWayStoreFlowable<KEY, DATA> {
+interface PaginationStoreFlowable<KEY, DATA> : StoreFlowable<KEY, DATA> {
 
     /**
-     * Request previous data.
+     * Request next data.
      *
      * Do nothing if there is no additional data or if already data retrieving.
      *
      * @param continueWhenError Even if the data state is an [LoadingState.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
-    suspend fun requestPrevData(continueWhenError: Boolean = true)
+    suspend fun requestNextData(continueWhenError: Boolean = true)
 
     /**
      * Treat the passed data as the latest acquired data.
@@ -30,7 +30,6 @@ interface TwoWayStoreFlowable<KEY, DATA> : OneWayStoreFlowable<KEY, DATA> {
      *
      * @param newData Latest data.
      * @param nextKey Key for next request. If null is set, the stored key will be used.
-     * @param prevKey Key for prev request. If null is set, the stored key will be used.
      */
-    suspend fun update(newData: DATA?, nextKey: String? = null, prevKey: String? = null)
+    suspend fun update(newData: DATA?, nextKey: String? = null)
 }

@@ -4,14 +4,14 @@ import com.kazakago.storeflowable.BaseStoreFlowableFactory
 import com.kazakago.storeflowable.pagination.oneway.Fetched
 
 /**
- * Abstract factory class for [TwoWayStoreFlowable] class.
+ * Abstract factory class for [TwoWayPaginationStoreFlowable] class.
  *
  * Create a class that implements origin or cache data Input / Output / Two-Way-Pagination according to this interface.
  *
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, DATA> {
+interface TwoWayPaginationStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, DATA> {
 
     /**
      * The next data saving process to cache.

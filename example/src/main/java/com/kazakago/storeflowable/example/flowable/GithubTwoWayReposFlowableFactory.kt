@@ -7,11 +7,11 @@ import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.pagination.twoway.FetchedInitial
 import com.kazakago.storeflowable.pagination.twoway.FetchedNext
 import com.kazakago.storeflowable.pagination.twoway.FetchedPrev
-import com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowableFactory
+import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowableFactory
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubTwoWayReposFlowableFactory : TwoWayStoreFlowableFactory<Unit, List<GithubRepo>> {
+class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Unit, List<GithubRepo>> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)

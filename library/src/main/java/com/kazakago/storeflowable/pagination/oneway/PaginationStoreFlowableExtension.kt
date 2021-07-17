@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable.pagination.twoway
+package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.logic.StoreFlowableImpl
@@ -6,11 +6,11 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 
 /**
- * Create [TwoWayStoreFlowable] class from [TwoWayStoreFlowableFactory].
+ * Create [PaginationStoreFlowable] class from [PaginationStoreFlowableFactory].
  *
- * @return Created [TwoWayStoreFlowable].
+ * @return Created [PaginationStoreFlowable].
  */
-fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowable<KEY, DATA> {
+fun <KEY, DATA> PaginationStoreFlowableFactory<KEY, DATA>.create(): PaginationStoreFlowable<KEY, DATA> {
     return StoreFlowableImpl(
         key = key,
         flowableDataStateManager = flowableDataStateManager,
@@ -18,12 +18,12 @@ fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowa
             override suspend fun load() = loadDataFromCache()
             override suspend fun save(newData: DATA?) = saveDataToCache(newData)
             override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData)
-            override suspend fun savePrev(cachedData: DATA, newData: DATA) = savePrevDataToCache(cachedData, newData)
+            override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetched<DATA> {
                 val result = fetchDataFromOrigin()
-                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = result.prevKey)
+                return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<DATA> {
@@ -31,10 +31,7 @@ fun <KEY, DATA> TwoWayStoreFlowableFactory<KEY, DATA>.create(): TwoWayStoreFlowa
                 return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
-            override suspend fun fetchPrev(prevKey: String): InternalFetched<DATA> {
-                val result = fetchPrevDataFromOrigin(prevKey)
-                return InternalFetched(result.data, nextKey = null, prevKey = result.prevKey)
-            }
+            override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
         needRefresh = { needRefresh(it) }
     )

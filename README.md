@@ -239,7 +239,7 @@ This library includes pagination support.
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`OneWayStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
+Inherit [`PaginationStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 
 An example is shown below.  
 
@@ -247,7 +247,7 @@ An example is shown below.
 object UserListStateManager : FlowableDataStateManager<Unit>()
 ```
 ```kotlin
-class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>> {
+class UserListFlowableFactory : PaginationStoreFlowableFactory<Unit, List<UserData>> {
 
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
@@ -284,7 +284,7 @@ class UserListFlowableFactory : OneWayStoreFlowableFactory<Unit, List<UserData>>
 }
 ```
 
-You need to additionally implements [`saveNextDataToCache()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt) and [`fetchNextDataFromOrigin()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowableFactory.kt).  
+You need to additionally implements [`saveNextDataToCache()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowableFactory.kt) and [`fetchNextDataFromOrigin()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowableFactory.kt).  
 When saving the data, combine the cached data and the new data before saving.  
 
 And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.  
@@ -320,10 +320,10 @@ On Android, To display in the [`RecyclerView`](https://developer.android.com/jet
 
 ### Request additional data
 
-You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/OneWayStoreFlowable.kt) method.
+You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowable.kt) method.
 
 ```kotlin
-interface OneWayStoreFlowable<KEY, DATA> {
+interface PaginationStoreFlowable<KEY, DATA> {
     suspend fun requestNextData(continueWhenError: Boolean = true)
 }
 ```
@@ -336,14 +336,14 @@ The [GithubOrgsFlowableFactory](example/src/main/java/com/kazakago/storeflowable
 
 This library also includes two-way pagination support.  
 
-Inherit [`TwoWayStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
+Inherit [`TwoWayPaginationStoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](library/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).
 
 ### Request next & previous data
 
-You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) [`requestPrevData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayStoreFlowable.kt) method.
+You can request additional data for paginating using the [`requestNextData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowable.kt) [`requestPrevData()`](library/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowable.kt) method.
 
 ```kotlin
-interface TwoWayStoreFlowable<KEY, DATA> {
+interface TwoWayPaginationStoreFlowable<KEY, DATA> {
     suspend fun requestNextData(continueWhenError: Boolean = true)
     suspend fun requestPrevData(continueWhenError: Boolean = true)
 }
