@@ -1,4 +1,4 @@
-package com.kazakago.storeflowable
+package com.kazakago.storeflowable.logic
 
 import com.kazakago.storeflowable.core.AdditionalLoadingState
 import com.kazakago.storeflowable.core.LoadingState

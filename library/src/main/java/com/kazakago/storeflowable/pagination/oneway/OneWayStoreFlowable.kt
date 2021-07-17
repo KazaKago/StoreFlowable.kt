@@ -1,6 +1,6 @@
 package com.kazakago.storeflowable.pagination.oneway
 
-import com.kazakago.storeflowable.BaseStoreFlowable
+import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.LoadingState
 
 /**
@@ -11,7 +11,7 @@ import com.kazakago.storeflowable.core.LoadingState
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface OneWayStoreFlowable<KEY, DATA> : BaseStoreFlowable<KEY, DATA> {
+interface OneWayStoreFlowable<KEY, DATA> : StoreFlowable<KEY, DATA> {
 
     /**
      * Request next data.

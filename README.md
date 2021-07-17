@@ -55,14 +55,14 @@ There are only 5 things you have to implement:
 
 ### 1. Create FlowableDataStateManager class
 
-First, create a class that inherits [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/datastate/FlowableDataStateManager.kt).  
+First, create a class that inherits [`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt).  
 Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.  
 
 ```kotlin
 object UserStateManager : FlowableDataStateManager<UserId>()
 ```
 
-[`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/datastate/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
+[`FlowableDataStateManager<KEY>`](library/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
 
 ### 2. Create StoreFlowableFactory class
 
@@ -116,7 +116,7 @@ Be sure to go through the created [`StoreFlowable<KEY, DATA>`](library/src/main/
 ```kotlin
 class UserRepository {
 
-    fun followUserData(userId: UserId): FlowableLoadingState<UserData> {
+    fun followUserData(userId: UserId): FlowLoadingState<UserData> {
         val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userId).create()
         return userFlowable.publish()
     }
@@ -128,13 +128,13 @@ class UserRepository {
 }
 ```
 
-You can get the data in the form of [`FlowableLoadingState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowableLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
+You can get the data in the form of [`FlowLoadingState<DATA>`](library-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class is a [Sealed Classes](https://kotlinlang.org/docs/reference/sealed-classes.html) that holds raw data.
 
 ### 4. Use Repository class
 
 You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
-and branch the data state with `doAction()` method or `when` statement.  
+and branch the data state with [`doAction()`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) method or `when` statement.  
 
 ```kotlin
 private fun subscribe(userId: UserId) = viewModelScope.launch {
@@ -167,9 +167,9 @@ This example accesses the [Github API](https://docs.github.com/en/free-pro-team@
 
 ### Get data without [LoadingState](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class
 
-If you don't need value flow and [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class, you can use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt).  
-[`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
-[`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) returns null instead of Exception.  
+If you don't need value flow and [`LoadingState`](library-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class, you can use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
+[`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) throws an Exception if there is no valid cache and fails to get new data.  
+[`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) returns null instead of Exception.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
@@ -191,7 +191,7 @@ enum class GettingFrom {
 }
 ```
 
-However, use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
+However, use [`requireData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) or [`getData()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) only for one-shot data acquisition, and consider using [`publish()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if possible.  
 
 ### Refresh data
 
@@ -199,11 +199,11 @@ If you want to ignore the cache and get new data, add `forceRefresh` parameter t
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
-    fun publish(forceRefresh: Boolean = false): FlowableState<DATA>
+    fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
 }
 ```
 
-Or you can use [`refresh()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) if you are already observing the `Flow`.  
+Or you can use [`refresh()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you are already observing the `Flow`.  
 
 ```kotlin
 interface StoreFlowable<KEY, DATA> {
@@ -213,7 +213,7 @@ interface StoreFlowable<KEY, DATA> {
 
 ### Validate cache data
 
-Use [`validate()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) if you want to verify that the local cache is valid.  
+Use [`validate()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you want to verify that the local cache is valid.  
 If invalid, get new data remotely.  
 
 ```kotlin
@@ -224,7 +224,7 @@ interface StoreFlowable<KEY, DATA> {
 
 ### Update cache data
 
-If you want to update the local cache, use the [`update()`](library/src/main/java/com/kazakago/storeflowable/BaseStoreFlowable.kt) method.  
+If you want to update the local cache, use the [`update()`](library/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
 `Flow` observers will be notified.  
 
 ```kotlin

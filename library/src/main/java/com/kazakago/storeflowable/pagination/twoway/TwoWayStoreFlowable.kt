@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.twoway
 
-import com.kazakago.storeflowable.BaseStoreFlowable
 import com.kazakago.storeflowable.core.LoadingState
+import com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowable
 
 /**
  * Provides input / output methods that abstract the data acquisition destination for two-way pagination.
@@ -11,16 +11,7 @@ import com.kazakago.storeflowable.core.LoadingState
  * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayStoreFlowable<KEY, DATA> : BaseStoreFlowable<KEY, DATA> {
-
-    /**
-     * Request next data.
-     *
-     * Do nothing if there is no additional data or if already data retrieving.
-     *
-     * @param continueWhenError Even if the data state is an [LoadingState.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
-     */
-    suspend fun requestNextData(continueWhenError: Boolean = true)
+interface TwoWayStoreFlowable<KEY, DATA> : OneWayStoreFlowable<KEY, DATA> {
 
     /**
      * Request previous data.

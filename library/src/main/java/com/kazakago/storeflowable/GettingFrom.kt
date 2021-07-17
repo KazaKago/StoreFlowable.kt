@@ -3,8 +3,8 @@ package com.kazakago.storeflowable
 /**
  * This enum to specify where to get data when getting data.
  *
- * @see com.kazakago.storeflowable.StoreFlowable.getData
- * @see com.kazakago.storeflowable.StoreFlowable.requireData
+ * @see StoreFlowable.getData
+ * @see StoreFlowable.requireData
  */
 enum class GettingFrom {
     /**

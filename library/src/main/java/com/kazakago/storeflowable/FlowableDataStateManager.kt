@@ -1,5 +1,9 @@
-package com.kazakago.storeflowable.datastate
+package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.datastate.AdditionalDataState
+import com.kazakago.storeflowable.datastate.DataState
+import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.datastate.FlowAccessor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -44,14 +48,14 @@ abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccess
         dataState.getOrCreate(key).value = state
     }
 
-    private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed(nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData())) })
-    }
-
     /**
      * Clear all data state in this manager.
      */
     fun clearAll() {
         dataState.clear()
+    }
+
+    private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed(nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData())) })
     }
 }

@@ -1,6 +1,6 @@
-package com.kazakago.storeflowable.datastate
+package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.toTest
+import com.kazakago.storeflowable.datastate.DataState
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

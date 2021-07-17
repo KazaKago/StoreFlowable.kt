@@ -1,7 +1,5 @@
 package com.kazakago.storeflowable
 
-import com.kazakago.storeflowable.datastate.FlowableDataStateManager
-
 /**
  * Common function of [com.kazakago.storeflowable.StoreFlowableFactory], [com.kazakago.storeflowable.pagination.oneway.OneWayStoreFlowableFactory], [com.kazakago.storeflowable.pagination.twoway.TwoWayStoreFlowableFactory] interfaces.
  *

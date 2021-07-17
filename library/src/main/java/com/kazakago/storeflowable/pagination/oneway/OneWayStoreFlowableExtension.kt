@@ -1,6 +1,7 @@
 package com.kazakago.storeflowable.pagination.oneway
 
 import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.logic.StoreFlowableImpl
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 
@@ -10,7 +11,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  * @return Created [OneWayStoreFlowable].
  */
 fun <KEY, DATA> OneWayStoreFlowableFactory<KEY, DATA>.create(): OneWayStoreFlowable<KEY, DATA> {
-    return OneWayStoreFlowableImpl(
+    return StoreFlowableImpl(
         key = key,
         flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
