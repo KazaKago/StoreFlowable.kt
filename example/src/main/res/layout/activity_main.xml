@@ -6,147 +6,165 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <TextView
-        android:id="@+id/descriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="This example accesses the Github API.\nThe valid time of these fetched data is 1 minute."
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/title1TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Non pagination example"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/metaButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Single cache"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/title1TextView" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/userButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Per user cache"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/metaButton" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userName1TextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/userButton">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userName1InputEditText"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Input any Github username"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:text="github" />
+            android:layout_height="wrap_content">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/descriptionTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="This example accesses the Github API.\nThe valid time of these fetched data is 1 minute."
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/title2TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="One-way pagination example"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/userName1TextInputLayout" />
+            <TextView
+                android:id="@+id/title1TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Non pagination example"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/orgsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Single one-way pagination"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/title2TextView" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/metaButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Single cache"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/title1TextView" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/reposButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Per user one-way pagination"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/orgsButton" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/userButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Per user cache"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/metaButton" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/userNameTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/reposButton">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/userName1TextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/userButton">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userName2InputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Input any Github username"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:text="github" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/userName1InputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Input any Github username"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:text="github" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/title3TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Two-way pagination example"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/userNameTextInputLayout" />
+            <TextView
+                android:id="@+id/title2TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="One-way pagination example"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/userName1TextInputLayout" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/repos2Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Single two-way pagination"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/title1TextView"
-        app:layout_constraintTop_toBottomOf="@id/title3TextView" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/orgsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Single one-way pagination"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/title2TextView" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reposButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Per user one-way pagination"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/orgsButton" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/userNameTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/reposButton">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/userName2InputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Input any Github username"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:text="github" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/title3TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Two-way pagination example"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/userNameTextInputLayout" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/repos2Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="Single two-way pagination"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/title1TextView"
+                app:layout_constraintTop_toBottomOf="@id/title3TextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
