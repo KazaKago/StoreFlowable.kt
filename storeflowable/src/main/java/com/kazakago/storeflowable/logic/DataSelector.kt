@@ -89,8 +89,7 @@ internal class DataSelector<KEY, DATA>(
             is DataState.Loading -> Unit
             is DataState.Error -> when (requestType) {
                 RequestType.Refresh -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Refresh)
-                RequestType.Next -> dataStateManager.save(key, DataState.Error(AdditionalRequestOnErrorStateException()))
-                RequestType.Prev -> dataStateManager.save(key, DataState.Error(AdditionalRequestOnErrorStateException()))
+                RequestType.Next, RequestType.Prev -> dataStateManager.save(key, DataState.Error(AdditionalRequestOnErrorStateException()))
             }
         }
     }
@@ -100,19 +99,12 @@ internal class DataSelector<KEY, DATA>(
         when (requestType) {
             is KeyedRequestType.Refresh -> {
                 if (cachedData == null || forceRefresh || needRefresh(cachedData)) {
-                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Refresh)
+                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 }
             }
-            is KeyedRequestType.Next -> {
+            is KeyedRequestType.Next, is KeyedRequestType.Prev -> {
                 if (cachedData != null) {
-                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Next(requestKey = requestType.requestKey))
-                } else {
-                    dataStateManager.save(key, DataState.Error(AdditionalRequestOnNullException()))
-                }
-            }
-            is KeyedRequestType.Prev -> {
-                if (cachedData != null) {
-                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Prev(requestKey = requestType.requestKey))
+                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 } else {
                     dataStateManager.save(key, DataState.Error(AdditionalRequestOnNullException()))
                 }
