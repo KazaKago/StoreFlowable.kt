@@ -9,14 +9,14 @@ package com.kazakago.storeflowable.core
  */
 fun <A, B, Z> LoadingState<A>.zip(state2: LoadingState<B>, transform: (rawContent1: A, rawContent2: B) -> Z): LoadingState<Z> {
     return when (this) {
-        is LoadingState.Completed -> when (state2) {
-            is LoadingState.Loading -> LoadingState.Loading(if (state2.content != null) transform(content, state2.content) else null)
-            is LoadingState.Completed -> LoadingState.Completed(transform(content, state2.content), next.zip(state2.next), prev.zip(state2.prev))
-            is LoadingState.Error -> LoadingState.Error(state2.exception)
-        }
         is LoadingState.Loading -> when (state2) {
             is LoadingState.Loading -> LoadingState.Loading(if (content != null && state2.content != null) transform(content, state2.content) else null)
             is LoadingState.Completed -> LoadingState.Loading(if (content != null) transform(content, state2.content) else null)
+            is LoadingState.Error -> LoadingState.Error(state2.exception)
+        }
+        is LoadingState.Completed -> when (state2) {
+            is LoadingState.Loading -> LoadingState.Loading(if (state2.content != null) transform(content, state2.content) else null)
+            is LoadingState.Completed -> LoadingState.Completed(transform(content, state2.content), next.zip(state2.next), prev.zip(state2.prev))
             is LoadingState.Error -> LoadingState.Error(state2.exception)
         }
         is LoadingState.Error -> when (state2) {
