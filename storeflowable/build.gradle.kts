@@ -20,7 +20,7 @@ val versionName: String by project
 setupPublishing(version = versionName, artifactId = "storeflowable")
 
 dependencies {
-    api(project(":library-core"))
+    api(project(":storeflowable-core"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
 
     testImplementation("junit:junit:4.13.2")
