@@ -31,6 +31,7 @@ interface PaginationStoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<K
     /**
      * Next data acquisition process from origin.
      *
+     * @param nextKey Key for next data request.
      * @return [Fetched] class including the acquired data.
      */
     suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<DATA>
