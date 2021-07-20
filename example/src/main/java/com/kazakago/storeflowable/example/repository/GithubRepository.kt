@@ -32,7 +32,7 @@ class GithubRepository {
         githubOrgsFlowable.refresh()
     }
 
-    suspend fun requestAdditionalOrgs(continueWhenError: Boolean) {
+    suspend fun requestNextOrgs(continueWhenError: Boolean) {
         val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
         githubOrgsFlowable.requestNextData(continueWhenError)
     }

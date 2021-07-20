@@ -46,7 +46,7 @@ class GithubReposActivity : AppCompatActivity() {
 
         binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
         binding.githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAddition()
+            githubReposViewModel.requestNext()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             githubReposViewModel.refresh()
@@ -57,7 +57,7 @@ class GithubReposActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenStarted {
             githubReposViewModel.reposStatus.collect { reposStatus ->
-                val items: List<Group> = mutableListOf<Group>().apply {
+                val items = mutableListOf<Group>().apply {
                     this += createGithubRepoItems(reposStatus.githubRepos)
                     if (reposStatus.isNextLoading) this += createLoadingItem()
                     reposStatus.nextError?.let { this += createErrorItem(it) }
@@ -97,7 +97,7 @@ class GithubReposActivity : AppCompatActivity() {
 
     private fun createErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryAddition() }
+            onRetry = { githubReposViewModel.retryNext() }
         }
     }
 

@@ -49,11 +49,11 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
         githubRepository.refreshRepos(userName)
     }
 
-    fun requestAddition() = viewModelScope.launch {
+    fun requestNext() = viewModelScope.launch {
         githubRepository.requestNextRepos(userName, continueWhenError = false)
     }
 
-    fun retryAddition() = viewModelScope.launch {
+    fun retryNext() = viewModelScope.launch {
         githubRepository.requestNextRepos(userName, continueWhenError = true)
     }
 

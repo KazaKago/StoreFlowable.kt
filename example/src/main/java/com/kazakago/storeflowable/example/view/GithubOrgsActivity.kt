@@ -17,7 +17,6 @@ import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 
 class GithubOrgsActivity : AppCompatActivity() {
 
@@ -37,7 +36,7 @@ class GithubOrgsActivity : AppCompatActivity() {
 
         binding.githubOrgsRecyclerView.adapter = githubOrgsGroupAdapter
         binding.githubOrgsRecyclerView.addOnBottomReached {
-            githubOrgsViewModel.requestAddition()
+            githubOrgsViewModel.requestNext()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             githubOrgsViewModel.refresh()
@@ -47,11 +46,11 @@ class GithubOrgsActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launchWhenStarted {
-            combine(githubOrgsViewModel.githubOrgs, githubOrgsViewModel.isAdditionalLoading, githubOrgsViewModel.additionalError) { a, b, c -> Triple(a, b, c) }.collect {
-                val items: List<Group> = mutableListOf<Group>().apply {
-                    this += createGithubOrgItems(it.first)
-                    if (it.second) this += createLoadingItem()
-                    if (it.third != null) this += createErrorItem(it.third!!)
+            githubOrgsViewModel.orgsStatus.collect { reposStatus ->
+                val items = mutableListOf<Group>().apply {
+                    this += createGithubOrgItems(reposStatus.githubOrgs)
+                    if (reposStatus.isNextLoading) this += createLoadingItem()
+                    reposStatus.nextError?.let { this += createErrorItem(it) }
                 }
                 githubOrgsGroupAdapter.updateAsync(items)
             }
@@ -84,7 +83,7 @@ class GithubOrgsActivity : AppCompatActivity() {
 
     private fun createErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubOrgsViewModel.retryAddition() }
+            onRetry = { githubOrgsViewModel.retryNext() }
         }
     }
 }
