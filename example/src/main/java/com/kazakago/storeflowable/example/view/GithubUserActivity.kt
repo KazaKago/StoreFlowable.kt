@@ -33,7 +33,7 @@ class GithubUserActivity : AppCompatActivity() {
     private val binding by lazy { ActivityGithubUserBinding.inflate(layoutInflater) }
     private val githubUserViewModel by viewModels<GithubUserViewModel> {
         val githubUserName = intent.getStringExtra(ParameterName.UserName.name)!!
-        GithubUserViewModel.Factory(application, githubUserName)
+        GithubUserViewModel.Factory(githubUserName)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,6 +1,5 @@
 package com.kazakago.storeflowable.example.flowable
 
-import com.kazakago.storeflowable.FetchingResult
 import com.kazakago.storeflowable.FlowableDataStateManager
 import com.kazakago.storeflowable.StoreFlowableFactory
 import com.kazakago.storeflowable.example.api.GithubApi
@@ -32,9 +31,8 @@ class GithubMetaFlowableFactory : StoreFlowableFactory<Unit, GithubMeta> {
         githubCache.metaCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun fetchDataFromOrigin(): FetchingResult<GithubMeta> {
-        val data = githubApi.getMeta()
-        return FetchingResult(data = data)
+    override suspend fun fetchDataFromOrigin(): GithubMeta {
+        return githubApi.getMeta()
     }
 
     override suspend fun needRefresh(cachedData: GithubMeta): Boolean {

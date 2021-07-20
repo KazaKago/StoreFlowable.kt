@@ -18,4 +18,7 @@ object GithubCache {
 
     val reposCache: MutableMap<String, List<GithubRepo>?> = mutableMapOf()
     val reposCacheCreatedAt: MutableMap<String, LocalDateTime> = mutableMapOf()
+
+    var twoWayReposCache: List<GithubRepo>? = null
+    var twoWayReposCacheCreatedAt: LocalDateTime? = null
 }
