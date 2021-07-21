@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.example.repository.GithubRepository
+import com.kazakago.storeflowable.example.repository.GithubReposRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -27,7 +27,7 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
     val isRefreshing = _isRefreshing.asStateFlow()
     private val _mainError = MutableStateFlow<Exception?>(null)
     val mainError = _mainError.asStateFlow()
-    private val githubRepository = GithubRepository()
+    private val githubReposRepository = GithubReposRepository()
 
     data class ReposStatus(
         var githubRepos: List<GithubRepo> = emptyList(),
@@ -41,24 +41,24 @@ class GithubReposViewModel(private val userName: String) : ViewModel() {
 
     fun refresh() = viewModelScope.launch {
         _isRefreshing.value = true
-        githubRepository.refreshRepos(userName)
+        githubReposRepository.refresh(userName)
         _isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshRepos(userName)
+        githubReposRepository.refresh(userName)
     }
 
     fun requestNext() = viewModelScope.launch {
-        githubRepository.requestNextRepos(userName, continueWhenError = false)
+        githubReposRepository.requestNext(userName, continueWhenError = false)
     }
 
     fun retryNext() = viewModelScope.launch {
-        githubRepository.requestNextRepos(userName, continueWhenError = true)
+        githubReposRepository.requestNext(userName, continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followRepos(userName).collect {
+        githubReposRepository.follow(userName).collect {
             it.doAction(
                 onLoading = { githubRepos ->
                     if (githubRepos != null) {

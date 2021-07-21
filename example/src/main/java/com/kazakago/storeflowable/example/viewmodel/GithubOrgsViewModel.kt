@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.example.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubOrg
-import com.kazakago.storeflowable.example.repository.GithubRepository
+import com.kazakago.storeflowable.example.repository.GithubOrgsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -19,7 +19,7 @@ class GithubOrgsViewModel : ViewModel() {
     val isRefreshing = _isRefreshing.asStateFlow()
     private val _mainError = MutableStateFlow<Exception?>(null)
     val mainError = _mainError.asStateFlow()
-    private val githubRepository = GithubRepository()
+    private val githubOrgsRepository = GithubOrgsRepository()
 
     data class OrgsStatus(
         var githubOrgs: List<GithubOrg> = emptyList(),
@@ -33,24 +33,24 @@ class GithubOrgsViewModel : ViewModel() {
 
     fun refresh() = viewModelScope.launch {
         _isRefreshing.value = true
-        githubRepository.refreshOrgs()
+        githubOrgsRepository.refresh()
         _isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshOrgs()
+        githubOrgsRepository.refresh()
     }
 
     fun requestNext() = viewModelScope.launch {
-        githubRepository.requestNextOrgs(continueWhenError = false)
+        githubOrgsRepository.requestNext(continueWhenError = false)
     }
 
     fun retryNext() = viewModelScope.launch {
-        githubRepository.requestNextOrgs(continueWhenError = true)
+        githubOrgsRepository.requestNext(continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followOrgs().collect {
+        githubOrgsRepository.follow().collect {
             it.doAction(
                 onLoading = { githubOrgs ->
                     if (githubOrgs != null) {

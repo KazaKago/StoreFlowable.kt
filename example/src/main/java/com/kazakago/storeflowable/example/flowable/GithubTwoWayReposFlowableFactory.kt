@@ -45,11 +45,11 @@ class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Un
     }
 
     override suspend fun fetchDataFromOrigin(): FetchedInitial<List<GithubRepo>> {
-        val data = githubApi.getRepos(GITHUB_USER_NAME, INITIAL_PAGE, PER_PAGE)
+        val data = githubApi.getRepos(GITHUB_USER_NAME, 4, PER_PAGE)
         return FetchedInitial(
             data = data,
-            nextKey = if (data.isNotEmpty()) (INITIAL_PAGE + 1).toString() else null,
-            prevKey = if (INITIAL_PAGE > 1) (INITIAL_PAGE - 1).toString() else null,
+            nextKey = if (data.isNotEmpty()) 5.toString() else null,
+            prevKey = if (data.isNotEmpty()) 3.toString() else null,
         )
     }
 
