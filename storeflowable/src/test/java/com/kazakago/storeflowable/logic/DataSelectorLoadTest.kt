@@ -51,7 +51,8 @@ class DataSelectorLoadTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
-                return InternalFetched(TestData.FetchedData, nextKey = null, prevKey = null)
+                fail()
+                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {

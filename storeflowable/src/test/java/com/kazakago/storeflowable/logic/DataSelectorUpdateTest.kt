@@ -52,7 +52,8 @@ class DataSelectorUpdateTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
-                return InternalFetched(TestData.FetchedData, nextKey = null, prevKey = null)
+                fail()
+                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
@@ -72,7 +73,7 @@ class DataSelectorUpdateTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun update_data() = runBlockingTest {
+    fun update_Data() = runBlockingTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
@@ -82,7 +83,7 @@ class DataSelectorUpdateTest {
     }
 
     @Test
-    fun update_null() = runBlockingTest {
+    fun update_Null() = runBlockingTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 
