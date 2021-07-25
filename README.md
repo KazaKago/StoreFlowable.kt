@@ -299,13 +299,13 @@ userFlowable.publish(userId).collect {
         onCompleted = { contents: List<UserData>, next: AdditionalLoadingState, _ ->
             // Whole (Initial) data loading completed.
             next.doAction(
-                onFixed = { canRequestAdditionalData ->
+                onFixed = { canRequestAdditionalData: Boolean ->
                     // No additional processing.
                 },
                 onLoading = {
                     // Additional data loading.
                 },
-                onError = { exception ->
+                onError = { exception: Exception ->
                     // Additional loading error.
                 }
             )
