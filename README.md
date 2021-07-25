@@ -269,13 +269,13 @@ class UserListFlowableFactory : PaginationStoreFlowableFactory<Unit, List<UserDa
     }
 
     override suspend fun fetchDataFromOrigin(): Fetched<List<UserData>> {
-        val fetchedData = userListApi.fetch(null)
-        return Fetched(data = fetchedData, nextKey = fetchedData.nextToken)
+        val fetchedData = userListApi.fetch(pageToken = null)
+        return Fetched(data = fetchedData, nextKey = fetchedData.nextPageToken)
     }
 
     override suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<List<GithubOrg>> {
-        val fetchedData = userListApi.fetch(nextKey)
-        return Fetched(data = fetchedData, nextKey = fetchedData.nextToken)
+        val fetchedData = userListApi.fetch(pageToken = nextKey)
+        return Fetched(data = fetchedData, nextKey = fetchedData.nextPageToken)
     }
 
     override suspend fun needRefresh(cachedData: List<UserData>): Boolean {
