@@ -14,7 +14,7 @@ class GithubUserViewModel(private val userName: String) : ViewModel() {
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val userName: String) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return GithubUserViewModel(userName) as T
         }
     }
