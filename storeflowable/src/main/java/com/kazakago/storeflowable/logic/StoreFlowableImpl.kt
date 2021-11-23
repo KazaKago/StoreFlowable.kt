@@ -17,17 +17,17 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
-internal class StoreFlowableImpl<KEY, DATA>(
-    private val key: KEY,
-    private val flowableDataStateManager: FlowableDataStateManager<KEY>,
+internal class StoreFlowableImpl<PARAM, DATA>(
+    private val param: PARAM,
+    private val flowableDataStateManager: FlowableDataStateManager<PARAM>,
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : StoreFlowable<KEY, DATA>, PaginationStoreFlowable<KEY, DATA>, TwoWayPaginationStoreFlowable<KEY, DATA> {
+) : StoreFlowable<PARAM, DATA>, PaginationStoreFlowable<PARAM, DATA>, TwoWayPaginationStoreFlowable<PARAM, DATA> {
 
     private val dataSelector = DataSelector(
-        key = key,
+        param = param,
         dataStateManager = flowableDataStateManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
@@ -35,7 +35,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
     )
 
     override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
-        return flowableDataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(param)
             .onStart {
                 CoroutineScope(defaultDispatcher).launch {
                     if (forceRefresh) {
@@ -57,7 +57,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return flowableDataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(param)
             .onStart {
                 when (from) {
                     GettingFrom.Both -> dataSelector.validate()

@@ -12,40 +12,40 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * Does not handle the raw data in this class.
  *
- * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
+ * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-abstract class FlowableDataStateManager<KEY> : DataStateManager<KEY>, FlowAccessor<KEY> {
+abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAccessor<PARAM> {
 
-    private val dataState = mutableMapOf<KEY, MutableStateFlow<DataState>>()
+    private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
 
     /**
      * Get the data state as [Flow].
      *
-     * @param key Key to get the specified data.
+     * @param param Key to get the specified data.
      * @return Flow for getting data state changes.
      */
-    override fun getFlow(key: KEY): Flow<DataState> {
-        return dataState.getOrCreate(key)
+    override fun getFlow(param: PARAM): Flow<DataState> {
+        return dataState.getOrCreate(param)
     }
 
     /**
      * Get the current data state.
      *
-     * @param key Key to get the specified data.
+     * @param param Key to get the specified data.
      * @return State of saved data.
      */
-    override fun load(key: KEY): DataState {
-        return dataState.getOrCreate(key).value
+    override fun load(param: PARAM): DataState {
+        return dataState.getOrCreate(param).value
     }
 
     /**
      * Save the data state.
      *
-     * @param key Key to get the specified data.
+     * @param param Key to get the specified data.
      * @param state State of saved data.
      */
-    override fun save(key: KEY, state: DataState) {
-        dataState.getOrCreate(key).value = state
+    override fun save(param: PARAM, state: DataState) {
+        dataState.getOrCreate(param).value = state
     }
 
     /**

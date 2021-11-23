@@ -8,9 +8,9 @@ import com.kazakago.storeflowable.exception.AdditionalRequestOnErrorStateExcepti
 import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
 import com.kazakago.storeflowable.origin.OriginDataManager
 
-internal class DataSelector<KEY, DATA>(
-    private val key: KEY,
-    private val dataStateManager: DataStateManager<KEY>,
+internal class DataSelector<PARAM, DATA>(
+    private val param: PARAM,
+    private val dataStateManager: DataStateManager<PARAM>,
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
@@ -26,16 +26,16 @@ internal class DataSelector<KEY, DATA>(
         val nextDataState = if (nextKey != null) {
             AdditionalDataState.Fixed(additionalRequestKey = nextKey)
         } else {
-            val state = dataStateManager.load(key)
+            val state = dataStateManager.load(param)
             state.nextKeyOrNull()?.let { AdditionalDataState.Fixed(additionalRequestKey = it) } ?: AdditionalDataState.FixedWithNoMoreAdditionalData()
         }
         val prevDataState = if (prevKey != null) {
             AdditionalDataState.Fixed(additionalRequestKey = prevKey)
         } else {
-            val state = dataStateManager.load(key)
+            val state = dataStateManager.load(param)
             state.prevKeyOrNull()?.let { AdditionalDataState.Fixed(additionalRequestKey = it) } ?: AdditionalDataState.FixedWithNoMoreAdditionalData()
         }
-        dataStateManager.save(key, DataState.Fixed(nextDataState = nextDataState, prevDataState = prevDataState))
+        dataStateManager.save(param, DataState.Fixed(nextDataState = nextDataState, prevDataState = prevDataState))
     }
 
     suspend fun validate() {
@@ -55,7 +55,7 @@ internal class DataSelector<KEY, DATA>(
     }
 
     private suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, requestType: RequestType) {
-        when (val state = dataStateManager.load(key)) {
+        when (val state = dataStateManager.load(param)) {
             is DataState.Fixed -> when (requestType) {
                 RequestType.Refresh -> if (state.nextDataState !is AdditionalDataState.Loading && state.prevDataState !is AdditionalDataState.Loading) {
                     doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Refresh)
@@ -76,7 +76,7 @@ internal class DataSelector<KEY, DATA>(
             is DataState.Loading -> Unit
             is DataState.Error -> when (requestType) {
                 RequestType.Refresh -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Refresh)
-                RequestType.Next, RequestType.Prev -> dataStateManager.save(key, DataState.Error(AdditionalRequestOnErrorStateException()))
+                RequestType.Next, RequestType.Prev -> dataStateManager.save(param, DataState.Error(AdditionalRequestOnErrorStateException()))
             }
         }
     }
@@ -93,7 +93,7 @@ internal class DataSelector<KEY, DATA>(
                 if (cachedData != null) {
                     prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
                 } else {
-                    dataStateManager.save(key, DataState.Error(AdditionalRequestOnNullException()))
+                    dataStateManager.save(param, DataState.Error(AdditionalRequestOnNullException()))
                 }
             }
         }
@@ -101,11 +101,11 @@ internal class DataSelector<KEY, DATA>(
 
     private suspend fun prepareFetch(clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, requestType: KeyedRequestType) {
         if (clearCacheBeforeFetching) cacheDataManager.save(null)
-        val state = dataStateManager.load(key)
+        val state = dataStateManager.load(param)
         when (requestType) {
-            is KeyedRequestType.Refresh -> dataStateManager.save(key, DataState.Loading())
-            is KeyedRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = AdditionalDataState.Loading(requestType.requestKey), prevDataState = state.prevDataStateOrNull()))
-            is KeyedRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Loading(requestType.requestKey)))
+            is KeyedRequestType.Refresh -> dataStateManager.save(param, DataState.Loading())
+            is KeyedRequestType.Next -> dataStateManager.save(param, DataState.Fixed(nextDataState = AdditionalDataState.Loading(requestType.requestKey), prevDataState = state.prevDataStateOrNull()))
+            is KeyedRequestType.Prev -> dataStateManager.save(param, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Loading(requestType.requestKey)))
         }
         fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
     }
@@ -130,19 +130,19 @@ internal class DataSelector<KEY, DATA>(
                     cacheDataManager.savePrev(cachedData, result.data)
                 }
             }
-            val state = dataStateManager.load(key)
+            val state = dataStateManager.load(param)
             when (requestType) {
-                is KeyedRequestType.Refresh -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
-                is KeyedRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = state.prevDataStateOrNull()))
-                is KeyedRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
+                is KeyedRequestType.Refresh -> dataStateManager.save(param, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
+                is KeyedRequestType.Next -> dataStateManager.save(param, DataState.Fixed(nextDataState = if (result.nextKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.nextKey), prevDataState = state.prevDataStateOrNull()))
+                is KeyedRequestType.Prev -> dataStateManager.save(param, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = if (result.prevKey.isNullOrEmpty()) AdditionalDataState.FixedWithNoMoreAdditionalData() else AdditionalDataState.Fixed(additionalRequestKey = result.prevKey)))
             }
         } catch (exception: Exception) {
             if (clearCacheWhenFetchFails) cacheDataManager.save(null)
-            val state = dataStateManager.load(key)
+            val state = dataStateManager.load(param)
             when (requestType) {
-                is KeyedRequestType.Refresh -> dataStateManager.save(key, DataState.Error(exception))
-                is KeyedRequestType.Next -> dataStateManager.save(key, DataState.Fixed(nextDataState = AdditionalDataState.Error(requestType.requestKey, exception), prevDataState = state.prevDataStateOrNull()))
-                is KeyedRequestType.Prev -> dataStateManager.save(key, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Error(requestType.requestKey, exception)))
+                is KeyedRequestType.Refresh -> dataStateManager.save(param, DataState.Error(exception))
+                is KeyedRequestType.Next -> dataStateManager.save(param, DataState.Fixed(nextDataState = AdditionalDataState.Error(requestType.requestKey, exception), prevDataState = state.prevDataStateOrNull()))
+                is KeyedRequestType.Prev -> dataStateManager.save(param, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Error(requestType.requestKey, exception)))
             }
         }
     }

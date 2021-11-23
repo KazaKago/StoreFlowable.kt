@@ -24,13 +24,13 @@ class DataSelectorRefreshFailedTest {
     }
 
     private val dataSelector = DataSelector(
-        key = "key",
-        dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+        param = Unit,
+        dataStateManager = object : DataStateManager<Unit> {
+            override fun load(param: Unit): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun save(param: Unit, state: DataState) {
                 dataState = state
             }
         },

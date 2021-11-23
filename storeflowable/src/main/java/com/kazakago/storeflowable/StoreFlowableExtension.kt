@@ -12,7 +12,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  */
 fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreFlowable<PARAM, DATA> {
     return StoreFlowableImpl(
-        key = param,
+        param = param,
         flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache(param)
