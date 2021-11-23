@@ -9,10 +9,13 @@ import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 
 internal class StoreFlowableImpl<KEY, DATA>(
     private val key: KEY,
@@ -20,6 +23,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : StoreFlowable<KEY, DATA>, PaginationStoreFlowable<KEY, DATA>, TwoWayPaginationStoreFlowable<KEY, DATA> {
 
     private val dataSelector = DataSelector(
@@ -33,15 +37,18 @@ internal class StoreFlowableImpl<KEY, DATA>(
     override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
         return flowableDataStateManager.getFlow(key)
             .onStart {
-                if (forceRefresh) {
-                    dataSelector.refreshAsync(clearCacheBeforeFetching = true)
-                } else {
-                    dataSelector.validateAsync()
+                CoroutineScope(defaultDispatcher).launch {
+                    if (forceRefresh) {
+                        dataSelector.refresh(clearCacheBeforeFetching = true)
+                    } else {
+                        dataSelector.validate()
+                    }
                 }
             }
-            .map { dataState ->
+            .transform { dataState ->
                 val data = cacheDataManager.load()
-                dataState.toLoadingState(data)
+                val state = dataState.toLoadingState(data)
+                if (state != null) emit(state)
             }
     }
 
