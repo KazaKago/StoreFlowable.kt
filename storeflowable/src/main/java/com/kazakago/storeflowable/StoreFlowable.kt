@@ -9,10 +9,9 @@ import kotlinx.coroutines.flow.Flow
  *
  * This class is generated from [StoreFlowableFactory.create].
  *
- * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface StoreFlowable<PARAM, DATA> {
+interface StoreFlowable<DATA> {
 
     /**
      * Returns a [FlowLoadingState] that can continuously receive changes in the state of the data.

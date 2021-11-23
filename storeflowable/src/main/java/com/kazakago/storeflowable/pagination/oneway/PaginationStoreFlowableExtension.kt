@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created [PaginationStoreFlowable].
  */
-fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): PaginationStoreFlowable<PARAM, DATA> {
+fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): PaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,

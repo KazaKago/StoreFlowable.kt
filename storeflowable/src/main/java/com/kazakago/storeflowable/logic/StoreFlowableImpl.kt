@@ -24,7 +24,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : StoreFlowable<PARAM, DATA>, PaginationStoreFlowable<PARAM, DATA>, TwoWayPaginationStoreFlowable<PARAM, DATA> {
+) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
         param = param,

@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created [TwoWayPaginationStoreFlowable].
  */
-fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): TwoWayPaginationStoreFlowable<PARAM, DATA> {
+fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): TwoWayPaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,

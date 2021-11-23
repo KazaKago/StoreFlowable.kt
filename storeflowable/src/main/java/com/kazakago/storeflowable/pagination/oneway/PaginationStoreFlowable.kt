@@ -8,10 +8,9 @@ import com.kazakago.storeflowable.core.LoadingState
  *
  * This class is generated from [PaginationStoreFlowableFactory.create].
  *
- * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface PaginationStoreFlowable<PARAM, DATA> : StoreFlowable<PARAM, DATA> {
+interface PaginationStoreFlowable<DATA> : StoreFlowable<DATA> {
 
     /**
      * Request next data.

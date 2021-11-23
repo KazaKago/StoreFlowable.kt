@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created StateFlowable.
  */
-fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreFlowable<PARAM, DATA> {
+fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,
