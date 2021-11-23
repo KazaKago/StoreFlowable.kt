@@ -18,24 +18,22 @@ class GithubMetaFlowableFactory : StoreFlowableFactory<Unit, GithubMeta> {
     private val githubApi = GithubApi()
     private val githubCache = GithubCache
 
-    override val key: Unit = Unit
-
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubMetaStateManager
 
-    override suspend fun loadDataFromCache(): GithubMeta? {
+    override suspend fun loadDataFromCache(param: Unit): GithubMeta? {
         return githubCache.metaCache
     }
 
-    override suspend fun saveDataToCache(newData: GithubMeta?) {
+    override suspend fun saveDataToCache(newData: GithubMeta?, param: Unit) {
         githubCache.metaCache = newData
         githubCache.metaCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun fetchDataFromOrigin(): GithubMeta {
+    override suspend fun fetchDataFromOrigin(param: Unit): GithubMeta {
         return githubApi.getMeta()
     }
 
-    override suspend fun needRefresh(cachedData: GithubMeta): Boolean {
+    override suspend fun needRefresh(cachedData: GithubMeta, param: Unit): Boolean {
         val createdAt = githubCache.metaCacheCreatedAt
         return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION

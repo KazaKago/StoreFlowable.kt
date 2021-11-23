@@ -8,12 +8,12 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 class GithubMetaRepository {
 
     fun follow(): FlowLoadingState<GithubMeta> {
-        val githubMetaFlowable = GithubMetaFlowableFactory().create()
+        val githubMetaFlowable = GithubMetaFlowableFactory().create(Unit)
         return githubMetaFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubMetaFlowable = GithubMetaFlowableFactory().create()
+        val githubMetaFlowable = GithubMetaFlowableFactory().create(Unit)
         githubMetaFlowable.refresh()
     }
 }

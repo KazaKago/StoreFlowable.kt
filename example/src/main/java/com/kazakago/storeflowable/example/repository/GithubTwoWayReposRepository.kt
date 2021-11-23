@@ -8,22 +8,22 @@ import com.kazakago.storeflowable.pagination.twoway.create
 class GithubTwoWayReposRepository {
 
     fun follow(): FlowLoadingState<List<GithubRepo>> {
-        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create(Unit)
         return githubReposFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create(Unit)
         githubReposFlowable.refresh()
     }
 
     suspend fun requestNext(continueWhenError: Boolean) {
-        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create(Unit)
         githubReposFlowable.requestNextData(continueWhenError)
     }
 
     suspend fun requestPrev(continueWhenError: Boolean) {
-        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create()
+        val githubReposFlowable = GithubTwoWayReposFlowableFactory().create(Unit)
         githubReposFlowable.requestPrevData(continueWhenError)
     }
 

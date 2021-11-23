@@ -8,12 +8,12 @@ import com.kazakago.storeflowable.example.model.GithubUser
 class GithubUserRepository {
 
     fun follow(userName: String): FlowLoadingState<GithubUser> {
-        val githubUserFlowable = GithubUserFlowableFactory(userName).create()
+        val githubUserFlowable = GithubUserFlowableFactory().create(userName)
         return githubUserFlowable.publish()
     }
 
     suspend fun refresh(userName: String) {
-        val githubUserFlowable = GithubUserFlowableFactory(userName).create()
+        val githubUserFlowable = GithubUserFlowableFactory().create(userName)
         githubUserFlowable.refresh()
     }
 }

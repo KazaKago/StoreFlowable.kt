@@ -20,24 +20,22 @@ class GithubOrgsFlowableFactory : PaginationStoreFlowableFactory<Unit, List<Gith
     private val githubApi = GithubApi()
     private val githubCache = GithubCache
 
-    override val key: Unit = Unit
-
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = GithubOrgsStateManager
 
-    override suspend fun loadDataFromCache(): List<GithubOrg>? {
+    override suspend fun loadDataFromCache(param: Unit): List<GithubOrg>? {
         return githubCache.orgsCache
     }
 
-    override suspend fun saveDataToCache(newData: List<GithubOrg>?) {
+    override suspend fun saveDataToCache(newData: List<GithubOrg>?, param: Unit) {
         githubCache.orgsCache = newData
         githubCache.orgsCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<GithubOrg>, newData: List<GithubOrg>) {
+    override suspend fun saveNextDataToCache(cachedData: List<GithubOrg>, newData: List<GithubOrg>, param: Unit) {
         githubCache.orgsCache = cachedData + newData
     }
 
-    override suspend fun fetchDataFromOrigin(): Fetched<List<GithubOrg>> {
+    override suspend fun fetchDataFromOrigin(param: Unit): Fetched<List<GithubOrg>> {
         val data = githubApi.getOrgs(null, PER_PAGE)
         return Fetched(
             data = data,
@@ -45,7 +43,7 @@ class GithubOrgsFlowableFactory : PaginationStoreFlowableFactory<Unit, List<Gith
         )
     }
 
-    override suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<List<GithubOrg>> {
+    override suspend fun fetchNextDataFromOrigin(nextKey: String, param: Unit): Fetched<List<GithubOrg>> {
         val data = githubApi.getOrgs(nextKey.toLong(), PER_PAGE)
         return Fetched(
             data = data,
@@ -53,7 +51,7 @@ class GithubOrgsFlowableFactory : PaginationStoreFlowableFactory<Unit, List<Gith
         )
     }
 
-    override suspend fun needRefresh(cachedData: List<GithubOrg>): Boolean {
+    override suspend fun needRefresh(cachedData: List<GithubOrg>, param: Unit): Boolean {
         val createdAt = githubCache.orgsCacheCreatedAt
         return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION

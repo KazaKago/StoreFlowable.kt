@@ -23,29 +23,27 @@ class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Un
     private val githubApi = GithubApi()
     private val githubCache = GithubCache
 
-    override val key = Unit
-
     override val flowableDataStateManager = GithubTwoWayReposStateManager
 
-    override suspend fun loadDataFromCache(): List<GithubRepo>? {
+    override suspend fun loadDataFromCache(param: Unit): List<GithubRepo>? {
         return githubCache.twoWayReposCache
     }
 
-    override suspend fun saveDataToCache(newData: List<GithubRepo>?) {
+    override suspend fun saveDataToCache(newData: List<GithubRepo>?, param: Unit) {
         githubCache.twoWayReposCache = newData
         githubCache.twoWayReposCacheCreatedAt = LocalDateTime.now()
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>) {
+    override suspend fun saveNextDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>, param: Unit) {
         githubCache.twoWayReposCache = cachedData + newData
     }
 
-    override suspend fun savePrevDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>) {
+    override suspend fun savePrevDataToCache(cachedData: List<GithubRepo>, newData: List<GithubRepo>, param: Unit) {
         githubCache.twoWayReposCache = newData + cachedData
     }
 
-    override suspend fun fetchDataFromOrigin(): FetchedInitial<List<GithubRepo>> {
-        val data = githubApi.getRepos(GITHUB_USER_NAME, 4, PER_PAGE)
+    override suspend fun fetchDataFromOrigin(param: Unit): FetchedInitial<List<GithubRepo>> {
+        val data = githubApi.getRepos(GITHUB_USER_NAME, INITIAL_PAGE, PER_PAGE)
         return FetchedInitial(
             data = data,
             nextKey = if (data.isNotEmpty()) 5.toString() else null,
@@ -53,7 +51,7 @@ class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Un
         )
     }
 
-    override suspend fun fetchNextDataFromOrigin(nextKey: String): FetchedNext<List<GithubRepo>> {
+    override suspend fun fetchNextDataFromOrigin(nextKey: String, param: Unit): FetchedNext<List<GithubRepo>> {
         val nextPage = nextKey.toInt()
         val data = githubApi.getRepos(GITHUB_USER_NAME, nextPage, PER_PAGE)
         return FetchedNext(
@@ -62,7 +60,7 @@ class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Un
         )
     }
 
-    override suspend fun fetchPrevDataFromOrigin(prevKey: String): FetchedPrev<List<GithubRepo>> {
+    override suspend fun fetchPrevDataFromOrigin(prevKey: String, param: Unit): FetchedPrev<List<GithubRepo>> {
         val prevPage = prevKey.toInt()
         val data = githubApi.getRepos(GITHUB_USER_NAME, prevPage, PER_PAGE)
         return FetchedPrev(
@@ -71,7 +69,7 @@ class GithubTwoWayReposFlowableFactory : TwoWayPaginationStoreFlowableFactory<Un
         )
     }
 
-    override suspend fun needRefresh(cachedData: List<GithubRepo>): Boolean {
+    override suspend fun needRefresh(cachedData: List<GithubRepo>, param: Unit): Boolean {
         val createdAt = githubCache.twoWayReposCacheCreatedAt
         return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION

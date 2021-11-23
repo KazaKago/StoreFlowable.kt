@@ -8,17 +8,17 @@ import com.kazakago.storeflowable.pagination.oneway.create
 class GithubOrgsRepository {
 
     fun follow(): FlowLoadingState<List<GithubOrg>> {
-        val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
+        val githubOrgsFlowable = GithubOrgsFlowableFactory().create(Unit)
         return githubOrgsFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
+        val githubOrgsFlowable = GithubOrgsFlowableFactory().create(Unit)
         githubOrgsFlowable.refresh()
     }
 
     suspend fun requestNext(continueWhenError: Boolean) {
-        val githubOrgsFlowable = GithubOrgsFlowableFactory().create()
+        val githubOrgsFlowable = GithubOrgsFlowableFactory().create(Unit)
         githubOrgsFlowable.requestNextData(continueWhenError)
     }
 }
