@@ -55,51 +55,48 @@ There are only 5 things you have to implement:
 
 ### 1. Create FlowableDataStateManager class
 
-First, create a class that inherits [`FlowableDataStateManager<KEY>`](storeflowable/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt).  
-Put the type you want to use as a key in `<KEY>`. If you don't need the key, put in the `Unit`.  
+First, create a class that inherits [`FlowableDataStateManager<PARAM>`](storeflowable/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt).  
+Put the type you want to use as a param in `<PARAM>`. If you don't need the param, put in the `Unit`.  
 
 ```kotlin
 object UserStateManager : FlowableDataStateManager<UserId>()
 ```
 
-[`FlowableDataStateManager<KEY>`](storeflowable/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
+[`FlowableDataStateManager<PARAM>`](storeflowable/src/main/java/com/kazakago/storeflowable/FlowableDataStateManager.kt) needs to be used in Singleton pattern, so please make it [`object class`](https://kotlinlang.org/docs/reference/object-declarations.html#object-declarations).  
 
 ### 2. Create StoreFlowableFactory class
 
-Next, create a class that implements [`StoreFlowableFactory<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
+Next, create a class that implements [`StoreFlowableFactory<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
 Put the type you want to use as a Data in `<DATA>`.  
 
 An example is shown below.  
 
 ```kotlin
-class UserFlowableFactory(userId: UserId) : StoreFlowableFactory<UserId, UserData> {
+class UserFlowableFactory : StoreFlowableFactory<UserId, UserData> {
 
     private val userApi = UserApi()
     private val userCache = UserCache()
-
-    // Set the key for input / output of data. If you don't need the key, put in the Unit.
-    override val key: UserId = userId
 
     // Create data state management class.
     override val flowableDataStateManager: FlowableDataStateManager<UserId> = UserStateManager
 
     // Get data from local cache.
-    override suspend fun loadDataFromCache(): UserData? {
-        return userCache.load(key)
+    override suspend fun loadDataFromCache(param: UserId): UserData? {
+        return userCache.load(param)
     }
 
     // Save data to local cache.
-    override suspend fun saveDataToCache(data: UserData?) {
-        userCache.save(key, data)
+    override suspend fun saveDataToCache(data: UserData?, param: UserId) {
+        userCache.save(param, data)
     }
 
     // Get data from remote server.
-    override suspend fun fetchDataFromOrigin(): UserData {
-        return userApi.fetch(key)
+    override suspend fun fetchDataFromOrigin(param: UserId): UserData {
+        return userApi.fetch(param)
     }
 
     // Whether the cache is valid.
-    override suspend fun needRefresh(cachedData: UserData): Boolean {
+    override suspend fun needRefresh(cachedData: UserData, param: UserId): Boolean {
         return cachedData.isExpired()
     }
 }
@@ -110,19 +107,19 @@ In this case, `UserApi` and `UserCache` classes.
 
 ### 3. Create Repository class
 
-After that, you can get the [`StoreFlowable<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableFactory<KEY, DATA>.create()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
-Be sure to go through the created [`StoreFlowable<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
+After that, you can get the [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowableFactory<PARAM, DATA>.create()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+Be sure to go through the created [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.  
 
 ```kotlin
 class UserRepository {
 
     fun followUserData(userId: UserId): FlowLoadingState<UserData> {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userId).create()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory().create(userId)
         return userFlowable.publish()
     }
 
     suspend fun updateUserData(userData: UserData) {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory(userData.userId).create()
+        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory().create(userData.userId)
         userFlowable.update(userData)
     }
 }
@@ -172,7 +169,7 @@ If you don't need value flow and [`LoadingState`](storeflowable-core/src/main/ja
 [`getData()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) returns null instead of Exception.  
 
 ```kotlin
-interface StoreFlowable<KEY, DATA> {
+interface StoreFlowable<DATA> {
     suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
     suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 }
@@ -198,7 +195,7 @@ However, use [`requireData()`](storeflowable/src/main/java/com/kazakago/storeflo
 If you want to ignore the cache and get new data, add `forceRefresh` parameter to [`publish()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt).  
 
 ```kotlin
-interface StoreFlowable<KEY, DATA> {
+interface StoreFlowable<DATA> {
     fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
 }
 ```
@@ -206,7 +203,7 @@ interface StoreFlowable<KEY, DATA> {
 Or you can use [`refresh()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) if you are already observing the `Flow`.  
 
 ```kotlin
-interface StoreFlowable<KEY, DATA> {
+interface StoreFlowable<DATA> {
     suspend fun refresh()
 }
 ```
@@ -217,7 +214,7 @@ Use [`validate()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreF
 If invalid, get new data remotely.  
 
 ```kotlin
-interface StoreFlowable<KEY, DATA> {
+interface StoreFlowable<DATA> {
     suspend fun validate()
 }
 ```
@@ -228,7 +225,7 @@ If you want to update the local cache, use the [`update()`](storeflowable/src/ma
 `Flow` observers will be notified.  
 
 ```kotlin
-interface StoreFlowable<KEY, DATA> {
+interface StoreFlowable<DATA> {
     suspend fun update(newData: DATA?)
 }
 ```
@@ -239,7 +236,7 @@ This library includes pagination support.
 
 <img src="https://user-images.githubusercontent.com/7742104/100849417-e29be000-34c5-11eb-8dba-0149e07d5017.gif" width="280"> <img src="https://user-images.githubusercontent.com/7742104/100849432-e7f92a80-34c5-11eb-918f-377ac6c4eb9e.gif" width="280">
 
-Inherit [`PaginationStoreFlowableFactory<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
+Inherit [`PaginationStoreFlowableFactory<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
 
 An example is shown below.  
 
@@ -252,33 +249,31 @@ class UserListFlowableFactory : PaginationStoreFlowableFactory<Unit, List<UserDa
     private val userListApi = UserListApi()
     private val userListCache = UserListCache()
 
-    override val key: Unit = Unit
-
     override val flowableDataStateManager: FlowableDataStateManager<Unit> = UserListStateManager
 
-    override suspend fun loadDataFromCache(): List<UserData>? {
+    override suspend fun loadDataFromCache(param: Unit): List<UserData>? {
         return userListCache.load()
     }
 
-    override suspend fun saveDataToCache(newData: List<UserData>?) {
+    override suspend fun saveDataToCache(newData: List<UserData>?, param: Unit) {
         userListCache.save(newData)
     }
 
-    override suspend fun saveNextDataToCache(cachedData: List<UserData>, newData: List<UserData>) {
+    override suspend fun saveNextDataToCache(cachedData: List<UserData>, newData: List<UserData>, param: Unit) {
         userListCache.save(cachedData + newData)
     }
 
-    override suspend fun fetchDataFromOrigin(): Fetched<List<UserData>> {
+    override suspend fun fetchDataFromOrigin(param: Unit): Fetched<List<UserData>> {
         val fetchedData = userListApi.fetch(pageToken = null)
         return Fetched(data = fetchedData, nextKey = fetchedData.nextPageToken)
     }
 
-    override suspend fun fetchNextDataFromOrigin(nextKey: String): Fetched<List<GithubOrg>> {
+    override suspend fun fetchNextDataFromOrigin(nextKey: String, param: Unit): Fetched<List<GithubOrg>> {
         val fetchedData = userListApi.fetch(pageToken = nextKey)
         return Fetched(data = fetchedData, nextKey = fetchedData.nextPageToken)
     }
 
-    override suspend fun needRefresh(cachedData: List<UserData>): Boolean {
+    override suspend fun needRefresh(cachedData: List<UserData>, param: Unit): Boolean {
         return cachedData.last().isExpired()
     }
 }
@@ -324,7 +319,7 @@ On Android, To display in the [`RecyclerView`](https://developer.android.com/jet
 You can request additional data for paginating using the [`requestNextData()`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/oneway/PaginationStoreFlowable.kt) method.
 
 ```kotlin
-interface PaginationStoreFlowable<KEY, DATA> {
+interface PaginationStoreFlowable<DATA> {
     suspend fun requestNextData(continueWhenError: Boolean = true)
 }
 ```
@@ -337,14 +332,14 @@ The [GithubOrgsFlowableFactory](example/src/main/java/com/kazakago/storeflowable
 
 This library also includes two-way pagination support.  
 
-Inherit [`TwoWayPaginationStoreFlowableFactory<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<KEY, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
+Inherit [`TwoWayPaginationStoreFlowableFactory<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowableFactory.kt) instead of [`StoreFlowableFactory<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableFactory.kt).  
 
 ### Request next & previous data
 
 You can request additional data for paginating using the [`requestNextData()`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowable.kt), [`requestPrevData()`](storeflowable/src/main/java/com/kazakago/storeflowable/pagination/twoway/TwoWayPaginationStoreFlowable.kt) method.  
 
 ```kotlin
-interface TwoWayPaginationStoreFlowable<KEY, DATA> {
+interface TwoWayPaginationStoreFlowable<DATA> {
     suspend fun requestNextData(continueWhenError: Boolean = true)
     suspend fun requestPrevData(continueWhenError: Boolean = true)
 }
