@@ -14,7 +14,7 @@ data class GithubMeta(
     data class SshKeyFingerprints(
         @Json(name = "SHA256_RSA")
         val sha256Rsa: String,
-        @Json(name = "SHA256_DSA")
+        @Json(name = "SHA256_ECDSA")
         val sha256Dsa: String,
     )
 }
