@@ -16,80 +16,78 @@ class StoreFlowableRequiredDataTest {
         FetchedData(false),
     }
 
-    private class TestFlowableFactory(private var dataCache: TestData?) : StoreFlowableFactory<String, TestData> {
+    private class TestFlowableFactory(private var dataCache: TestData?) : StoreFlowableFactory<Unit, TestData> {
 
-        override val key: String = "Key"
+        override val flowableDataStateManager: FlowableDataStateManager<Unit> = object : FlowableDataStateManager<Unit>() {}
 
-        override val flowableDataStateManager: FlowableDataStateManager<String> = object : FlowableDataStateManager<String>() {}
-
-        override suspend fun loadDataFromCache(): TestData? {
+        override suspend fun loadDataFromCache(param: Unit): TestData? {
             return dataCache
         }
 
-        override suspend fun saveDataToCache(newData: TestData?) {
+        override suspend fun saveDataToCache(newData: TestData?, param: Unit) {
             dataCache = newData
         }
 
-        override suspend fun fetchDataFromOrigin(): TestData {
+        override suspend fun fetchDataFromOrigin(param: Unit): TestData {
             return TestData.FetchedData
         }
 
-        override suspend fun needRefresh(cachedData: TestData): Boolean {
+        override suspend fun needRefresh(cachedData: TestData, param: Unit): Boolean {
             return cachedData.needRefresh
         }
     }
 
     @Test
     fun requiredData_Both_NoCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create()
+        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         storeFlowable.requireData(GettingFrom.Both) shouldBeEqualTo TestData.FetchedData
     }
 
     @Test
     fun requiredData_Both_ValidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Both) shouldBeEqualTo TestData.ValidData
     }
 
     @Test
     fun requiredData_Both_InvalidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Both) shouldBeEqualTo TestData.FetchedData
     }
 
     @Test
     fun requiredData_Cache_NoCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create()
+        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Cache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun requiredData_Cache_ValidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Cache) shouldBeEqualTo TestData.ValidData
     }
 
     @Test
     fun requiredData_Cache_InvalidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Cache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
     fun requiredData_Origin_NoCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create()
+        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         storeFlowable.requireData(GettingFrom.Origin) shouldBeEqualTo TestData.FetchedData
     }
 
     @Test
     fun requiredData_Origin_ValidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Origin) shouldBeEqualTo TestData.FetchedData
     }
 
     @Test
     fun requiredData_Origin_InvalidCache() = runBlockingTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create()
+        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Origin) shouldBeEqualTo TestData.FetchedData
     }
 }
