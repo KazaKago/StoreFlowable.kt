@@ -5,15 +5,15 @@ package com.kazakago.storeflowable
  *
  * Create a class that implements origin or cache data Input / Output according to this interface.
  *
- * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
+ * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface StoreFlowableFactory<KEY, DATA> : BaseStoreFlowableFactory<KEY, DATA> {
+interface StoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**
      * The latest data acquisition process from origin.
      *
      * @return acquired data.
      */
-    suspend fun fetchDataFromOrigin(): DATA
+    suspend fun fetchDataFromOrigin(param: PARAM): DATA
 }

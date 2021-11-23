@@ -10,29 +10,29 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created [PaginationStoreFlowable].
  */
-fun <KEY, DATA> PaginationStoreFlowableFactory<KEY, DATA>.create(): PaginationStoreFlowable<KEY, DATA> {
+fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): PaginationStoreFlowable<PARAM, DATA> {
     return StoreFlowableImpl(
-        key = key,
+        key = param,
         flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
-            override suspend fun load() = loadDataFromCache()
-            override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData)
+            override suspend fun load() = loadDataFromCache(param)
+            override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
+            override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData, param)
             override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetched<DATA> {
-                val result = fetchDataFromOrigin()
+                val result = fetchDataFromOrigin(param)
                 return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<DATA> {
-                val result = fetchNextDataFromOrigin(nextKey)
+                val result = fetchNextDataFromOrigin(nextKey, param)
                 return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
-        needRefresh = { needRefresh(it) }
+        needRefresh = { needRefresh(it, param) }
     )
 }

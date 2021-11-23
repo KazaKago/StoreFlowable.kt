@@ -10,25 +10,25 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created StateFlowable.
  */
-fun <KEY, DATA> StoreFlowableFactory<KEY, DATA>.create(): StoreFlowable<KEY, DATA> {
+fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreFlowable<PARAM, DATA> {
     return StoreFlowableImpl(
-        key = key,
+        key = param,
         flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
-            override suspend fun load() = loadDataFromCache()
-            override suspend fun save(newData: DATA?) = saveDataToCache(newData)
+            override suspend fun load() = loadDataFromCache(param)
+            override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
             override suspend fun saveNext(cachedData: DATA, newData: DATA) = throw NotImplementedError()
             override suspend fun savePrev(cachedData: DATA, newData: DATA) = throw NotImplementedError()
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetched<DATA> {
-                val data = fetchDataFromOrigin()
+                val data = fetchDataFromOrigin(param)
                 return InternalFetched(data = data, nextKey = null, prevKey = null)
             }
 
             override suspend fun fetchNext(nextKey: String) = throw NotImplementedError()
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
-        needRefresh = { needRefresh(it) }
+        needRefresh = { needRefresh(it, param) }
     )
 }
