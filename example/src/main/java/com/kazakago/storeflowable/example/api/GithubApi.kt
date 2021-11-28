@@ -1,19 +1,25 @@
 package com.kazakago.storeflowable.example.api
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.kazakago.storeflowable.example.model.GithubMeta
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.model.GithubUser
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 class GithubApi {
 
+    private val serialFormatter = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
+
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com")
-        .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
+        .addConverterFactory(serialFormatter.asConverterFactory("application/json".toMediaType()))
         .build()
 
     suspend fun getMeta(): GithubMeta {

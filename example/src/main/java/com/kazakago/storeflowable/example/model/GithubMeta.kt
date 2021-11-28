@@ -1,20 +1,20 @@
 package com.kazakago.storeflowable.example.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class GithubMeta(
-    @Json(name = "verifiable_password_authentication")
+    @SerialName("verifiable_password_authentication")
     val verifiablePasswordAuthentication: Boolean,
-    @Json(name = "ssh_key_fingerprints")
+    @SerialName("ssh_key_fingerprints")
     val sshKeyFingerprints: SshKeyFingerprints,
 ) {
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class SshKeyFingerprints(
-        @Json(name = "SHA256_RSA")
+        @SerialName("SHA256_RSA")
         val sha256Rsa: String,
-        @Json(name = "SHA256_ECDSA")
+        @SerialName("SHA256_ECDSA")
         val sha256Dsa: String,
     )
 }
