@@ -286,7 +286,7 @@ And then, You can get the state of additional loading from the `next` parameter 
 
 ```kotlin
 val userFlowable = UserFlowableFactory(userId).create()
-userFlowable.publish(userId).collect {
+userFlowable.publish().collect {
     it.doAction(
         onLoading = { contents: List<UserData>? ->
             // Whole (Initial) data loading.
