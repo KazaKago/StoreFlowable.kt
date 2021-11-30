@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
@@ -45,10 +46,9 @@ internal class StoreFlowableImpl<PARAM, DATA>(
                     }
                 }
             }
-            .transform { dataState ->
+            .mapNotNull { dataState ->
                 val data = cacheDataManager.load()
-                val state = dataState.toLoadingState(data)
-                if (state != null) emit(state)
+                dataState.toLoadingState(data)
             }
     }
 
@@ -65,12 +65,12 @@ internal class StoreFlowableImpl<PARAM, DATA>(
                     GettingFrom.Cache -> Unit
                 }
             }
-            .transform { dataState ->
+            .mapNotNull { dataState ->
                 val data = dataSelector.loadValidCacheOrNull()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit
-                    is DataState.Error -> if (data != null) emit(data) else throw dataState.exception
+                    is DataState.Fixed -> data ?: throw NoSuchElementException()
+                    is DataState.Loading -> null
+                    is DataState.Error -> data ?: throw dataState.exception
                 }
             }
             .first()
