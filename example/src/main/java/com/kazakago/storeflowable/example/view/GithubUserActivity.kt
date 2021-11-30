@@ -9,12 +9,15 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import coil.load
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubUserBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubUserViewModel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class GithubUserActivity : AppCompatActivity() {
 
@@ -27,7 +30,7 @@ class GithubUserActivity : AppCompatActivity() {
     }
 
     private enum class ParameterName {
-        UserName
+        UserName,
     }
 
     private val binding by lazy { ActivityGithubUserBinding.inflate(layoutInflater) }
@@ -47,23 +50,27 @@ class GithubUserActivity : AppCompatActivity() {
             githubUserViewModel.retry()
         }
 
-        lifecycleScope.launchWhenStarted {
-            githubUserViewModel.githubUser.collect {
-                binding.avatarImageView.load(it?.avatarUrl)
-                binding.idTextView.text = it?.id?.let { id -> "ID: $id" }
-                binding.nameTextView.text = it?.name
-                binding.linkTextView.text = it?.htmlUrl
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubUserViewModel.isLoading.collect {
-                binding.progressBar.isVisible = it
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubUserViewModel.error.collect {
-                binding.errorGroup.isVisible = (it != null)
-                binding.errorTextView.text = it?.toString()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    githubUserViewModel.githubUser.collect {
+                        binding.avatarImageView.load(it?.avatarUrl)
+                        binding.idTextView.text = it?.id?.let { id -> "ID: $id" }
+                        binding.nameTextView.text = it?.name
+                        binding.linkTextView.text = it?.htmlUrl
+                    }
+                }
+                launch {
+                    githubUserViewModel.isLoading.collect {
+                        binding.progressBar.isVisible = it
+                    }
+                }
+                launch {
+                    githubUserViewModel.error.collect {
+                        binding.errorGroup.isVisible = (it != null)
+                        binding.errorTextView.text = it?.toString()
+                    }
+                }
             }
         }
     }

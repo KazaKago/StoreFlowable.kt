@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.kazakago.storeflowable.example.databinding.ActivityGithubOrgsBinding
 import com.kazakago.storeflowable.example.model.GithubOrg
 import com.kazakago.storeflowable.example.view.items.ErrorItem
@@ -17,6 +19,7 @@ import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class GithubOrgsActivity : AppCompatActivity() {
 
@@ -45,30 +48,34 @@ class GithubOrgsActivity : AppCompatActivity() {
             githubOrgsViewModel.retry()
         }
 
-        lifecycleScope.launchWhenStarted {
-            githubOrgsViewModel.orgsStatus.collect { reposStatus ->
-                val items = mutableListOf<Group>().apply {
-                    this += createGithubOrgItems(reposStatus.githubOrgs)
-                    if (reposStatus.isNextLoading) this += createLoadingItem()
-                    reposStatus.nextError?.let { this += createErrorItem(it) }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    githubOrgsViewModel.orgsStatus.collect { reposStatus ->
+                        val items = mutableListOf<Group>().apply {
+                            this += createGithubOrgItems(reposStatus.githubOrgs)
+                            if (reposStatus.isNextLoading) this += createLoadingItem()
+                            reposStatus.nextError?.let { this += createErrorItem(it) }
+                        }
+                        githubOrgsGroupAdapter.updateAsync(items)
+                    }
                 }
-                githubOrgsGroupAdapter.updateAsync(items)
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubOrgsViewModel.isMainLoading.collect {
-                binding.progressBar.isVisible = it
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubOrgsViewModel.mainError.collect {
-                binding.errorGroup.isVisible = (it != null)
-                binding.errorTextView.text = it?.toString()
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubOrgsViewModel.isRefreshing.collect {
-                binding.swipeRefreshLayout.isRefreshing = it
+                launch {
+                    githubOrgsViewModel.isMainLoading.collect {
+                        binding.progressBar.isVisible = it
+                    }
+                }
+                launch {
+                    githubOrgsViewModel.mainError.collect {
+                        binding.errorGroup.isVisible = (it != null)
+                        binding.errorTextView.text = it?.toString()
+                    }
+                }
+                launch {
+                    githubOrgsViewModel.isRefreshing.collect {
+                        binding.swipeRefreshLayout.isRefreshing = it
+                    }
+                }
             }
         }
     }
