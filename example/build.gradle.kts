@@ -35,8 +35,8 @@ android {
 
 dependencies {
     implementation(project(":storeflowable"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0-RC")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
     implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("androidx.activity:activity-ktx:1.4.0")

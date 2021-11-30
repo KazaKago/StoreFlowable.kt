@@ -21,10 +21,10 @@ setupPublishing(version = versionName, artifactId = "storeflowable")
 
 dependencies {
     api(project(":storeflowable-core"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.amshove.kluent:kluent:1.68")
-    testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
 }
