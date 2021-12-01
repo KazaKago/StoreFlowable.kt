@@ -285,7 +285,7 @@ When saving the data, combine the cached data and the new data before saving.
 And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.  
 
 ```kotlin
-val userFlowable = UserFlowableFactory(userId).create()
+val userFlowable = UserFlowableFactory().create(userId)
 userFlowable.publish().collect {
     it.doAction(
         onLoading = { contents: List<UserData>? ->
