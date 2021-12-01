@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -73,7 +73,7 @@ class DataSelectorUpdateTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun update_Data() = runBlockingTest {
+    fun update_Data() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
@@ -83,7 +83,7 @@ class DataSelectorUpdateTest {
     }
 
     @Test
-    fun update_Null() = runBlockingTest {
+    fun update_Null() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 

@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.core
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -18,7 +18,7 @@ class FlowLoadingStateCombinerTest {
     private val flowError: FlowLoadingState<Int> = flowOf(LoadingState.Error(IllegalStateException()))
 
     @Test
-    fun combine_Loading_Loading() = runBlockingTest {
+    fun combine_Loading_Loading() = runTest {
         val combinedFlowState = flowLoading.combineState(flowLoading) { _, _ ->
             fail()
         }
@@ -37,7 +37,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Loading_LoadingWithData() = runBlockingTest {
+    fun combine_Loading_LoadingWithData() = runTest {
         val combinedFlowState = flowLoading.combineState(flowLoadingWithData) { _, _ ->
             fail()
         }
@@ -56,7 +56,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Loading_Completed() = runBlockingTest {
+    fun combine_Loading_Completed() = runTest {
         val combinedFlowState = flowLoading.combineState(flowCompleted) { _, _ ->
             fail()
         }
@@ -75,7 +75,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Loading_Error() = runBlockingTest {
+    fun combine_Loading_Error() = runTest {
         val combinedFlowState = flowLoading.combineState(flowError) { _, _ ->
             fail()
         }
@@ -94,7 +94,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_LoadingWithData_Loading() = runBlockingTest {
+    fun combine_LoadingWithData_Loading() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowLoading) { _, _ ->
             fail()
         }
@@ -113,7 +113,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_LoadingWithData_LoadingWithData() = runBlockingTest {
+    fun combine_LoadingWithData_LoadingWithData() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowLoadingWithData) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 70
@@ -134,7 +134,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_LoadingWithData_Completed() = runBlockingTest {
+    fun combine_LoadingWithData_Completed() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowCompleted) { value1, value2 ->
             value1 shouldBeEqualTo 70
             value2 shouldBeEqualTo 30
@@ -155,7 +155,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_LoadingWithData_Error() = runBlockingTest {
+    fun combine_LoadingWithData_Error() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowError) { _, _ ->
             fail()
         }
@@ -174,7 +174,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Completed_Loading() = runBlockingTest {
+    fun combine_Completed_Loading() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowLoading) { _, _ ->
             fail()
         }
@@ -193,7 +193,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Completed_LoadingWithData() = runBlockingTest {
+    fun combine_Completed_LoadingWithData() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowLoadingWithData) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 70
@@ -214,7 +214,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Completed_Completed() = runBlockingTest {
+    fun combine_Completed_Completed() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowCompleted) { value1, value2 ->
             value1 shouldBeEqualTo 30
             value2 shouldBeEqualTo 30
@@ -235,7 +235,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Completed_Error() = runBlockingTest {
+    fun combine_Completed_Error() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowError) { _, _ ->
             fail()
         }
@@ -254,7 +254,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Error_Loading() = runBlockingTest {
+    fun combine_Error_Loading() = runTest {
         val combinedFlowState = flowError.combineState(flowLoading) { _, _ ->
             fail()
         }
@@ -273,7 +273,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Error_LoadingWithData() = runBlockingTest {
+    fun combine_Error_LoadingWithData() = runTest {
         val combinedFlowState = flowError.combineState(flowLoadingWithData) { _, _ ->
             fail()
         }
@@ -292,7 +292,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Error_Completed() = runBlockingTest {
+    fun combine_Error_Completed() = runTest {
         val combinedFlowState = flowError.combineState(flowCompleted) { _, _ ->
             fail()
         }
@@ -311,7 +311,7 @@ class FlowLoadingStateCombinerTest {
     }
 
     @Test
-    fun combine_Error_Error() = runBlockingTest {
+    fun combine_Error_Error() = runTest {
         val combinedFlowState = flowError.combineState(flowError) { _, _ ->
             fail()
         }

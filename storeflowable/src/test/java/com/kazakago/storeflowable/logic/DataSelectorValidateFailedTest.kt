@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -73,7 +73,7 @@ class DataSelectorValidateFailedTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun validate_Fixed_NoCache() = runBlockingTest {
+    fun validate_Fixed_NoCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
 
@@ -84,7 +84,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Fixed_ValidCache() = runBlockingTest {
+    fun validate_Fixed_ValidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
 
@@ -94,7 +94,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Fixed_InvalidCache() = runBlockingTest {
+    fun validate_Fixed_InvalidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
 
@@ -105,7 +105,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Loading_NoCache() = runBlockingTest {
+    fun validate_Loading_NoCache() = runTest {
         dataState = DataState.Loading()
         dataCache = null
 
@@ -115,7 +115,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Loading_ValidCache() = runBlockingTest {
+    fun validate_Loading_ValidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
@@ -125,7 +125,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Loading_InvalidCache() = runBlockingTest {
+    fun validate_Loading_InvalidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.InvalidData
 
@@ -135,7 +135,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Error_NoCache() = runBlockingTest {
+    fun validate_Error_NoCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = null
 
@@ -146,7 +146,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Error_ValidCache() = runBlockingTest {
+    fun validate_Error_ValidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.ValidData
 
@@ -157,7 +157,7 @@ class DataSelectorValidateFailedTest {
     }
 
     @Test
-    fun validate_Error_InvalidCache() = runBlockingTest {
+    fun validate_Error_InvalidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 

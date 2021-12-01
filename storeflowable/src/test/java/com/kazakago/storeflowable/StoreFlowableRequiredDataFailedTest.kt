@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.coInvoking
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
@@ -39,55 +39,55 @@ class StoreFlowableRequiredDataFailedTest {
     }
 
     @Test
-    fun requiredData_Both_NoCache() = runBlockingTest {
+    fun requiredData_Both_NoCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Both) } shouldThrow UnknownHostException::class
     }
 
     @Test
-    fun requiredData_Both_ValidCache() = runBlockingTest {
+    fun requiredData_Both_ValidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Both) shouldBeEqualTo TestData.ValidData
     }
 
     @Test
-    fun requiredData_Both_InvalidCache() = runBlockingTest {
+    fun requiredData_Both_InvalidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Both) } shouldThrow UnknownHostException::class
     }
 
     @Test
-    fun requiredData_Cache_NoCache() = runBlockingTest {
+    fun requiredData_Cache_NoCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Cache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
-    fun requiredData_Cache_ValidCache() = runBlockingTest {
+    fun requiredData_Cache_ValidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         storeFlowable.requireData(GettingFrom.Cache) shouldBeEqualTo TestData.ValidData
     }
 
     @Test
-    fun requiredData_Cache_InvalidCache() = runBlockingTest {
+    fun requiredData_Cache_InvalidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Cache) } shouldThrow NoSuchElementException::class
     }
 
     @Test
-    fun requiredData_Origin_NoCache() = runBlockingTest {
+    fun requiredData_Origin_NoCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Origin) } shouldThrow UnknownHostException::class
     }
 
     @Test
-    fun requiredData_Origin_ValidCache() = runBlockingTest {
+    fun requiredData_Origin_ValidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Origin) } shouldThrow UnknownHostException::class
     }
 
     @Test
-    fun requiredData_Origin_InvalidCache() = runBlockingTest {
+    fun requiredData_Origin_InvalidCache() = runTest {
         val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
         coInvoking { storeFlowable.requireData(GettingFrom.Origin) } shouldThrow UnknownHostException::class
     }
