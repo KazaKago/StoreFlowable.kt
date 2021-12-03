@@ -10,32 +10,32 @@ import com.kazakago.storeflowable.origin.OriginDataManager
  *
  * @return Created [TwoWayPaginationStoreFlowable].
  */
-fun <KEY, DATA> TwoWayPaginationStoreFlowableFactory<KEY, DATA>.create(): TwoWayPaginationStoreFlowable<KEY, DATA> {
+fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): TwoWayPaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
-        key = key,
+        param = param,
         flowableDataStateManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
-            override suspend fun load() = loadDataFromCache()
-            override suspend fun save(newData: DATA?) = saveDataToCache(newData)
-            override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData)
-            override suspend fun savePrev(cachedData: DATA, newData: DATA) = savePrevDataToCache(cachedData, newData)
+            override suspend fun load() = loadDataFromCache(param)
+            override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
+            override suspend fun saveNext(cachedData: DATA, newData: DATA) = saveNextDataToCache(cachedData, newData, param)
+            override suspend fun savePrev(cachedData: DATA, newData: DATA) = savePrevDataToCache(cachedData, newData, param)
         },
         originDataManager = object : OriginDataManager<DATA> {
             override suspend fun fetch(): InternalFetched<DATA> {
-                val result = fetchDataFromOrigin()
+                val result = fetchDataFromOrigin(param)
                 return InternalFetched(result.data, nextKey = result.nextKey, prevKey = result.prevKey)
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<DATA> {
-                val result = fetchNextDataFromOrigin(nextKey)
+                val result = fetchNextDataFromOrigin(nextKey, param)
                 return InternalFetched(result.data, nextKey = result.nextKey, prevKey = null)
             }
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<DATA> {
-                val result = fetchPrevDataFromOrigin(prevKey)
+                val result = fetchPrevDataFromOrigin(prevKey, param)
                 return InternalFetched(result.data, nextKey = null, prevKey = result.prevKey)
             }
         },
-        needRefresh = { needRefresh(it) }
+        needRefresh = { needRefresh(it, param) }
     )
 }

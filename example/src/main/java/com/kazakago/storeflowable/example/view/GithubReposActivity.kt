@@ -7,7 +7,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.kazakago.storeflowable.example.databinding.ActivityGithubReposBinding
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.view.items.ErrorItem
@@ -18,6 +20,7 @@ import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class GithubReposActivity : AppCompatActivity() {
 
@@ -30,7 +33,7 @@ class GithubReposActivity : AppCompatActivity() {
     }
 
     private enum class ParameterName {
-        UserName
+        UserName,
     }
 
     private val binding by lazy { ActivityGithubReposBinding.inflate(layoutInflater) }
@@ -46,7 +49,7 @@ class GithubReposActivity : AppCompatActivity() {
 
         binding.githubReposRecyclerView.adapter = githubReposGroupAdapter
         binding.githubReposRecyclerView.addOnBottomReached {
-            githubReposViewModel.requestAddition()
+            githubReposViewModel.requestNext()
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             githubReposViewModel.refresh()
@@ -55,30 +58,34 @@ class GithubReposActivity : AppCompatActivity() {
             githubReposViewModel.retry()
         }
 
-        lifecycleScope.launchWhenStarted {
-            githubReposViewModel.reposStatus.collect { reposStatus ->
-                val items: List<Group> = mutableListOf<Group>().apply {
-                    this += createGithubRepoItems(reposStatus.githubRepos)
-                    if (reposStatus.isNextLoading) this += createLoadingItem()
-                    reposStatus.nextError?.let { this += createErrorItem(it) }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    githubReposViewModel.reposStatus.collect { reposStatus ->
+                        val items = mutableListOf<Group>().apply {
+                            this += createGithubRepoItems(reposStatus.githubRepos)
+                            if (reposStatus.isNextLoading) this += createLoadingItem()
+                            reposStatus.nextError?.let { this += createErrorItem(it) }
+                        }
+                        githubReposGroupAdapter.updateAsync(items)
+                    }
                 }
-                githubReposGroupAdapter.updateAsync(items)
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubReposViewModel.isMainLoading.collect {
-                binding.progressBar.isVisible = it
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubReposViewModel.mainError.collect {
-                binding.errorGroup.isVisible = (it != null)
-                binding.errorTextView.text = it?.toString()
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubReposViewModel.isRefreshing.collect {
-                binding.swipeRefreshLayout.isRefreshing = it
+                launch {
+                    githubReposViewModel.isMainLoading.collect {
+                        binding.progressBar.isVisible = it
+                    }
+                }
+                launch {
+                    githubReposViewModel.mainError.collect {
+                        binding.errorGroup.isVisible = (it != null)
+                        binding.errorTextView.text = it?.toString()
+                    }
+                }
+                launch {
+                    githubReposViewModel.isRefreshing.collect {
+                        binding.swipeRefreshLayout.isRefreshing = it
+                    }
+                }
             }
         }
     }
@@ -97,7 +104,7 @@ class GithubReposActivity : AppCompatActivity() {
 
     private fun createErrorItem(exception: Exception): ErrorItem {
         return ErrorItem(exception).apply {
-            onRetry = { githubReposViewModel.retryAddition() }
+            onRetry = { githubReposViewModel.retryNext() }
         }
     }
 

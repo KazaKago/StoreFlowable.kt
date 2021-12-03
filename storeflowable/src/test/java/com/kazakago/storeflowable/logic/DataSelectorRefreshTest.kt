@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -23,13 +23,13 @@ class DataSelectorRefreshTest {
     }
 
     private val dataSelector = DataSelector(
-        key = "key",
-        dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+        param = Unit,
+        dataStateManager = object : DataStateManager<Unit> {
+            override fun load(param: Unit): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun save(param: Unit, state: DataState) {
                 dataState = state
             }
         },
@@ -72,7 +72,7 @@ class DataSelectorRefreshTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun refresh_Fixed_NoCache() = runBlockingTest {
+    fun refresh_Fixed_NoCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
 
@@ -82,7 +82,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Fixed_ValidCache() = runBlockingTest {
+    fun refresh_Fixed_ValidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
 
@@ -92,7 +92,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Fixed_InvalidCache() = runBlockingTest {
+    fun refresh_Fixed_InvalidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
 
@@ -102,7 +102,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Loading_NoCache() = runBlockingTest {
+    fun refresh_Loading_NoCache() = runTest {
         dataState = DataState.Loading()
         dataCache = null
 
@@ -112,7 +112,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Loading_ValidCache() = runBlockingTest {
+    fun refresh_Loading_ValidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
@@ -122,7 +122,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Loading_InvalidCache() = runBlockingTest {
+    fun refresh_Loading_InvalidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.InvalidData
 
@@ -132,7 +132,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Error_NoCache() = runBlockingTest {
+    fun refresh_Error_NoCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = null
 
@@ -142,7 +142,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Error_ValidCache() = runBlockingTest {
+    fun refresh_Error_ValidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.ValidData
 
@@ -152,7 +152,7 @@ class DataSelectorRefreshTest {
     }
 
     @Test
-    fun refresh_Error_InvalidCache() = runBlockingTest {
+    fun refresh_Error_InvalidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 

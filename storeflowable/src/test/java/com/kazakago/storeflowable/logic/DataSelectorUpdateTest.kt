@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -23,13 +23,13 @@ class DataSelectorUpdateTest {
     }
 
     private val dataSelector = DataSelector(
-        key = "key",
-        dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+        param = Unit,
+        dataStateManager = object : DataStateManager<Unit> {
+            override fun load(param: Unit): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun save(param: Unit, state: DataState) {
                 dataState = state
             }
         },
@@ -52,7 +52,8 @@ class DataSelectorUpdateTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
-                return InternalFetched(TestData.FetchedData, nextKey = null, prevKey = null)
+                fail()
+                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
@@ -72,7 +73,7 @@ class DataSelectorUpdateTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun update_data() = runBlockingTest {
+    fun update_Data() = runTest {
         dataState = DataState.Loading()
         dataCache = TestData.ValidData
 
@@ -82,7 +83,7 @@ class DataSelectorUpdateTest {
     }
 
     @Test
-    fun update_null() = runBlockingTest {
+    fun update_Null() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = TestData.InvalidData
 

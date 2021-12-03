@@ -7,7 +7,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert.fail
 import org.junit.Test
@@ -22,13 +22,13 @@ class DataSelectorLoadTest {
     }
 
     private val dataSelector = DataSelector(
-        key = "key",
-        dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+        param = Unit,
+        dataStateManager = object : DataStateManager<Unit> {
+            override fun load(param: Unit): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun save(param: Unit, state: DataState) {
                 dataState = state
             }
         },
@@ -51,7 +51,8 @@ class DataSelectorLoadTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
-                return InternalFetched(TestData.FetchedData, nextKey = null, prevKey = null)
+                fail()
+                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
@@ -71,7 +72,7 @@ class DataSelectorLoadTest {
     private var dataCache: TestData? = null
 
     @Test
-    fun load_NoCache() = runBlockingTest {
+    fun load_NoCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = null
 
@@ -80,7 +81,7 @@ class DataSelectorLoadTest {
     }
 
     @Test
-    fun load_ValidCache() = runBlockingTest {
+    fun load_ValidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.ValidData
 
@@ -89,7 +90,7 @@ class DataSelectorLoadTest {
     }
 
     @Test
-    fun load_InvalidCache() = runBlockingTest {
+    fun load_InvalidCache() = runTest {
         dataState = DataState.Fixed(mockk(), mockk())
         dataCache = TestData.InvalidData
 

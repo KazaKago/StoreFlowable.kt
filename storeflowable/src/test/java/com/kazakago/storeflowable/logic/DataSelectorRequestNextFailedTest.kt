@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Assert.fail
@@ -28,13 +28,13 @@ class DataSelectorRequestNextFailedTest {
     }
 
     private val dataSelector = DataSelector(
-        key = "key",
-        dataStateManager = object : DataStateManager<String> {
-            override fun load(key: String): DataState {
+        param = Unit,
+        dataStateManager = object : DataStateManager<Unit> {
+            override fun load(param: Unit): DataState {
                 return dataState
             }
 
-            override fun save(key: String, state: DataState) {
+            override fun save(param: Unit, state: DataState) {
                 dataState = state
             }
         },
@@ -77,7 +77,7 @@ class DataSelectorRequestNextFailedTest {
     private var dataCache: List<TestData>? = null
 
     @Test
-    fun requestNextData_Fixed_Fixed_NoCache() = runBlockingTest {
+    fun requestNextData_Fixed_Fixed_NoCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), mockk())
         dataCache = null
 
@@ -88,7 +88,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Fixed_ValidCache() = runBlockingTest {
+    fun requestNextData_Fixed_Fixed_ValidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -99,8 +99,8 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Fixed_InvalidCache() = runBlockingTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
+    fun requestNextData_Fixed_Fixed_InvalidCache() = runTest {
+        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), mockk())
         dataCache = listOf(TestData.InvalidData)
 
         dataSelector.requestNextData(continueWhenError = true)
@@ -110,7 +110,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_FixedWithNoMoreData_NoCache() = runBlockingTest {
+    fun requestNextData_Fixed_FixedWithNoMoreData_NoCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = null
 
@@ -121,7 +121,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_FixedWithNoMoreData_ValidCache() = runBlockingTest {
+    fun requestNextData_Fixed_FixedWithNoMoreData_ValidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -132,7 +132,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_FixedWithNoMoreData_InvalidCache() = runBlockingTest {
+    fun requestNextData_Fixed_FixedWithNoMoreData_InvalidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), mockk())
         dataCache = listOf(TestData.InvalidData)
 
@@ -143,7 +143,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Loading_NoCache() = runBlockingTest {
+    fun requestNextData_Fixed_Loading_NoCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), mockk())
         dataCache = null
 
@@ -154,7 +154,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Loading_ValidCache() = runBlockingTest {
+    fun requestNextData_Fixed_Loading_ValidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -165,7 +165,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Loading_InvalidCache() = runBlockingTest {
+    fun requestNextData_Fixed_Loading_InvalidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), mockk())
         dataCache = listOf(TestData.InvalidData)
 
@@ -176,7 +176,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Error_NoCache() = runBlockingTest {
+    fun requestNextData_Fixed_Error_NoCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = null
 
@@ -187,7 +187,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Error_ValidCache() = runBlockingTest {
+    fun requestNextData_Fixed_Error_ValidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -198,7 +198,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Fixed_Error_InvalidCache() = runBlockingTest {
+    fun requestNextData_Fixed_Error_InvalidCache() = runTest {
         dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = listOf(TestData.InvalidData)
 
@@ -209,7 +209,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Loading_NoCache() = runBlockingTest {
+    fun requestNextData_Loading_NoCache() = runTest {
         dataState = DataState.Loading()
         dataCache = null
 
@@ -219,7 +219,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Loading_ValidCache() = runBlockingTest {
+    fun requestNextData_Loading_ValidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = listOf(TestData.ValidData)
 
@@ -229,7 +229,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Loading_InvalidCache() = runBlockingTest {
+    fun requestNextData_Loading_InvalidCache() = runTest {
         dataState = DataState.Loading()
         dataCache = listOf(TestData.InvalidData)
 
@@ -239,7 +239,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Error_NoCache() = runBlockingTest {
+    fun requestNextData_Error_NoCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = null
 
@@ -250,7 +250,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Error_ValidCache() = runBlockingTest {
+    fun requestNextData_Error_ValidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.ValidData)
 
@@ -261,7 +261,7 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_Error_InvalidCache() = runBlockingTest {
+    fun requestNextData_Error_InvalidCache() = runTest {
         dataState = DataState.Error(mockk())
         dataCache = listOf(TestData.InvalidData)
 
@@ -272,35 +272,35 @@ class DataSelectorRequestNextFailedTest {
     }
 
     @Test
-    fun requestNextData_NonContinueWhenError_Error_NoCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
+    fun requestNextData_NonContinueWhenError_Fixed_Error_NoCache() = runTest {
+        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = null
 
         dataSelector.requestNextData(continueWhenError = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo null
     }
 
     @Test
-    fun requestNextData_NonContinueWhenError_Error_ValidCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
+    fun requestNextData_NonContinueWhenError_Fixed_Error_ValidCache() = runTest {
+        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = listOf(TestData.ValidData)
 
         dataSelector.requestNextData(continueWhenError = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.ValidData)
     }
 
     @Test
-    fun requestNextData_NonContinueWhenError_Error_InvalidCache() = runBlockingTest {
-        dataState = DataState.Error(mockk())
+    fun requestNextData_NonContinueWhenError_Fixed_Error_InvalidCache() = runTest {
+        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", mockk()), mockk())
         dataCache = listOf(TestData.InvalidData)
 
         dataSelector.requestNextData(continueWhenError = false)
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf AdditionalRequestOnErrorStateException::class
+        dataState shouldBeInstanceOf DataState.Fixed::class
+        (dataState as DataState.Fixed).nextDataState shouldBeInstanceOf AdditionalDataState.Error::class
         dataCache shouldBeEqualTo listOf(TestData.InvalidData)
     }
 }

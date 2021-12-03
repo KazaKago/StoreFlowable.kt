@@ -3,7 +3,8 @@ package com.kazakago.storeflowable
 import com.kazakago.storeflowable.datastate.DataState
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Before
@@ -20,28 +21,36 @@ class FlowableDataStateManagerTest {
     }
 
     @Test
-    fun flowSameKeyEvent() = runBlockingTest {
+    fun flowSameKeyEvent() = runTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
+            delay(100)
             it.history.size shouldBeEqualTo 1
-            it.history[0] shouldBeInstanceOf DataState.Fixed::class
+            it.history.last() shouldBeInstanceOf DataState.Fixed::class
             flowableDataStateManager.save("hoge", DataState.Loading())
+            delay(100)
             it.history.size shouldBeEqualTo 2
-            it.history[1] shouldBeInstanceOf DataState.Loading::class
+            it.history.last() shouldBeInstanceOf DataState.Loading::class
             flowableDataStateManager.save("hoge", DataState.Error(mockk()))
+            delay(100)
             it.history.size shouldBeEqualTo 3
-            it.history[2] shouldBeInstanceOf DataState.Error::class
+            it.history.last() shouldBeInstanceOf DataState.Error::class
         }
     }
 
     @Test
-    fun flowDifferentKeyEvent() = runBlockingTest {
+    fun flowDifferentKeyEvent() = runTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
+            delay(100)
             it.history.size shouldBeEqualTo 1
-            it.history[0] shouldBeInstanceOf DataState.Fixed::class
+            it.history.last() shouldBeInstanceOf DataState.Fixed::class
             flowableDataStateManager.save("hogehoge", DataState.Loading())
+            delay(100)
             it.history.size shouldBeEqualTo 1
+            it.history.last() shouldBeInstanceOf DataState.Fixed::class
             flowableDataStateManager.save("hugahuga", DataState.Error(mockk()))
+            delay(100)
             it.history.size shouldBeEqualTo 1
+            it.history.last() shouldBeInstanceOf DataState.Fixed::class
         }
     }
 }

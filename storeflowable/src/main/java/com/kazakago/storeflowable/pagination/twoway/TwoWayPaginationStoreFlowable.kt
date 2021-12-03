@@ -8,10 +8,9 @@ import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
  *
  * This class is generated from [TwoWayPaginationStoreFlowableFactory.create].
  *
- * @param KEY Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayPaginationStoreFlowable<KEY, DATA> : PaginationStoreFlowable<KEY, DATA> {
+interface TwoWayPaginationStoreFlowable<DATA> : PaginationStoreFlowable<DATA> {
 
     /**
      * Request previous data.

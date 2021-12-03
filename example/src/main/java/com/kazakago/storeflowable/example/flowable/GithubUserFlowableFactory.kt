@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.example.model.GithubUser
 import java.time.Duration
 import java.time.LocalDateTime
 
-class GithubUserFlowableFactory(userName: String) : StoreFlowableFactory<String, GithubUser> {
+class GithubUserFlowableFactory : StoreFlowableFactory<String, GithubUser> {
 
     companion object {
         private val EXPIRED_DURATION = Duration.ofMinutes(1)
@@ -18,25 +18,23 @@ class GithubUserFlowableFactory(userName: String) : StoreFlowableFactory<String,
     private val githubApi = GithubApi()
     private val githubCache = GithubCache
 
-    override val key: String = userName
-
     override val flowableDataStateManager: FlowableDataStateManager<String> = GithubUserStateManager
 
-    override suspend fun loadDataFromCache(): GithubUser? {
-        return githubCache.userCache[key]
+    override suspend fun loadDataFromCache(param: String): GithubUser? {
+        return githubCache.userCache[param]
     }
 
-    override suspend fun saveDataToCache(newData: GithubUser?) {
-        githubCache.userCache[key] = newData
-        githubCache.userCacheCreateAt[key] = LocalDateTime.now()
+    override suspend fun saveDataToCache(newData: GithubUser?, param: String) {
+        githubCache.userCache[param] = newData
+        githubCache.userCacheCreateAt[param] = LocalDateTime.now()
     }
 
-    override suspend fun fetchDataFromOrigin(): GithubUser {
-        return githubApi.getUser(key)
+    override suspend fun fetchDataFromOrigin(param: String): GithubUser {
+        return githubApi.getUser(param)
     }
 
-    override suspend fun needRefresh(cachedData: GithubUser): Boolean {
-        val createdAt = githubCache.userCacheCreateAt[key]
+    override suspend fun needRefresh(cachedData: GithubUser, param: String): Boolean {
+        val createdAt = githubCache.userCacheCreateAt[param]
         return if (createdAt != null) {
             val expiredAt = createdAt + EXPIRED_DURATION
             expiredAt < LocalDateTime.now()

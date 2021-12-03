@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.example.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubMeta
-import com.kazakago.storeflowable.example.repository.GithubRepository
+import com.kazakago.storeflowable.example.repository.GithubMetaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -17,22 +17,22 @@ class GithubMetaViewModel : ViewModel() {
     val isLoading = _isLoading.asStateFlow()
     private val _error = MutableStateFlow<Exception?>(null)
     val error = _error.asStateFlow()
-    private val githubRepository = GithubRepository()
+    private val githubMetaRepository = GithubMetaRepository()
 
     init {
         subscribe()
     }
 
     fun refresh() = viewModelScope.launch {
-        githubRepository.refreshMeta()
+        githubMetaRepository.refresh()
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshMeta()
+        githubMetaRepository.refresh()
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followMeta().collect {
+        githubMetaRepository.follow().collect {
             it.doAction(
                 onLoading = {
                     _githubMeta.value = null

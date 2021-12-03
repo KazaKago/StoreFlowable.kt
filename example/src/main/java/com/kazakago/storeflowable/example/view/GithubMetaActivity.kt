@@ -8,11 +8,14 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubMetaBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubMetaViewModel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class GithubMetaActivity : AppCompatActivity() {
 
@@ -33,21 +36,25 @@ class GithubMetaActivity : AppCompatActivity() {
             githubMetaViewModel.retry()
         }
 
-        lifecycleScope.launchWhenStarted {
-            githubMetaViewModel.githubMeta.collect { meta ->
-                binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
-                binding.sha256DsaTextView.text = meta?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n$it" }
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubMetaViewModel.isLoading.collect {
-                binding.progressBar.isVisible = it
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            githubMetaViewModel.error.collect {
-                binding.errorGroup.isVisible = (it != null)
-                binding.errorTextView.text = it?.toString()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    githubMetaViewModel.githubMeta.collect { meta ->
+                        binding.sha256RsaTextView.text = meta?.sshKeyFingerprints?.sha256Rsa?.let { "SHA256_RSA\n$it" }
+                        binding.sha256DsaTextView.text = meta?.sshKeyFingerprints?.sha256Dsa?.let { "SHA256_DSA\n$it" }
+                    }
+                }
+                launch {
+                    githubMetaViewModel.isLoading.collect {
+                        binding.progressBar.isVisible = it
+                    }
+                }
+                launch {
+                    githubMetaViewModel.error.collect {
+                        binding.errorGroup.isVisible = (it != null)
+                        binding.errorTextView.text = it?.toString()
+                    }
+                }
             }
         }
     }

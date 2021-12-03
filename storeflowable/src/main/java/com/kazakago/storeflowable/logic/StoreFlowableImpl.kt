@@ -9,21 +9,26 @@ import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 
-internal class StoreFlowableImpl<KEY, DATA>(
-    private val key: KEY,
-    private val flowableDataStateManager: FlowableDataStateManager<KEY>,
+internal class StoreFlowableImpl<PARAM, DATA>(
+    private val param: PARAM,
+    private val flowableDataStateManager: FlowableDataStateManager<PARAM>,
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
-) : StoreFlowable<KEY, DATA>, PaginationStoreFlowable<KEY, DATA>, TwoWayPaginationStoreFlowable<KEY, DATA> {
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
-        key = key,
+        param = param,
         dataStateManager = flowableDataStateManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
@@ -31,15 +36,17 @@ internal class StoreFlowableImpl<KEY, DATA>(
     )
 
     override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
-        return flowableDataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(param)
             .onStart {
-                if (forceRefresh) {
-                    dataSelector.refreshAsync(clearCacheBeforeFetching = true)
-                } else {
-                    dataSelector.validateAsync()
+                CoroutineScope(defaultDispatcher).launch {
+                    if (forceRefresh) {
+                        dataSelector.refresh(clearCacheBeforeFetching = true)
+                    } else {
+                        dataSelector.validate()
+                    }
                 }
             }
-            .map { dataState ->
+            .mapNotNull { dataState ->
                 val data = cacheDataManager.load()
                 dataState.toLoadingState(data)
             }
@@ -50,7 +57,7 @@ internal class StoreFlowableImpl<KEY, DATA>(
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return flowableDataStateManager.getFlow(key)
+        return flowableDataStateManager.getFlow(param)
             .onStart {
                 when (from) {
                     GettingFrom.Both -> dataSelector.validate()
@@ -58,12 +65,12 @@ internal class StoreFlowableImpl<KEY, DATA>(
                     GettingFrom.Cache -> Unit
                 }
             }
-            .transform { dataState ->
+            .mapNotNull { dataState ->
                 val data = dataSelector.loadValidCacheOrNull()
                 when (dataState) {
-                    is DataState.Fixed -> if (data != null) emit(data) else throw NoSuchElementException()
-                    is DataState.Loading -> Unit
-                    is DataState.Error -> if (data != null) emit(data) else throw dataState.exception
+                    is DataState.Fixed -> data ?: throw NoSuchElementException()
+                    is DataState.Loading -> null
+                    is DataState.Error -> data ?: throw dataState.exception
                 }
             }
             .first()

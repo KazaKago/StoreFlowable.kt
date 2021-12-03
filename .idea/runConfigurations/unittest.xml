@@ -1,17 +1,15 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="unittest" type="AndroidJUnit" factoryName="Android JUnit">
-    <useClassPathOnly />
+  <configuration default="false" name="unittest" type="JUnit" factoryName="JUnit">
+    <module name="StoreFlowable.kt.storeflowable" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
-    <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="wholeProject" />
+      <value defaultName="moduleWithDependencies" />
     </option>
     <method v="2">
-      <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      <option name="Make" enabled="true" />
     </method>
   </configuration>
 </component>

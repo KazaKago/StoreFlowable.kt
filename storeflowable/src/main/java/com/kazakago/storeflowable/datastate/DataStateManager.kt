@@ -1,8 +1,8 @@
 package com.kazakago.storeflowable.datastate
 
-internal interface DataStateManager<KEY> {
+internal interface DataStateManager<PARAM> {
 
-    fun load(key: KEY): DataState
+    fun load(param: PARAM): DataState
 
-    fun save(key: KEY, state: DataState)
+    fun save(param: PARAM, state: DataState)
 }

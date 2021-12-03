@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.example.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.example.repository.GithubRepository
+import com.kazakago.storeflowable.example.repository.GithubTwoWayReposRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -17,7 +17,7 @@ class GithubTwoWayReposViewModel : ViewModel() {
     val isMainLoading = _isMainLoading.asStateFlow()
     private val _mainError = MutableStateFlow<Exception?>(null)
     val mainError = _mainError.asStateFlow()
-    private val githubRepository = GithubRepository()
+    private val githubTwoWayReposRepository = GithubTwoWayReposRepository()
 
     data class ReposStatus(
         var githubRepos: List<GithubRepo> = emptyList(),
@@ -32,27 +32,27 @@ class GithubTwoWayReposViewModel : ViewModel() {
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshTwoWayRepos()
+        githubTwoWayReposRepository.refresh()
     }
 
     fun requestNext() = viewModelScope.launch {
-        githubRepository.requestTwoWayNextRepos(continueWhenError = false)
+        githubTwoWayReposRepository.requestNext(continueWhenError = false)
     }
 
     fun requestPrev() = viewModelScope.launch {
-        githubRepository.requestTwoWayPrevRepos(continueWhenError = false)
+        githubTwoWayReposRepository.requestPrev(continueWhenError = false)
     }
 
     fun retryNext() = viewModelScope.launch {
-        githubRepository.requestTwoWayNextRepos(continueWhenError = true)
+        githubTwoWayReposRepository.requestNext(continueWhenError = true)
     }
 
     fun retryPrev() = viewModelScope.launch {
-        githubRepository.requestTwoWayPrevRepos(continueWhenError = true)
+        githubTwoWayReposRepository.requestPrev(continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followTwoWayRepos().collect {
+        githubTwoWayReposRepository.follow().collect {
             it.doAction(
                 onLoading = { githubRepos ->
                     if (githubRepos != null) {

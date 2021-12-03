@@ -7,7 +7,7 @@ package com.kazakago.storeflowable.datastate
  */
 @Suppress("CanSealedSubClassBeObject")
 sealed class DataState {
-    internal class Fixed(val nextDataState: AdditionalDataState, val prevDataState: AdditionalDataState) : DataState()
+    internal class Fixed(val nextDataState: AdditionalDataState, val prevDataState: AdditionalDataState, val isInitial: Boolean = false) : DataState()
     internal class Loading : DataState()
     internal class Error(val exception: Exception) : DataState()
 

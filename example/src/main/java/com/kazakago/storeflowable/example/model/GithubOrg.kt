@@ -1,12 +1,12 @@
 package com.kazakago.storeflowable.example.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class GithubOrg(
-    @Json(name = "id")
+    @SerialName("id")
     val id: Long,
-    @Json(name = "login")
+    @SerialName("login")
     val name: String,
 )

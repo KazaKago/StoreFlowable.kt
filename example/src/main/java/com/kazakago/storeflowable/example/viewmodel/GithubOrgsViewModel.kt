@@ -3,7 +3,7 @@ package com.kazakago.storeflowable.example.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kazakago.storeflowable.example.model.GithubOrg
-import com.kazakago.storeflowable.example.repository.GithubRepository
+import com.kazakago.storeflowable.example.repository.GithubOrgsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -11,19 +11,21 @@ import kotlinx.coroutines.launch
 
 class GithubOrgsViewModel : ViewModel() {
 
-    private val _githubOrgs = MutableStateFlow<List<GithubOrg>>(emptyList())
-    val githubOrgs = _githubOrgs.asStateFlow()
+    private val _orgsStatus = MutableStateFlow(OrgsStatus())
+    val orgsStatus = _orgsStatus.asStateFlow()
     private val _isMainLoading = MutableStateFlow(false)
     val isMainLoading = _isMainLoading.asStateFlow()
-    private val _isAdditionalLoading = MutableStateFlow(false)
-    val isAdditionalLoading = _isAdditionalLoading.asStateFlow()
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
     private val _mainError = MutableStateFlow<Exception?>(null)
     val mainError = _mainError.asStateFlow()
-    private val _additionalError = MutableStateFlow<Exception?>(null)
-    val additionalError = _additionalError.asStateFlow()
-    private val githubRepository = GithubRepository()
+    private val githubOrgsRepository = GithubOrgsRepository()
+
+    data class OrgsStatus(
+        var githubOrgs: List<GithubOrg> = emptyList(),
+        var isNextLoading: Boolean = false,
+        var nextError: Exception? = null,
+    )
 
     init {
         subscribe()
@@ -31,62 +33,54 @@ class GithubOrgsViewModel : ViewModel() {
 
     fun refresh() = viewModelScope.launch {
         _isRefreshing.value = true
-        githubRepository.refreshOrgs()
+        githubOrgsRepository.refresh()
         _isRefreshing.value = false
     }
 
     fun retry() = viewModelScope.launch {
-        githubRepository.refreshOrgs()
+        githubOrgsRepository.refresh()
     }
 
-    fun requestAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalOrgs(continueWhenError = false)
+    fun requestNext() = viewModelScope.launch {
+        githubOrgsRepository.requestNext(continueWhenError = false)
     }
 
-    fun retryAddition() = viewModelScope.launch {
-        githubRepository.requestAdditionalOrgs(continueWhenError = true)
+    fun retryNext() = viewModelScope.launch {
+        githubOrgsRepository.requestNext(continueWhenError = true)
     }
 
     private fun subscribe() = viewModelScope.launch {
-        githubRepository.followOrgs().collect {
+        githubOrgsRepository.follow().collect {
             it.doAction(
                 onLoading = { githubOrgs ->
                     if (githubOrgs != null) {
-                        _githubOrgs.value = githubOrgs
+                        _orgsStatus.value = OrgsStatus(githubOrgs = githubOrgs)
                         _isMainLoading.value = false
                     } else {
-                        _githubOrgs.value = emptyList()
+                        _orgsStatus.value = OrgsStatus(githubOrgs = emptyList())
                         _isMainLoading.value = true
                     }
-                    _isAdditionalLoading.value = false
                     _mainError.value = null
-                    _additionalError.value = null
                 },
                 onCompleted = { githubOrgs, next, _ ->
+                    val orgsStatus = OrgsStatus(githubOrgs = githubOrgs)
                     next.doAction(
-                        onFixed = {
-                            _isAdditionalLoading.value = false
-                            _additionalError.value = null
-                        },
+                        onFixed = {},
                         onLoading = {
-                            _isAdditionalLoading.value = true
-                            _additionalError.value = null
+                            orgsStatus.isNextLoading = true
                         },
                         onError = { exception ->
-                            _isAdditionalLoading.value = false
-                            _additionalError.value = exception
+                            orgsStatus.nextError = exception
                         }
                     )
-                    _githubOrgs.value = githubOrgs
+                    _orgsStatus.value = orgsStatus
                     _isMainLoading.value = false
                     _mainError.value = null
                 },
                 onError = { exception ->
-                    _githubOrgs.value = emptyList()
+                    _orgsStatus.value = OrgsStatus()
                     _isMainLoading.value = false
-                    _isAdditionalLoading.value = false
                     _mainError.value = exception
-                    _additionalError.value = null
                 },
             )
         }
