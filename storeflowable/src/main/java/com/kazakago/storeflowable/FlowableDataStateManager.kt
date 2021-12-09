@@ -56,6 +56,6 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAc
     }
 
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key, { MutableStateFlow(DataState.Fixed(nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), isInitial = true)) })
+        return getOrPut(key, { MutableStateFlow(DataState.Fixed(nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(), prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData())) })
     }
 }

@@ -9,14 +9,8 @@ import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 
 internal class StoreFlowableImpl<PARAM, DATA>(
     private val param: PARAM,
@@ -24,7 +18,6 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
@@ -35,21 +28,20 @@ internal class StoreFlowableImpl<PARAM, DATA>(
         needRefresh = needRefresh,
     )
 
+    @FlowPreview
     override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
-        return flowableDataStateManager.getFlow(param)
-            .onStart {
-                CoroutineScope(defaultDispatcher).launch {
-                    if (forceRefresh) {
-                        dataSelector.refresh(clearCacheBeforeFetching = true)
-                    } else {
-                        dataSelector.validate()
-                    }
-                }
+        return flow {
+            if (forceRefresh) {
+                emit(dataSelector.refreshAsync(clearCacheBeforeFetching = true))
+            } else {
+                emit(dataSelector.validateAsync())
             }
-            .mapNotNull { dataState ->
-                val data = cacheDataManager.load()
-                dataState.toLoadingState(data)
-            }
+        }.flatMapConcat {
+            flowableDataStateManager.getFlow(param)
+        }.map { dataState ->
+            val data = cacheDataManager.load()
+            dataState.toLoadingState(data)
+        }
     }
 
     override suspend fun getData(from: GettingFrom): DATA? {
