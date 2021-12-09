@@ -4,9 +4,11 @@ import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.example.flowable.GithubReposFlowableFactory
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.pagination.oneway.create
+import kotlinx.coroutines.FlowPreview
 
 class GithubReposRepository {
 
+    @OptIn(FlowPreview::class)
     fun follow(userName: String): FlowLoadingState<List<GithubRepo>> {
         val githubReposFlowable = GithubReposFlowableFactory().create(userName)
         return githubReposFlowable.publish()

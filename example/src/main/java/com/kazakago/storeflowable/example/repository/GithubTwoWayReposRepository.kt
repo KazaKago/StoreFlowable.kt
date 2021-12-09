@@ -4,9 +4,11 @@ import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.example.flowable.GithubTwoWayReposFlowableFactory
 import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.pagination.twoway.create
+import kotlinx.coroutines.FlowPreview
 
 class GithubTwoWayReposRepository {
 
+    @OptIn(FlowPreview::class)
     fun follow(): FlowLoadingState<List<GithubRepo>> {
         val githubReposFlowable = GithubTwoWayReposFlowableFactory().create(Unit)
         return githubReposFlowable.publish()
