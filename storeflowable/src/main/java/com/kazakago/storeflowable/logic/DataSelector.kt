@@ -7,6 +7,10 @@ import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.exception.AdditionalRequestOnErrorStateException
 import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
 import com.kazakago.storeflowable.origin.OriginDataManager
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 internal class DataSelector<PARAM, DATA>(
     private val param: PARAM,
@@ -14,6 +18,7 @@ internal class DataSelector<PARAM, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
     suspend fun loadValidCacheOrNull(): DATA? {
@@ -39,59 +44,67 @@ internal class DataSelector<PARAM, DATA>(
     }
 
     suspend fun validate() {
-        doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, requestType = RequestType.Refresh)
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
+    }
+
+    suspend fun validateAsync() {
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
     }
 
     suspend fun refresh(clearCacheBeforeFetching: Boolean) {
-        doStateAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = true, continueWhenError = true, requestType = RequestType.Refresh)
+        doStateAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
+    }
+
+    suspend fun refreshAsync(clearCacheBeforeFetching: Boolean) {
+        doStateAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = false, requestType = RequestType.Refresh)
     }
 
     suspend fun requestNextData(continueWhenError: Boolean) {
-        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, requestType = RequestType.Next)
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Next)
     }
 
     suspend fun requestPrevData(continueWhenError: Boolean) {
-        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, requestType = RequestType.Prev)
+        doStateAction(forceRefresh = false, clearCacheBeforeFetching = false, clearCacheWhenFetchFails = false, continueWhenError = continueWhenError, awaitFetching = true, requestType = RequestType.Prev)
     }
 
-    private suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, requestType: RequestType) {
+    private suspend fun doStateAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, continueWhenError: Boolean, awaitFetching: Boolean, requestType: RequestType) {
         when (val state = dataStateManager.load(param)) {
             is DataState.Fixed -> when (requestType) {
                 RequestType.Refresh -> if (state.nextDataState !is AdditionalDataState.Loading && state.prevDataState !is AdditionalDataState.Loading) {
-                    doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Refresh)
+                    doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Refresh)
                 }
                 RequestType.Next -> when (val nextDataState = state.nextDataState) {
-                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Next(nextDataState.additionalRequestKey))
+                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Next(nextDataState.additionalRequestKey))
                     is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
-                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Next(nextDataState.additionalRequestKey))
+                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Next(nextDataState.additionalRequestKey))
                 }
                 RequestType.Prev -> when (val prevDataState = state.prevDataState) {
-                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Prev(prevDataState.additionalRequestKey))
+                    is AdditionalDataState.Fixed -> doDataAction(forceRefresh = forceRefresh, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Prev(prevDataState.additionalRequestKey))
                     is AdditionalDataState.FixedWithNoMoreAdditionalData -> Unit
                     is AdditionalDataState.Loading -> Unit
-                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Prev(prevDataState.additionalRequestKey))
+                    is AdditionalDataState.Error -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Prev(prevDataState.additionalRequestKey))
                 }
             }
             is DataState.Loading -> Unit
             is DataState.Error -> when (requestType) {
-                RequestType.Refresh -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = KeyedRequestType.Refresh)
+                RequestType.Refresh -> if (continueWhenError) doDataAction(forceRefresh = true, clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = KeyedRequestType.Refresh)
                 RequestType.Next, RequestType.Prev -> dataStateManager.save(param, DataState.Error(AdditionalRequestOnErrorStateException()))
             }
         }
     }
 
-    private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, requestType: KeyedRequestType) {
+    private suspend fun doDataAction(forceRefresh: Boolean, clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: KeyedRequestType) {
         val cachedData = cacheDataManager.load()
         when (requestType) {
             is KeyedRequestType.Refresh -> {
                 if (cachedData == null || forceRefresh || needRefresh(cachedData)) {
-                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
+                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 }
             }
             is KeyedRequestType.Next, is KeyedRequestType.Prev -> {
                 if (cachedData != null) {
-                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
+                    prepareFetch(clearCacheBeforeFetching = clearCacheBeforeFetching, clearCacheWhenFetchFails = clearCacheWhenFetchFails, awaitFetching = awaitFetching, requestType = requestType)
                 } else {
                     dataStateManager.save(param, DataState.Error(AdditionalRequestOnNullException()))
                 }
@@ -99,7 +112,7 @@ internal class DataSelector<PARAM, DATA>(
         }
     }
 
-    private suspend fun prepareFetch(clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, requestType: KeyedRequestType) {
+    private suspend fun prepareFetch(clearCacheBeforeFetching: Boolean, clearCacheWhenFetchFails: Boolean, awaitFetching: Boolean, requestType: KeyedRequestType) {
         if (clearCacheBeforeFetching) cacheDataManager.save(null)
         val state = dataStateManager.load(param)
         when (requestType) {
@@ -107,7 +120,11 @@ internal class DataSelector<PARAM, DATA>(
             is KeyedRequestType.Next -> dataStateManager.save(param, DataState.Fixed(nextDataState = AdditionalDataState.Loading(requestType.requestKey), prevDataState = state.prevDataStateOrNull()))
             is KeyedRequestType.Prev -> dataStateManager.save(param, DataState.Fixed(nextDataState = state.nextDataStateOrNull(), prevDataState = AdditionalDataState.Loading(requestType.requestKey)))
         }
-        fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
+        if (awaitFetching) {
+            fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
+        } else {
+            CoroutineScope(defaultDispatcher).launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType) }
+        }
     }
 
     private suspend fun fetchNewData(clearCacheWhenFetchFails: Boolean, requestType: KeyedRequestType) {

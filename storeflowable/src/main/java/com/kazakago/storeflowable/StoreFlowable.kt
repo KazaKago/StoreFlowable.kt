@@ -2,6 +2,7 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.core.LoadingState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -24,6 +25,7 @@ interface StoreFlowable<DATA> {
      * @param forceRefresh Set to `true` if you want to forcibly retrieve data from origin when collecting. Default value is `false`.
      * @return Returns a [Flow] containing the state of the data.
      */
+    @FlowPreview
     fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
 
     /**
