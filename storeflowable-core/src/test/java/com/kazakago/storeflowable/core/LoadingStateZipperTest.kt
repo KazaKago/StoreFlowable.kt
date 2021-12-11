@@ -4,8 +4,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import org.amshove.kluent.shouldBeNull
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class LoadingStateZipperTest {
@@ -22,7 +23,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -40,7 +41,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -58,7 +59,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -94,7 +95,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -170,7 +171,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()

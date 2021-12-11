@@ -13,8 +13,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DataSelectorRequestNextTest {
@@ -57,7 +57,6 @@ class DataSelectorRequestNextTest {
         originDataManager = object : OriginDataManager<List<TestData>> {
             override suspend fun fetch(): InternalFetched<List<TestData>> {
                 fail()
-                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<List<TestData>> {
@@ -66,7 +65,6 @@ class DataSelectorRequestNextTest {
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<List<TestData>> {
                 fail()
-                throw NotImplementedError()
             }
         },
         needRefresh = { it.firstOrNull()?.needRefresh ?: false }

@@ -7,15 +7,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.BeforeTest
 
 @ExperimentalCoroutinesApi
 class FlowableDataStateManagerTest {
 
     private lateinit var flowableDataStateManager: FlowableDataStateManager<String>
 
-    @Before
+    @BeforeTest
     fun setup() {
         flowableDataStateManager = object : FlowableDataStateManager<String>() {}
     }

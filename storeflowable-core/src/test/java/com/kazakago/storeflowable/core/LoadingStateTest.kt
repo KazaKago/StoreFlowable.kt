@@ -3,8 +3,8 @@ package com.kazakago.storeflowable.core
 import io.mockk.mockk
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.fail
 
 class LoadingStateTest {
 

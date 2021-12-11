@@ -10,9 +10,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
 import java.net.UnknownHostException
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DataSelectorValidateFailedTest {
@@ -58,12 +58,10 @@ class DataSelectorValidateFailedTest {
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
         },
         needRefresh = { it.needRefresh }

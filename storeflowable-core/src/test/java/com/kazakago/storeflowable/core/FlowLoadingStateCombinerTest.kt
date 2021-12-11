@@ -6,8 +6,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import org.amshove.kluent.shouldBeNull
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class FlowLoadingStateCombinerTest {
@@ -25,7 +26,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -44,7 +45,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -63,7 +64,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -101,7 +102,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -181,7 +182,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it.shouldBeNull()
             },
             onCompleted = { _, _, _ ->
                 fail()

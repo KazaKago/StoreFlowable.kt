@@ -5,8 +5,8 @@ import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.coInvoking
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
-import org.junit.Test
 import java.net.UnknownHostException
+import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
 class StoreFlowableRequiredDataFailedTest {

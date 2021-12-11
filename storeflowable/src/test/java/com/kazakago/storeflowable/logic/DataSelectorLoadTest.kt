@@ -9,8 +9,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DataSelectorLoadTest {
@@ -52,17 +52,14 @@ class DataSelectorLoadTest {
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
         },
         needRefresh = { it.needRefresh }
