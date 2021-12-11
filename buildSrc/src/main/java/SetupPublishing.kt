@@ -19,9 +19,9 @@ private val Project.sourceSets: SourceSetContainer
     get() = (this as ExtensionAware).extensions.getByName("sourceSets") as SourceSetContainer
 
 fun Project.setupPublishing(
-    version: String,
-    artifactId: String,
+    version: String = PublishingInfo.versionName,
     groupId: String = PublishingInfo.groupId,
+    artifactId: String = name,
     projectName: String = PublishingInfo.projectName,
     projectDescription: String = PublishingInfo.projectDescription,
     licenseName: String = PublishingInfo.licenseName,

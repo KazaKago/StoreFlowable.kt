@@ -16,9 +16,6 @@ tasks.withType(KotlinCompile::class).all {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-val versionName: String by project
-setupPublishing(version = versionName, artifactId = "storeflowable")
-
 dependencies {
     api(project(":storeflowable-core"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC2")
@@ -28,3 +25,5 @@ dependencies {
     testImplementation("io.mockk:mockk:1.12.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC2")
 }
+
+setupPublishing()
