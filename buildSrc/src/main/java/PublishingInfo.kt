@@ -6,7 +6,7 @@ internal object PublishingInfo {
     const val projectDescription = "Repository pattern support library for Kotlin with Coroutines & Flow."
 
     const val licenseName = "Apache License, Version 2.0"
-    const val licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
+    const val licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0"
 
     const val projectUrl = "https://github.com/KazaKago/StoreFlowable.kt"
     const val scmConnection = "git:git@github.com:KazaKago/StoreFlowable.kt"
