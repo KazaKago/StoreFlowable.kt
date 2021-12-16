@@ -1,29 +1,55 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     id("org.jetbrains.dokka")
     `maven-publish`
     signing
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-tasks.withType(KotlinCompile::class).all {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-dependencies {
-    api(project(":storeflowable-core"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
-
-    testImplementation(kotlin("test"))
-    testImplementation("org.amshove.kluent:kluent:1.68")
-    testImplementation("io.mockk:mockk:1.12.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        withJava()
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
+    }
+    js(BOTH) {
+        browser {
+            commonWebpackConfig {
+                cssSupport.enabled = true
+            }
+        }
+    }
+    ios {
+        binaries {
+            framework {
+                baseName = "library"
+            }
+        }
+    }
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(project(":storeflowable-core"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC2")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC2")
+                implementation("io.kotest:kotest-assertions-core:5.0.2")
+            }
+        }
+        val jvmMain by getting
+        val jvmTest by getting
+        val jsMain by getting
+        val jsTest by getting
+        val iosMain by getting
+        val iosTest by getting
+    }
 }
 
 setupPublishing()
