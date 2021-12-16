@@ -20,9 +20,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.amshove.kluent:kluent:1.68")
-    testImplementation("io.mockk:mockk:1.12.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
+    testImplementation("io.kotest:kotest-assertions-core:5.0.2")
 }
 
 setupPublishing()

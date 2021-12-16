@@ -3,12 +3,12 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.fakeAdditionalDataState
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
-import io.mockk.mockk
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
 import kotlin.test.Test
 import kotlin.test.fail
 
@@ -65,33 +65,33 @@ class DataSelectorLoadTest {
         needRefresh = { it.needRefresh }
     )
 
-    private var dataState: DataState = DataState.Fixed(mockk(), mockk())
+    private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
     private var dataCache: TestData? = null
 
     @Test
     fun load_NoCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = null
 
         val data = dataSelector.loadValidCacheOrNull()
-        data shouldBeEqualTo null
+        data shouldBe null
     }
 
     @Test
     fun load_ValidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.ValidData
 
         val data = dataSelector.loadValidCacheOrNull()
-        data shouldBeEqualTo TestData.ValidData
+        data shouldBe TestData.ValidData
     }
 
     @Test
     fun load_InvalidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.InvalidData
 
         val data = dataSelector.loadValidCacheOrNull()
-        data shouldBeEqualTo null
+        data shouldBe null
     }
 }

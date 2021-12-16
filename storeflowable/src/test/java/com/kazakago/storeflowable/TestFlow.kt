@@ -4,15 +4,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.io.Closeable
 
-class TestFlow<T>(flow: Flow<T>, scope: CoroutineScope) : Closeable {
+class TestFlow<T>(flow: Flow<T>, scope: CoroutineScope) {
     private val _history = mutableListOf<T>()
     val history: List<T> = _history
     private val job = flow.onEach { _history.add(it) }
         .launchIn(scope)
 
-    override fun close() {
+    inline fun use(block: (flow: TestFlow<T>) -> Unit) {
+        block(this)
+        close()
+    }
+
+    fun close() {
         job.cancel()
     }
 

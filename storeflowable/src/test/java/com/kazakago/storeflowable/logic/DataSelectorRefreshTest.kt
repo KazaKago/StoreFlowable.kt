@@ -3,13 +3,14 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.fakeAdditionalDataState
+import com.kazakago.storeflowable.fakeException
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
-import io.mockk.mockk
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
 import kotlin.test.Test
 import kotlin.test.fail
 
@@ -66,37 +67,37 @@ class DataSelectorRefreshTest {
         needRefresh = { it.needRefresh }
     )
 
-    private var dataState: DataState = DataState.Fixed(mockk(), mockk())
+    private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
     private var dataCache: TestData? = null
 
     @Test
     fun refresh_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = null
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
     fun refresh_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.ValidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
     fun refresh_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.InvalidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
@@ -105,8 +106,8 @@ class DataSelectorRefreshTest {
         dataCache = null
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe null
     }
 
     @Test
@@ -115,8 +116,8 @@ class DataSelectorRefreshTest {
         dataCache = TestData.ValidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.ValidData
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe TestData.ValidData
     }
 
     @Test
@@ -125,37 +126,37 @@ class DataSelectorRefreshTest {
         dataCache = TestData.InvalidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.InvalidData
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe TestData.InvalidData
     }
 
     @Test
     fun refresh_Error_NoCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = null
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
     fun refresh_Error_ValidCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = TestData.ValidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
     fun refresh_Error_InvalidCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = TestData.InvalidData
 
         dataSelector.refresh(clearCacheBeforeFetching = true)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 }

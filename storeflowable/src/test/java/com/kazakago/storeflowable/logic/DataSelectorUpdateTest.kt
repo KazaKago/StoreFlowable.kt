@@ -3,13 +3,14 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.fakeAdditionalDataState
+import com.kazakago.storeflowable.fakeException
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
-import io.mockk.mockk
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
 import kotlin.test.Test
 import kotlin.test.fail
 
@@ -66,7 +67,7 @@ class DataSelectorUpdateTest {
         needRefresh = { it.needRefresh }
     )
 
-    private var dataState: DataState = DataState.Fixed(mockk(), mockk())
+    private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
     private var dataCache: TestData? = null
 
     @Test
@@ -75,17 +76,17 @@ class DataSelectorUpdateTest {
         dataCache = TestData.ValidData
 
         dataSelector.update(TestData.FetchedData, null, null)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.FetchedData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.FetchedData
     }
 
     @Test
     fun update_Null() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = TestData.InvalidData
 
         dataSelector.update(null, null, null)
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe null
     }
 }

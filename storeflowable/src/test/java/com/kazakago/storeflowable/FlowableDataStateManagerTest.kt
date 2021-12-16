@@ -1,14 +1,13 @@
 package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.datastate.DataState
-import io.mockk.mockk
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
-import kotlin.test.Test
 import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
 class FlowableDataStateManagerTest {
@@ -24,16 +23,16 @@ class FlowableDataStateManagerTest {
     fun flowSameKeyEvent() = runTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
             delay(100)
-            it.history.size shouldBeEqualTo 1
-            it.history.last() shouldBeInstanceOf DataState.Fixed::class
+            it.history.size shouldBe 1
+            it.history.last().shouldBeTypeOf<DataState.Fixed>()
             flowableDataStateManager.save("hoge", DataState.Loading())
             delay(100)
-            it.history.size shouldBeEqualTo 2
-            it.history.last() shouldBeInstanceOf DataState.Loading::class
-            flowableDataStateManager.save("hoge", DataState.Error(mockk()))
+            it.history.size shouldBe 2
+            it.history.last().shouldBeTypeOf<DataState.Loading>()
+            flowableDataStateManager.save("hoge", DataState.Error(fakeException()))
             delay(100)
-            it.history.size shouldBeEqualTo 3
-            it.history.last() shouldBeInstanceOf DataState.Error::class
+            it.history.size shouldBe 3
+            it.history.last().shouldBeTypeOf<DataState.Error>()
         }
     }
 
@@ -41,16 +40,16 @@ class FlowableDataStateManagerTest {
     fun flowDifferentKeyEvent() = runTest {
         flowableDataStateManager.getFlow("hoge").toTest(this).use {
             delay(100)
-            it.history.size shouldBeEqualTo 1
-            it.history.last() shouldBeInstanceOf DataState.Fixed::class
+            it.history.size shouldBe 1
+            it.history.last().shouldBeTypeOf<DataState.Fixed>()
             flowableDataStateManager.save("hogehoge", DataState.Loading())
             delay(100)
-            it.history.size shouldBeEqualTo 1
-            it.history.last() shouldBeInstanceOf DataState.Fixed::class
-            flowableDataStateManager.save("hugahuga", DataState.Error(mockk()))
+            it.history.size shouldBe 1
+            it.history.last().shouldBeTypeOf<DataState.Fixed>()
+            flowableDataStateManager.save("hugahuga", DataState.Error(fakeException()))
             delay(100)
-            it.history.size shouldBeEqualTo 1
-            it.history.last() shouldBeInstanceOf DataState.Fixed::class
+            it.history.size shouldBe 1
+            it.history.last().shouldBeTypeOf<DataState.Fixed>()
         }
     }
 }
