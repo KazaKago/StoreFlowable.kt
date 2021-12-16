@@ -32,6 +32,8 @@ fun Project.setupPublishing(
     developerEmail: String = PublishingInfo.developerEmail,
     developerUrl: String = PublishingInfo.developerUrl
 ) {
+    this.version = PublishingInfo.versionName
+    this.group = PublishingInfo.groupId
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
         archiveClassifier.set("javadoc")
@@ -48,9 +50,9 @@ fun Project.setupPublishing(
                 from(components["java"])
                 artifact(tasks["sourcesJar"])
                 artifact(tasks["javadocJar"])
+                this.version = version
                 this.groupId = groupId
                 this.artifactId = artifactId
-                this.version = version
                 pom {
                     name.set(projectName)
                     description.set(projectDescription)
