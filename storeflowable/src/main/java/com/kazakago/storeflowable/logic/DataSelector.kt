@@ -18,7 +18,7 @@ internal class DataSelector<PARAM, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
 
     suspend fun loadValidCacheOrNull(): DATA? {
