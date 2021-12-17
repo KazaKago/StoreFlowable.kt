@@ -114,12 +114,12 @@ Be sure to go through the created [`StoreFlowable<DATA>`](storeflowable/src/main
 class UserRepository {
 
     fun followUserData(userId: UserId): FlowLoadingState<UserData> {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory().create(userId)
+        val userFlowable: StoreFlowable<UserData> = UserFlowableFactory().create(userId)
         return userFlowable.publish()
     }
 
     suspend fun updateUserData(userData: UserData) {
-        val userFlowable: StoreFlowable<UserId, UserData> = UserFlowableFactory().create(userData.userId)
+        val userFlowable: StoreFlowable<UserData> = UserFlowableFactory().create(userData.userId)
         userFlowable.update(userData)
     }
 }
