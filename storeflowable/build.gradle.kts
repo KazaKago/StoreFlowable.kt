@@ -25,7 +25,14 @@ kotlin {
     ios {
         binaries {
             framework {
-                baseName = "library"
+                baseName = "shared"
+            }
+        }
+    }
+    iosSimulatorArm64 {
+        binaries {
+            framework {
+                baseName = "shared"
             }
         }
     }
@@ -49,6 +56,12 @@ kotlin {
         val jsTest by getting
         val iosMain by getting
         val iosTest by getting
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Test by getting {
+            dependsOn(iosTest)
+        }
     }
 }
 
