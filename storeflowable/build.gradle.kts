@@ -18,10 +18,10 @@ tasks.withType(KotlinCompile::class).all {
 
 dependencies {
     api(project(":storeflowable-core"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC3")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC3")
     testImplementation("io.kotest:kotest-assertions-core:5.0.2")
 }
 
