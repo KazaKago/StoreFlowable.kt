@@ -19,7 +19,6 @@ import com.kazakago.storeflowable.example.viewmodel.GithubReposViewModel
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubReposActivity : AppCompatActivity() {
