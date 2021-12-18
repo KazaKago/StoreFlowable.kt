@@ -10,10 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":storeflowable:cleanAllTests" />
-          <option value=":storeflowable-core:cleanAllTests" />
-          <option value=":storeflowable:allTests" />
-          <option value=":storeflowable-core:allTests" />
+          <option value="allTests" />
         </list>
       </option>
       <option name="vmOptions" />
