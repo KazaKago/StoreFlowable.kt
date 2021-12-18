@@ -16,7 +16,6 @@ import coil.load
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubUserBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubUserViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubUserActivity : AppCompatActivity() {

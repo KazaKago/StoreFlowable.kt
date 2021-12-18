@@ -32,8 +32,8 @@ fun Project.setupPublishing(
     developerEmail: String = PublishingInfo.developerEmail,
     developerUrl: String = PublishingInfo.developerUrl
 ) {
-    this.version = PublishingInfo.versionName
-    this.group = PublishingInfo.groupId
+    this.version = version
+    this.group = groupId
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
         archiveClassifier.set("javadoc")
