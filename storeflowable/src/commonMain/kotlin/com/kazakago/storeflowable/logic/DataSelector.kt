@@ -9,7 +9,7 @@ import com.kazakago.storeflowable.exception.AdditionalRequestOnNullException
 import com.kazakago.storeflowable.origin.OriginDataManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 internal class DataSelector<PARAM, DATA>(
@@ -18,8 +18,10 @@ internal class DataSelector<PARAM, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     private val originDataManager: OriginDataManager<DATA>,
     private val needRefresh: (suspend (cachedData: DATA) -> Boolean),
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    asyncDispatcher: CoroutineDispatcher,
 ) {
+
+    private val asyncCoroutineScope = CoroutineScope(SupervisorJob() + asyncDispatcher)
 
     suspend fun loadValidCacheOrNull(): DATA? {
         val data = cacheDataManager.load() ?: return null
@@ -123,7 +125,7 @@ internal class DataSelector<PARAM, DATA>(
         if (awaitFetching) {
             fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType)
         } else {
-            CoroutineScope(defaultDispatcher).launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType) }
+            asyncCoroutineScope.launch { fetchNewData(clearCacheWhenFetchFails = clearCacheWhenFetchFails, requestType = requestType) }
         }
     }
 

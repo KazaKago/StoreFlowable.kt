@@ -1,16 +1,21 @@
 package com.kazakago.storeflowable.pagination.oneway
 
+import com.kazakago.storeflowable.defaultAsyncDispatcher
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.logic.StoreFlowableImpl
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
+import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Create [PaginationStoreFlowable] class from [PaginationStoreFlowableFactory].
  *
  * @return Created [PaginationStoreFlowable].
  */
-fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): PaginationStoreFlowable<DATA> {
+fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
+    param: PARAM,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): PaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,
@@ -33,6 +38,7 @@ fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARA
 
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
-        needRefresh = { needRefresh(it, param) }
+        needRefresh = { needRefresh(it, param) },
+        asyncDispatcher = asyncDispatcher,
     )
 }

@@ -1,16 +1,21 @@
 package com.kazakago.storeflowable.pagination.twoway
 
+import com.kazakago.storeflowable.defaultAsyncDispatcher
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.logic.StoreFlowableImpl
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
+import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Create [TwoWayPaginationStoreFlowable] class from [TwoWayPaginationStoreFlowableFactory].
  *
  * @return Created [TwoWayPaginationStoreFlowable].
  */
-fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(param: PARAM): TwoWayPaginationStoreFlowable<DATA> {
+fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(
+    param: PARAM,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): TwoWayPaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,
@@ -36,6 +41,7 @@ fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(param
                 return InternalFetched(result.data, nextKey = null, prevKey = result.prevKey)
             }
         },
-        needRefresh = { needRefresh(it, param) }
+        needRefresh = { needRefresh(it, param) },
+        asyncDispatcher = asyncDispatcher,
     )
 }
