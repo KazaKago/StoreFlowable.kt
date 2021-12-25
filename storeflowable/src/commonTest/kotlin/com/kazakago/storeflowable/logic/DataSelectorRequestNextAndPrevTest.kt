@@ -13,6 +13,7 @@ import com.kazakago.storeflowable.origin.OriginDataManager
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.fail
@@ -69,7 +70,8 @@ class DataSelectorRequestNextAndPrevTest {
                 return InternalFetched(listOf(TestData.FetchedPrevData), nextKey = null, prevKey = "KEY")
             }
         },
-        needRefresh = { it.firstOrNull()?.needRefresh ?: false }
+        needRefresh = { it.firstOrNull()?.needRefresh ?: false },
+        asyncDispatcher = StandardTestDispatcher(),
     )
 
     private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
