@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.pagination.twoway
 
-import com.kazakago.storeflowable.defaultAsyncDispatcher
 import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.defaultAsyncDispatcher
 import com.kazakago.storeflowable.logic.StoreFlowableImpl
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
