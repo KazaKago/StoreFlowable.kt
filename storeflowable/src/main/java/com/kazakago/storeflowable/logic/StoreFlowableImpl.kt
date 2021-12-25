@@ -9,6 +9,7 @@ import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
@@ -18,6 +19,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
+    asyncDispatcher: CoroutineDispatcher,
 ) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
@@ -26,6 +28,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
         needRefresh = needRefresh,
+        asyncDispatcher = asyncDispatcher,
     )
 
     @FlowPreview
