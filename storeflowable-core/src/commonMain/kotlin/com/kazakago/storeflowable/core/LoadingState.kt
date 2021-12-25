@@ -12,14 +12,14 @@ import com.kazakago.storeflowable.core.LoadingState.*
  *
  * @param T Types of data to be included.
  */
-sealed interface LoadingState<out T> {
+sealed class LoadingState<out T> {
 
     /**
      * when data fetch is processing.
      *
      * @param content Indicates the existing or not existing of data.
      */
-    data class Loading<out T>(val content: T?) : LoadingState<T>
+    data class Loading<out T>(val content: T?) : LoadingState<T>()
 
     /**
      * When data fetch is successful.
@@ -28,14 +28,14 @@ sealed interface LoadingState<out T> {
      * @param next next pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
      * @param prev prev pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
      */
-    data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>
+    data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>()
 
     /**
      * when data fetch is failure.
      *
      * @param exception Occurred exception.
      */
-    data class Error<out T>(val exception: Exception) : LoadingState<T>
+    data class Error<out T>(val exception: Exception) : LoadingState<T>()
 
     /**
      * Provides state-specific callbacks.
@@ -46,7 +46,7 @@ sealed interface LoadingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
+    inline fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
             is Completed -> onCompleted(content, next, prev)
