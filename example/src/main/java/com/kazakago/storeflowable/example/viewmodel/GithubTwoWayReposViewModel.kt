@@ -6,7 +6,6 @@ import com.kazakago.storeflowable.example.model.GithubRepo
 import com.kazakago.storeflowable.example.repository.GithubTwoWayReposRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubTwoWayReposViewModel : ViewModel() {

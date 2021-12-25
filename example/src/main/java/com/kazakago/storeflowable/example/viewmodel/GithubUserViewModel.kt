@@ -7,7 +7,6 @@ import com.kazakago.storeflowable.example.model.GithubUser
 import com.kazakago.storeflowable.example.repository.GithubUserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubUserViewModel(private val userName: String) : ViewModel() {
