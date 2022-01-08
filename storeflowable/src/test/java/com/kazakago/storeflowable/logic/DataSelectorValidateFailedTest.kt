@@ -3,16 +3,17 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.fakeAdditionalDataState
+import com.kazakago.storeflowable.fakeException
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
-import io.mockk.mockk
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
-import java.net.UnknownHostException
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class DataSelectorValidateFailedTest {
@@ -53,55 +54,54 @@ class DataSelectorValidateFailedTest {
         },
         originDataManager = object : OriginDataManager<TestData> {
             override suspend fun fetch(): InternalFetched<TestData> {
-                throw UnknownHostException()
+                throw NoSuchElementException()
             }
 
             override suspend fun fetchNext(nextKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<TestData> {
                 fail()
-                throw NotImplementedError()
             }
         },
-        needRefresh = { it.needRefresh }
+        needRefresh = { it.needRefresh },
+        asyncDispatcher = StandardTestDispatcher(),
     )
 
-    private var dataState: DataState = DataState.Fixed(mockk(), mockk())
+    private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
     private var dataCache: TestData? = null
 
     @Test
     fun validate_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = null
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Error>()
+        (dataState as DataState.Error).exception.shouldBeTypeOf<NoSuchElementException>()
+        dataCache shouldBe null
     }
 
     @Test
     fun validate_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.ValidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Fixed::class
-        dataCache shouldBeEqualTo TestData.ValidData
+        dataState.shouldBeTypeOf<DataState.Fixed>()
+        dataCache shouldBe TestData.ValidData
     }
 
     @Test
     fun validate_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(mockk(), mockk())
+        dataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
         dataCache = TestData.InvalidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Error>()
+        (dataState as DataState.Error).exception.shouldBeTypeOf<NoSuchElementException>()
+        dataCache shouldBe null
     }
 
     @Test
@@ -110,8 +110,8 @@ class DataSelectorValidateFailedTest {
         dataCache = null
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe null
     }
 
     @Test
@@ -120,8 +120,8 @@ class DataSelectorValidateFailedTest {
         dataCache = TestData.ValidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.ValidData
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe TestData.ValidData
     }
 
     @Test
@@ -130,40 +130,40 @@ class DataSelectorValidateFailedTest {
         dataCache = TestData.InvalidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Loading::class
-        dataCache shouldBeEqualTo TestData.InvalidData
+        dataState.shouldBeTypeOf<DataState.Loading>()
+        dataCache shouldBe TestData.InvalidData
     }
 
     @Test
     fun validate_Error_NoCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = null
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Error>()
+        (dataState as DataState.Error).exception.shouldBeTypeOf<NoSuchElementException>()
+        dataCache shouldBe null
     }
 
     @Test
     fun validate_Error_ValidCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = TestData.ValidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Error>()
+        (dataState as DataState.Error).exception.shouldBeTypeOf<NoSuchElementException>()
+        dataCache shouldBe null
     }
 
     @Test
     fun validate_Error_InvalidCache() = runTest {
-        dataState = DataState.Error(mockk())
+        dataState = DataState.Error(fakeException())
         dataCache = TestData.InvalidData
 
         dataSelector.validate()
-        dataState shouldBeInstanceOf DataState.Error::class
-        (dataState as DataState.Error).exception shouldBeInstanceOf UnknownHostException::class
-        dataCache shouldBeEqualTo null
+        dataState.shouldBeTypeOf<DataState.Error>()
+        (dataState as DataState.Error).exception.shouldBeTypeOf<NoSuchElementException>()
+        dataCache shouldBe null
     }
 }

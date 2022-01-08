@@ -1,7 +1,7 @@
 package com.kazakago.storeflowable.datastate
 
 @Suppress("CanSealedSubClassBeObject")
-internal sealed interface AdditionalDataState {
+sealed interface AdditionalDataState {
     class Fixed(val additionalRequestKey: String) : AdditionalDataState
     class FixedWithNoMoreAdditionalData : AdditionalDataState
     class Loading(val additionalRequestKey: String) : AdditionalDataState

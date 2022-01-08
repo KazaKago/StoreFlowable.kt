@@ -16,14 +16,12 @@ tasks.withType(KotlinCompile::class).all {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-val versionName: String by project
-setupPublishing(version = versionName, artifactId = "storeflowable-core")
-
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.amshove.kluent:kluent:1.68")
-    testImplementation("io.mockk:mockk:1.12.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
+    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.0.3")
 }
+
+setupPublishing()

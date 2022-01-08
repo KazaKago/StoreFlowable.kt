@@ -4,13 +4,17 @@ import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.logic.StoreFlowableImpl
 import com.kazakago.storeflowable.origin.InternalFetched
 import com.kazakago.storeflowable.origin.OriginDataManager
+import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Create [StoreFlowable] class from [StoreFlowableFactory].
  *
  * @return Created StateFlowable.
  */
-fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreFlowable<DATA> {
+fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
+    param: PARAM,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): StoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
         flowableDataStateManager = flowableDataStateManager,
@@ -29,6 +33,7 @@ fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(param: PARAM): StoreF
             override suspend fun fetchNext(nextKey: String) = throw NotImplementedError()
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
-        needRefresh = { needRefresh(it, param) }
+        needRefresh = { needRefresh(it, param) },
+        asyncDispatcher = asyncDispatcher,
     )
 }

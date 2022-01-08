@@ -19,9 +19,9 @@ private val Project.sourceSets: SourceSetContainer
     get() = (this as ExtensionAware).extensions.getByName("sourceSets") as SourceSetContainer
 
 fun Project.setupPublishing(
-    version: String,
-    artifactId: String,
+    version: String = PublishingInfo.versionName,
     groupId: String = PublishingInfo.groupId,
+    artifactId: String = name,
     projectName: String = PublishingInfo.projectName,
     projectDescription: String = PublishingInfo.projectDescription,
     licenseName: String = PublishingInfo.licenseName,
@@ -32,6 +32,8 @@ fun Project.setupPublishing(
     developerEmail: String = PublishingInfo.developerEmail,
     developerUrl: String = PublishingInfo.developerUrl
 ) {
+    this.version = version
+    this.group = groupId
     tasks.create("javadocJar", Jar::class) {
         group = "publishing"
         archiveClassifier.set("javadoc")
@@ -48,9 +50,9 @@ fun Project.setupPublishing(
                 from(components["java"])
                 artifact(tasks["sourcesJar"])
                 artifact(tasks["javadocJar"])
+                this.version = version
                 this.groupId = groupId
                 this.artifactId = artifactId
-                this.version = version
                 pom {
                     name.set(projectName)
                     description.set(projectDescription)

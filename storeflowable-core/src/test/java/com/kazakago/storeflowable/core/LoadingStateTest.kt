@@ -1,22 +1,21 @@
 package com.kazakago.storeflowable.core
 
-import io.mockk.mockk
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
+import kotlin.test.Test
+import kotlin.test.fail
 
 class LoadingStateTest {
 
     @Test
     fun doAction_Completed() {
-        val state = LoadingState.Completed(10, mockk(), mockk())
+        val state = LoadingState.Completed(10, fakeAdditionalLoadingState(), fakeAdditionalLoadingState())
         state.doAction(
             onLoading = {
                 fail()
             },
             onCompleted = { content, _, _ ->
-                content shouldBeEqualTo 10
+                content shouldBe 10
             },
             onError = {
                 fail()
@@ -51,7 +50,7 @@ class LoadingStateTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }

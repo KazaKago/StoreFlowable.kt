@@ -14,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.kazakago.storeflowable.example.R
 import com.kazakago.storeflowable.example.databinding.ActivityGithubMetaBinding
 import com.kazakago.storeflowable.example.viewmodel.GithubMetaViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class GithubMetaActivity : AppCompatActivity() {

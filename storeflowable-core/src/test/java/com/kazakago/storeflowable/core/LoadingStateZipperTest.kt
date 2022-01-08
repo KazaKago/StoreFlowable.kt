@@ -1,11 +1,11 @@
 package com.kazakago.storeflowable.core
 
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class LoadingStateZipperTest {
@@ -22,7 +22,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -40,7 +40,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -58,7 +58,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -82,7 +82,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -94,7 +94,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -108,13 +108,13 @@ class LoadingStateZipperTest {
     @Test
     fun zip_LoadingWithData_LoadingWithData() = runTest {
         val zippedState = loadingWithData.zip(loadingWithData) { value1, value2 ->
-            value1 shouldBeEqualTo 70
-            value2 shouldBeEqualTo 70
+            value1 shouldBe 70
+            value2 shouldBe 70
             value1 + value2
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 140
+                it shouldBe 140
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -128,13 +128,13 @@ class LoadingStateZipperTest {
     @Test
     fun zip_LoadingWithData_Completed() = runTest {
         val zippedState = loadingWithData.zip(completed) { value1, value2 ->
-            value1 shouldBeEqualTo 70
-            value2 shouldBeEqualTo 30
+            value1 shouldBe 70
+            value2 shouldBe 30
             value1 + value2
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 100
+                it shouldBe 100
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -158,7 +158,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -170,7 +170,7 @@ class LoadingStateZipperTest {
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -184,13 +184,13 @@ class LoadingStateZipperTest {
     @Test
     fun zip_Completed_LoadingWithData() = runTest {
         val zippedState = completed.zip(loadingWithData) { value1, value2 ->
-            value1 shouldBeEqualTo 30
-            value2 shouldBeEqualTo 70
+            value1 shouldBe 30
+            value2 shouldBe 70
             value1 + value2
         }
         zippedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 100
+                it shouldBe 100
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -204,8 +204,8 @@ class LoadingStateZipperTest {
     @Test
     fun zip_Completed_Completed() = runTest {
         val zippedState = completed.zip(completed) { value1, value2 ->
-            value1 shouldBeEqualTo 30
-            value2 shouldBeEqualTo 30
+            value1 shouldBe 30
+            value2 shouldBe 30
             value1 + value2
         }
         zippedState.doAction(
@@ -213,7 +213,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onCompleted = { content, _, _ ->
-                content shouldBeEqualTo 60
+                content shouldBe 60
             },
             onError = {
                 fail()
@@ -234,7 +234,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -252,7 +252,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -270,7 +270,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -288,7 +288,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -306,7 +306,7 @@ class LoadingStateZipperTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }

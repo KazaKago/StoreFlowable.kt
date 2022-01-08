@@ -1,13 +1,13 @@
 package com.kazakago.storeflowable.core
 
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class FlowLoadingStateCombinerTest {
@@ -25,7 +25,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -44,7 +44,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -63,7 +63,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -88,7 +88,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -101,7 +101,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -115,14 +115,14 @@ class FlowLoadingStateCombinerTest {
     @Test
     fun combine_LoadingWithData_LoadingWithData() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowLoadingWithData) { value1, value2 ->
-            value1 shouldBeEqualTo 70
-            value2 shouldBeEqualTo 70
+            value1 shouldBe 70
+            value2 shouldBe 70
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 140
+                it shouldBe 140
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -136,14 +136,14 @@ class FlowLoadingStateCombinerTest {
     @Test
     fun combine_LoadingWithData_Completed() = runTest {
         val combinedFlowState = flowLoadingWithData.combineState(flowCompleted) { value1, value2 ->
-            value1 shouldBeEqualTo 70
-            value2 shouldBeEqualTo 30
+            value1 shouldBe 70
+            value2 shouldBe 30
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 100
+                it shouldBe 100
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -168,7 +168,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -181,7 +181,7 @@ class FlowLoadingStateCombinerTest {
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo null
+                it shouldBe null
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -195,14 +195,14 @@ class FlowLoadingStateCombinerTest {
     @Test
     fun combine_Completed_LoadingWithData() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowLoadingWithData) { value1, value2 ->
-            value1 shouldBeEqualTo 30
-            value2 shouldBeEqualTo 70
+            value1 shouldBe 30
+            value2 shouldBe 70
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
         combinedState.doAction(
             onLoading = {
-                it shouldBeEqualTo 100
+                it shouldBe 100
             },
             onCompleted = { _, _, _ ->
                 fail()
@@ -216,8 +216,8 @@ class FlowLoadingStateCombinerTest {
     @Test
     fun combine_Completed_Completed() = runTest {
         val combinedFlowState = flowCompleted.combineState(flowCompleted) { value1, value2 ->
-            value1 shouldBeEqualTo 30
-            value2 shouldBeEqualTo 30
+            value1 shouldBe 30
+            value2 shouldBe 30
             value1 + value2
         }
         val combinedState = combinedFlowState.first()
@@ -226,7 +226,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onCompleted = { content, _, _ ->
-                content shouldBeEqualTo 60
+                content shouldBe 60
             },
             onError = {
                 fail()
@@ -248,7 +248,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -267,7 +267,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -286,7 +286,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -305,7 +305,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
@@ -324,7 +324,7 @@ class FlowLoadingStateCombinerTest {
                 fail()
             },
             onError = {
-                it shouldBeInstanceOf IllegalStateException::class
+                it.shouldBeTypeOf<IllegalStateException>()
             }
         )
     }
