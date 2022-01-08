@@ -47,7 +47,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-                implementation("io.kotest:kotest-assertions-core:5.0.2")
+                implementation("io.kotest:kotest-assertions-core:5.0.3")
             }
         }
         val jvmMain by getting
