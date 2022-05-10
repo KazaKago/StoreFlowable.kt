@@ -16,6 +16,10 @@ tasks.withType(KotlinCompile::class).all {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 

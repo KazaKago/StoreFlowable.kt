@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.BaseStoreFlowableFactory
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface PaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
+public interface PaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**
      * The next data saving process to cache.
@@ -19,14 +19,14 @@ interface PaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun saveNextDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
+    public suspend fun saveNextDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
 
     /**
      * The latest data acquisition process from origin.
      *
      * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(param: PARAM): Fetched<DATA>
+    public suspend fun fetchDataFromOrigin(param: PARAM): Fetched<DATA>
 
     /**
      * Next data acquisition process from origin.
@@ -34,5 +34,5 @@ interface PaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory
      * @param nextKey Key for next data request.
      * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchNextDataFromOrigin(nextKey: String, param: PARAM): Fetched<DATA>
+    public suspend fun fetchNextDataFromOrigin(nextKey: String, param: PARAM): Fetched<DATA>
 }

@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  *
  * @return Created StateFlowable.
  */
-fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
+public fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
 ): StoreFlowable<DATA> {

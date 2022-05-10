@@ -11,7 +11,7 @@ import com.kazakago.storeflowable.pagination.oneway.Fetched
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
+public interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**
      * The next data saving process to cache.
@@ -20,7 +20,7 @@ interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableF
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun saveNextDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
+    public suspend fun saveNextDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
 
     /**
      * The previous data saving process to cache.
@@ -29,14 +29,14 @@ interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableF
      * @param cachedData Currently cached data.
      * @param newData Data to be saved.
      */
-    suspend fun savePrevDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
+    public suspend fun savePrevDataToCache(cachedData: DATA, newData: DATA, param: PARAM)
 
     /**
      * The latest data acquisition process from origin.
      *
      * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchDataFromOrigin(param: PARAM): FetchedInitial<DATA>
+    public suspend fun fetchDataFromOrigin(param: PARAM): FetchedInitial<DATA>
 
     /**
      * Next data acquisition process from origin.
@@ -44,7 +44,7 @@ interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableF
      * @param nextKey Key for next data request.
      * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchNextDataFromOrigin(nextKey: String, param: PARAM): FetchedNext<DATA>
+    public suspend fun fetchNextDataFromOrigin(nextKey: String, param: PARAM): FetchedNext<DATA>
 
     /**
      * Previous data acquisition process from origin.
@@ -52,5 +52,5 @@ interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableF
      * @param prevKey Key for previous data request.
      * @return [Fetched] class including the acquired data.
      */
-    suspend fun fetchPrevDataFromOrigin(prevKey: String, param: PARAM): FetchedPrev<DATA>
+    public suspend fun fetchPrevDataFromOrigin(prevKey: String, param: PARAM): FetchedPrev<DATA>
 }

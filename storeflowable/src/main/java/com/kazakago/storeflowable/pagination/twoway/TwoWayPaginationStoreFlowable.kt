@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
  *
  * @param DATA Specify the type of data to be handled.
  */
-interface TwoWayPaginationStoreFlowable<DATA> : PaginationStoreFlowable<DATA> {
+public interface TwoWayPaginationStoreFlowable<DATA> : PaginationStoreFlowable<DATA> {
 
     /**
      * Request previous data.
@@ -19,7 +19,7 @@ interface TwoWayPaginationStoreFlowable<DATA> : PaginationStoreFlowable<DATA> {
      *
      * @param continueWhenError Even if the data state is an [LoadingState.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
-    suspend fun requestPrevData(continueWhenError: Boolean = true)
+    public suspend fun requestPrevData(continueWhenError: Boolean = true)
 
     /**
      * Treat the passed data as the latest acquired data.
@@ -31,5 +31,5 @@ interface TwoWayPaginationStoreFlowable<DATA> : PaginationStoreFlowable<DATA> {
      * @param nextKey Key for next request. If null is set, the stored key will be used.
      * @param prevKey Key for prev request. If null is set, the stored key will be used.
      */
-    suspend fun update(newData: DATA?, nextKey: String? = null, prevKey: String? = null)
+    public suspend fun update(newData: DATA?, nextKey: String? = null, prevKey: String? = null)
 }

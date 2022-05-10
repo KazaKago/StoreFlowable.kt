@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataStateFlowAccessor<PARAM>, RequestKeyManager<PARAM> {
+public abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataStateFlowAccessor<PARAM>, RequestKeyManager<PARAM> {
 
     private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
     private val nextKey = mutableMapOf<PARAM, String?>()
@@ -54,7 +54,7 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataSt
     /**
      * Clear all data state in this manager.
      */
-    fun clearAll() {
+    public fun clearAll() {
         dataState.clear()
     }
 

@@ -10,7 +10,7 @@ import com.kazakago.storeflowable.core.LoadingState
  *
  * @param DATA Specify the type of data to be handled.
  */
-interface PaginationStoreFlowable<DATA> : StoreFlowable<DATA> {
+public interface PaginationStoreFlowable<DATA> : StoreFlowable<DATA> {
 
     /**
      * Request next data.
@@ -19,7 +19,7 @@ interface PaginationStoreFlowable<DATA> : StoreFlowable<DATA> {
      *
      * @param continueWhenError Even if the data state is an [LoadingState.Error] when [refresh] is called, the refresh will continue. Default value is `true`.
      */
-    suspend fun requestNextData(continueWhenError: Boolean = true)
+    public suspend fun requestNextData(continueWhenError: Boolean = true)
 
     /**
      * Treat the passed data as the latest acquired data.
@@ -30,5 +30,5 @@ interface PaginationStoreFlowable<DATA> : StoreFlowable<DATA> {
      * @param newData Latest data.
      * @param nextKey Key for next request. If null is set, the stored key will be used.
      */
-    suspend fun update(newData: DATA?, nextKey: String? = null)
+    public suspend fun update(newData: DATA?, nextKey: String? = null)
 }

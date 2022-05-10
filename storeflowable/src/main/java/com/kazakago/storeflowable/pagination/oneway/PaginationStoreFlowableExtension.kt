@@ -12,7 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
  *
  * @return Created [PaginationStoreFlowable].
  */
-fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
+public fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
 ): PaginationStoreFlowable<DATA> {

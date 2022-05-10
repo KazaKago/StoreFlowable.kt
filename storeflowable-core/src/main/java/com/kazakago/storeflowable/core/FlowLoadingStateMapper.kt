@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.map
  * @param transform This callback that returns the result of transforming the data.
  * @return Return [FlowLoadingState] containing the transformed data.
  */
-fun <A, Z> FlowLoadingState<A>.mapContent(transform: suspend (content: A) -> Z): FlowLoadingState<Z> {
+public fun <A, Z> FlowLoadingState<A>.mapContent(transform: suspend (content: A) -> Z): FlowLoadingState<Z> {
     return map {
         when (it) {
             is LoadingState.Loading -> LoadingState.Loading(if (it.content != null) transform(it.content) else null)

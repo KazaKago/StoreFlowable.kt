@@ -10,26 +10,26 @@ import com.kazakago.storeflowable.core.AdditionalLoadingState.*
  * - [Loading] is acquiring data.
  * - [Error] is an error when processing.
  */
-sealed class AdditionalLoadingState {
+public sealed class AdditionalLoadingState {
 
     /**
      * No processing.
      *
      * @param canRequestAdditionalData Whether additional fetching is possible from the origin.
      */
-    data class Fixed(val canRequestAdditionalData: Boolean) : AdditionalLoadingState()
+    public data class Fixed(val canRequestAdditionalData: Boolean) : AdditionalLoadingState()
 
     /**
      * when data fetch is processing.
      */
-    object Loading : AdditionalLoadingState()
+    public object Loading : AdditionalLoadingState()
 
     /**
      * when data fetch is failure.
      *
      * @param exception Occurred exception.
      */
-    data class Error(val exception: Exception) : AdditionalLoadingState()
+    public data class Error(val exception: Exception) : AdditionalLoadingState()
 
     /**
      * Provides state-specific callbacks.
@@ -40,7 +40,7 @@ sealed class AdditionalLoadingState {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    inline fun <V> doAction(onFixed: ((canRequestAdditionalData: Boolean) -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
+    public inline fun <V> doAction(onFixed: ((canRequestAdditionalData: Boolean) -> V), onLoading: (() -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Fixed -> onFixed(canRequestAdditionalData)
             is Loading -> onLoading()

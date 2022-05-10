@@ -6,28 +6,28 @@ package com.kazakago.storeflowable
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-interface BaseStoreFlowableFactory<PARAM, DATA> {
+public interface BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**
      * Used for data state management.
      *
      * Create a class that inherits [FlowableDataStateManager] and assign it.
      */
-    val flowableDataStateManager: FlowableDataStateManager<PARAM>
+    public val flowableDataStateManager: FlowableDataStateManager<PARAM>
 
     /**
      * The data loading process from cache.
      *
      * @return The loaded data.
      */
-    suspend fun loadDataFromCache(param: PARAM): DATA?
+    public suspend fun loadDataFromCache(param: PARAM): DATA?
 
     /**
      * The data saving process to cache.
      *
      * @param newData Data to be saved.
      */
-    suspend fun saveDataToCache(newData: DATA?, param: PARAM)
+    public suspend fun saveDataToCache(newData: DATA?, param: PARAM)
 
     /**
      * Determine if the cache is valid.
@@ -35,5 +35,5 @@ interface BaseStoreFlowableFactory<PARAM, DATA> {
      * @param cachedData Current cache data.
      * @return Returns `true` if the cache is invalid and refresh is needed.
      */
-    suspend fun needRefresh(cachedData: DATA, param: PARAM): Boolean
+    public suspend fun needRefresh(cachedData: DATA, param: PARAM): Boolean
 }
