@@ -37,6 +37,13 @@ internal class DataSelector<PARAM, DATA>(
         dataStateManager.save(param, DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed()))
     }
 
+    suspend fun clear() {
+        cacheDataManager.save(null)
+        requestKeyManager.saveNext(param, null)
+        requestKeyManager.savePrev(param, null)
+        dataStateManager.save(param, DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed()))
+    }
+
     suspend fun validate() {
         doStateAction(forceRefresh = false, clearCacheBeforeFetching = true, clearCacheWhenFetchFails = true, continueWhenError = true, awaitFetching = true, requestType = RequestType.Refresh)
     }

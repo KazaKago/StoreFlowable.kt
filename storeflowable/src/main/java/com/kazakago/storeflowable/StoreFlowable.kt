@@ -80,4 +80,10 @@ interface StoreFlowable<DATA> {
      * @param newData Latest data.
      */
     suspend fun update(newData: DATA?)
+
+    /**
+     * Clear data managed by StoreFlowable.
+     * and this event will be notified.
+     */
+    suspend fun clear()
 }

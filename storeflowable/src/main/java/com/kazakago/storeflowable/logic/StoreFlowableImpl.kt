@@ -106,4 +106,8 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     override suspend fun update(newData: DATA?, nextKey: String?, prevKey: String?) {
         dataSelector.update(newData, nextKey = nextKey, prevKey = prevKey)
     }
+
+    override suspend fun clear() {
+        dataSelector.clear()
+    }
 }
