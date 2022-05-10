@@ -22,7 +22,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-    testImplementation("io.kotest:kotest-assertions-core:5.0.3")
+    testImplementation("io.kotest:kotest-assertions-core:5.3.0")
 }
 
 setupPublishing()
