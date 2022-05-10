@@ -18,6 +18,7 @@ fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
     return StoreFlowableImpl(
         param = param,
         dataStateFlowAccessor = flowableDataStateManager,
+        requestKeyManager = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache(param)
             override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)

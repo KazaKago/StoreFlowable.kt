@@ -3,10 +3,11 @@ package com.kazakago.storeflowable.logic
 import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.cache.RequestKeyManager
 import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.datastate.DataState
-import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.datastate.DataStateFlowAccessor
+import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.*
 internal class StoreFlowableImpl<PARAM, DATA>(
     private val param: PARAM,
     private val dataStateFlowAccessor: DataStateFlowAccessor<PARAM>,
+    private val requestKeyManager: RequestKeyManager<PARAM>,
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
     dataStateManager: DataStateManager<PARAM>,
@@ -26,9 +28,10 @@ internal class StoreFlowableImpl<PARAM, DATA>(
 
     private val dataSelector = DataSelector(
         param = param,
-        dataStateManager = dataStateManager,
+        requestKeyManager = requestKeyManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
+        dataStateManager = dataStateManager,
         needRefresh = needRefresh,
         asyncDispatcher = asyncDispatcher,
     )
@@ -44,8 +47,11 @@ internal class StoreFlowableImpl<PARAM, DATA>(
         }.flatMapConcat {
             dataStateFlowAccessor.getFlow(param)
         }.map { dataState ->
-            val data = cacheDataManager.load()
-            dataState.toLoadingState(data)
+            dataState.toLoadingState(
+                content = cacheDataManager.load(),
+                canNextRequest = (requestKeyManager.loadNext(param) != null),
+                canPrevRequest = (requestKeyManager.loadPrev(param) != null),
+            )
         }
     }
 

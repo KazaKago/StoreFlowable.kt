@@ -1,5 +1,6 @@
 package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.cache.RequestKeyManager
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateFlowAccessor
@@ -14,9 +15,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataStateFlowAccessor<PARAM> {
+abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataStateFlowAccessor<PARAM>, RequestKeyManager<PARAM> {
 
     private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
+    private val nextKey = mutableMapOf<PARAM, String?>()
+    private val prevKey = mutableMapOf<PARAM, String?>()
 
     /**
      * Get the data state as [Flow].
@@ -55,14 +58,23 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataSt
         dataState.clear()
     }
 
+    override fun loadNext(param: PARAM): String? {
+        return nextKey[param]
+    }
+
+    override fun saveNext(param: PARAM, requestKey: String?) {
+        nextKey[param] = requestKey
+    }
+
+    override fun loadPrev(param: PARAM): String? {
+        return prevKey[param]
+    }
+
+    override fun savePrev(param: PARAM, requestKey: String?) {
+        prevKey[param] = requestKey
+    }
+
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key) {
-            MutableStateFlow(
-                DataState.Fixed(
-                    nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(),
-                    prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData()
-                )
-            )
-        }
+        return getOrPut(key) { MutableStateFlow(DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())) }
     }
 }
