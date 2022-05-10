@@ -18,7 +18,7 @@ fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(
 ): TwoWayPaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
-        flowableDataStateManager = flowableDataStateManager,
+        dataStateFlowAccessor = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache(param)
             override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
@@ -41,6 +41,7 @@ fun <PARAM, DATA> TwoWayPaginationStoreFlowableFactory<PARAM, DATA>.create(
                 return InternalFetched(result.data, nextKey = null, prevKey = result.prevKey)
             }
         },
+        dataStateManager = flowableDataStateManager,
         needRefresh = { needRefresh(it, param) },
         asyncDispatcher = asyncDispatcher,
     )

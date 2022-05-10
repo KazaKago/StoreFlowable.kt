@@ -2,8 +2,8 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
+import com.kazakago.storeflowable.datastate.DataStateFlowAccessor
 import com.kazakago.storeflowable.datastate.DataStateManager
-import com.kazakago.storeflowable.datastate.FlowAccessor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAccessor<PARAM> {
+abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, DataStateFlowAccessor<PARAM> {
 
     private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
 

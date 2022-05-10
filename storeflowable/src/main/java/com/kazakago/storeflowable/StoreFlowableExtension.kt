@@ -17,7 +17,7 @@ fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
 ): StoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
-        flowableDataStateManager = flowableDataStateManager,
+        dataStateFlowAccessor = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache(param)
             override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
@@ -33,6 +33,7 @@ fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
             override suspend fun fetchNext(nextKey: String) = throw NotImplementedError()
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
+        dataStateManager = flowableDataStateManager,
         needRefresh = { needRefresh(it, param) },
         asyncDispatcher = asyncDispatcher,
     )

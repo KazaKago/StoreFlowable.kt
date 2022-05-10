@@ -18,7 +18,7 @@ fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
 ): PaginationStoreFlowable<DATA> {
     return StoreFlowableImpl(
         param = param,
-        flowableDataStateManager = flowableDataStateManager,
+        dataStateFlowAccessor = flowableDataStateManager,
         cacheDataManager = object : CacheDataManager<DATA> {
             override suspend fun load() = loadDataFromCache(param)
             override suspend fun save(newData: DATA?) = saveDataToCache(newData, param)
@@ -38,6 +38,7 @@ fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
 
             override suspend fun fetchPrev(prevKey: String) = throw NotImplementedError()
         },
+        dataStateManager = flowableDataStateManager,
         needRefresh = { needRefresh(it, param) },
         asyncDispatcher = asyncDispatcher,
     )

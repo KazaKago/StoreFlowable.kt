@@ -1,11 +1,12 @@
 package com.kazakago.storeflowable.logic
 
-import com.kazakago.storeflowable.FlowableDataStateManager
 import com.kazakago.storeflowable.GettingFrom
 import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.cache.CacheDataManager
 import com.kazakago.storeflowable.core.FlowLoadingState
 import com.kazakago.storeflowable.datastate.DataState
+import com.kazakago.storeflowable.datastate.DataStateManager
+import com.kazakago.storeflowable.datastate.DataStateFlowAccessor
 import com.kazakago.storeflowable.origin.OriginDataManager
 import com.kazakago.storeflowable.pagination.oneway.PaginationStoreFlowable
 import com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable
@@ -15,16 +16,17 @@ import kotlinx.coroutines.flow.*
 
 internal class StoreFlowableImpl<PARAM, DATA>(
     private val param: PARAM,
-    private val flowableDataStateManager: FlowableDataStateManager<PARAM>,
+    private val dataStateFlowAccessor: DataStateFlowAccessor<PARAM>,
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
+    dataStateManager: DataStateManager<PARAM>,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
     asyncDispatcher: CoroutineDispatcher,
 ) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
         param = param,
-        dataStateManager = flowableDataStateManager,
+        dataStateManager = dataStateManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
         needRefresh = needRefresh,
@@ -40,7 +42,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
                 emit(dataSelector.validateAsync())
             }
         }.flatMapConcat {
-            flowableDataStateManager.getFlow(param)
+            dataStateFlowAccessor.getFlow(param)
         }.map { dataState ->
             val data = cacheDataManager.load()
             dataState.toLoadingState(data)
@@ -52,7 +54,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return flowableDataStateManager.getFlow(param)
+        return dataStateFlowAccessor.getFlow(param)
             .onStart {
                 when (from) {
                     GettingFrom.Both -> dataSelector.validate()
