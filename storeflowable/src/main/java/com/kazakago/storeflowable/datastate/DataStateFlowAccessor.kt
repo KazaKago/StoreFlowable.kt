@@ -2,7 +2,7 @@ package com.kazakago.storeflowable.datastate
 
 import kotlinx.coroutines.flow.Flow
 
-internal interface DataStateFlowAccessor<PARAM> {
+internal interface DataStateFlowAccessor {
 
-    fun getFlow(param: PARAM): Flow<DataState>
+    fun getFlow(): Flow<DataState>
 }

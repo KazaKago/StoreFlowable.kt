@@ -15,19 +15,17 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
-internal class StoreFlowableImpl<PARAM, DATA>(
-    private val param: PARAM,
-    private val dataStateFlowAccessor: DataStateFlowAccessor<PARAM>,
-    private val requestKeyManager: RequestKeyManager<PARAM>,
+internal class StoreFlowableImpl<DATA>(
+    private val dataStateFlowAccessor: DataStateFlowAccessor,
+    private val requestKeyManager: RequestKeyManager,
     private val cacheDataManager: CacheDataManager<DATA>,
     originDataManager: OriginDataManager<DATA>,
-    dataStateManager: DataStateManager<PARAM>,
+    dataStateManager: DataStateManager,
     needRefresh: (suspend (cachedData: DATA) -> Boolean),
     asyncDispatcher: CoroutineDispatcher,
 ) : StoreFlowable<DATA>, PaginationStoreFlowable<DATA>, TwoWayPaginationStoreFlowable<DATA> {
 
     private val dataSelector = DataSelector(
-        param = param,
         requestKeyManager = requestKeyManager,
         cacheDataManager = cacheDataManager,
         originDataManager = originDataManager,
@@ -45,12 +43,12 @@ internal class StoreFlowableImpl<PARAM, DATA>(
                 emit(dataSelector.validateAsync())
             }
         }.flatMapConcat {
-            dataStateFlowAccessor.getFlow(param)
+            dataStateFlowAccessor.getFlow()
         }.map { dataState ->
             dataState.toLoadingState(
                 content = cacheDataManager.load(),
-                canNextRequest = (requestKeyManager.loadNext(param) != null),
-                canPrevRequest = (requestKeyManager.loadPrev(param) != null),
+                canNextRequest = (requestKeyManager.loadNext() != null),
+                canPrevRequest = (requestKeyManager.loadPrev() != null),
             )
         }
     }
@@ -60,7 +58,7 @@ internal class StoreFlowableImpl<PARAM, DATA>(
     }
 
     override suspend fun requireData(from: GettingFrom): DATA {
-        return dataStateFlowAccessor.getFlow(param)
+        return dataStateFlowAccessor.getFlow()
             .onStart {
                 when (from) {
                     GettingFrom.Both -> dataSelector.validate()

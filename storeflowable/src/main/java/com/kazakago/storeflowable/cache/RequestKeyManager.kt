@@ -1,12 +1,12 @@
 package com.kazakago.storeflowable.cache
 
-internal interface RequestKeyManager<PARAM> {
+internal interface RequestKeyManager {
 
-    fun loadNext(param: PARAM): String?
+    suspend fun loadNext(): String?
 
-    fun saveNext(param: PARAM, requestKey: String?)
+    suspend fun saveNext(requestKey: String?)
 
-    fun loadPrev(param: PARAM): String?
+    suspend fun loadPrev(): String?
 
-    fun savePrev(param: PARAM, requestKey: String?)
+    suspend fun savePrev(requestKey: String?)
 }
