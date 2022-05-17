@@ -35,7 +35,7 @@ android {
 
 dependencies {
     implementation(project(":storeflowable"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.activity:activity-ktx:1.4.0")
@@ -50,7 +50,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("io.coil-kt:coil:1.4.0")
+    implementation("io.coil-kt:coil:2.0.0")
     implementation("com.github.lisawray.groupie:groupie:2.10.0")
     implementation("com.github.lisawray.groupie:groupie-viewbinding:2.10.0")
 

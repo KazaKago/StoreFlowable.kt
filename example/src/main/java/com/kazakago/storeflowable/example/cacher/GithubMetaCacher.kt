@@ -5,5 +5,5 @@ import com.kazakago.storeflowable.example.model.GithubMeta
 import kotlin.time.Duration.Companion.minutes
 
 object GithubMetaCacher : Cacher<Unit, GithubMeta>() {
-    override val expireTime = 30.minutes
+    override val expireSeconds = 30.minutes.inWholeSeconds
 }

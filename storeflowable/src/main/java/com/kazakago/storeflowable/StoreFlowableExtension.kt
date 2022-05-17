@@ -99,7 +99,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: DATA?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now(), param)
+                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: DATA, newData: DATA) {
@@ -176,7 +176,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: List<DATA>?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now(), param)
+                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: List<DATA>, newData: List<DATA>) {
@@ -254,7 +254,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: List<DATA>?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now(), param)
+                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: List<DATA>, newData: List<DATA>) {

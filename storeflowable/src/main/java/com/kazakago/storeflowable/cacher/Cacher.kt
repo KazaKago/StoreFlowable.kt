@@ -5,17 +5,13 @@ import com.kazakago.storeflowable.datastate.DataState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 public abstract class Cacher<PARAM, DATA> {
 
     private val dataMap = mutableMapOf<PARAM, DATA?>()
-    private val dataCreatedAtMap = mutableMapOf<PARAM, Instant>()
+    private val dataCreatedAtMap = mutableMapOf<PARAM, Long>()
     private val dataStateMap = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
-    public open val expireTime: Duration = Duration.INFINITE
+    public open val expireSeconds: Long = Long.MAX_VALUE
 
     public open suspend fun loadData(param: PARAM): DATA? {
         return dataMap[param]
@@ -25,33 +21,33 @@ public abstract class Cacher<PARAM, DATA> {
         dataMap[param] = data
     }
 
-    public open suspend fun loadDataCreatedAt(param: PARAM): Instant? {
+    public open suspend fun loadDataCreatedAt(param: PARAM): Long? {
         return dataCreatedAtMap[param]
     }
 
-    public open suspend fun saveDataCreatedAt(time: Instant, param: PARAM) {
+    public open suspend fun saveDataCreatedAt(time: Long, param: PARAM) {
         dataCreatedAtMap[param] = time
     }
 
     public open suspend fun needRefresh(cachedData: DATA, param: PARAM): Boolean {
         val createdAt = loadDataCreatedAt(param)
         return if (createdAt != null) {
-            val expiredAt = createdAt + expireTime
-            expiredAt < Clock.System.now()
+            val expiredAt = createdAt + expireSeconds
+            expiredAt < Clock.System.now().epochSeconds
         } else {
             false
         }
     }
 
-    internal fun getStateFlow(param: PARAM): Flow<DataState> {
+    public open fun getStateFlow(param: PARAM): Flow<DataState> {
         return dataStateMap.getOrCreate(param)
     }
 
-    internal fun loadState(param: PARAM): DataState {
+    public open fun loadState(param: PARAM): DataState {
         return dataStateMap.getOrCreate(param).value
     }
 
-    internal fun saveState(param: PARAM, state: DataState) {
+    public open fun saveState(param: PARAM, state: DataState) {
         dataStateMap.getOrCreate(param).value = state
     }
 
