@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
  */
 public interface StoreFlowable<DATA> {
 
+    public companion object
+
     /**
      * Returns a [FlowLoadingState] that can continuously receive changes in the state of the data.
      *
