@@ -1,6 +1,7 @@
 package com.kazakago.storeflowable.logic
 
 import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.cache.RequestKeyManager
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
@@ -30,13 +31,12 @@ class DataSelectorRequestNextAndPrevFailedTest {
     }
 
     private val dataSelector = DataSelector(
-        param = Unit,
-        dataStateManager = object : DataStateManager<Unit> {
-            override fun load(param: Unit): DataState {
+        dataStateManager = object : DataStateManager {
+            override fun load(): DataState {
                 return dataState
             }
 
-            override fun save(param: Unit, state: DataState) {
+            override fun save(state: DataState) {
                 dataState = state
             }
         },
@@ -70,17 +70,38 @@ class DataSelectorRequestNextAndPrevFailedTest {
                 throw NoSuchElementException()
             }
         },
+        requestKeyManager = object : RequestKeyManager {
+            override suspend fun loadNext(): String? {
+                return nextRequestKey
+            }
+
+            override suspend fun saveNext(requestKey: String?) {
+                nextRequestKey = requestKey
+            }
+
+            override suspend fun loadPrev(): String? {
+                return prevRequestKey
+            }
+
+            override suspend fun savePrev(requestKey: String?) {
+                prevRequestKey = requestKey
+            }
+        },
         needRefresh = { it.firstOrNull()?.needRefresh ?: false },
         asyncDispatcher = StandardTestDispatcher(),
     )
 
     private var dataState: DataState = DataState.Fixed(fakeAdditionalDataState(), fakeAdditionalDataState())
     private var dataCache: List<TestData>? = null
+    private var nextRequestKey: String? = null
+    private var prevRequestKey: String? = null
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
@@ -95,827 +116,1109 @@ class DataSelectorRequestNextAndPrevFailedTest {
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_FixedWithNoMoreData_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_FixedWithNoMoreData_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_FixedWithNoMoreData_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Loading_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Loading_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Loading_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Error_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Error_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Fixed_Error_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Fixed("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = null
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = null
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_FixedWithNoMoreData_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = null
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Loading_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = null
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Loading_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Loading_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Error_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = null
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Error_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_FixedWithNoMoreData_Error_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.FixedWithNoMoreAdditionalData(), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = null
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
-        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe null
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_FixedWithNoMoreData_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_FixedWithNoMoreData_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_FixedWithNoMoreData_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Loading_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Loading_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Loading_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Error_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(fakeException()))
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Error_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Loading_Error_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Loading("KEY"), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Loading(), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Fixed_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Fixed_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Fixed_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Fixed("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_FixedWithNoMoreData_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_FixedWithNoMoreData_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_FixedWithNoMoreData_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.FixedWithNoMoreAdditionalData())
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Fixed())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = null
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
-        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.FixedWithNoMoreAdditionalData>()
+        (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Fixed>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe null
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Loading_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Loading())
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Loading_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Loading())
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Loading_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Loading("KEY"))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Loading())
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Loading>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Error_NoCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Error(fakeException()))
         dataCache = null
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Error_ValidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.ValidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.ValidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
     fun requestNextAndPrev_Fixed_Error_Error_InvalidCache() = runTest {
-        dataState = DataState.Fixed(AdditionalDataState.Error("KEY", fakeException()), AdditionalDataState.Error("KEY", fakeException()))
+        dataState = DataState.Fixed(AdditionalDataState.Error(fakeException()), AdditionalDataState.Error(fakeException()))
         dataCache = listOf(TestData.InvalidData)
+        nextRequestKey = "INITIAL_KEY"
+        prevRequestKey = "INITIAL_KEY"
 
         dataSelector.requestNextData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Fixed>()
         (dataState as DataState.Fixed).nextDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         (dataState as DataState.Fixed).prevDataState.shouldBeTypeOf<AdditionalDataState.Error>()
         dataCache shouldBe listOf(TestData.InvalidData)
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 }

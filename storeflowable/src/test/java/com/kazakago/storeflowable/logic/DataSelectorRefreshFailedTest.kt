@@ -1,6 +1,7 @@
 package com.kazakago.storeflowable.logic
 
 import com.kazakago.storeflowable.cache.CacheDataManager
+import com.kazakago.storeflowable.cache.RequestKeyManager
 import com.kazakago.storeflowable.datastate.DataState
 import com.kazakago.storeflowable.datastate.DataStateManager
 import com.kazakago.storeflowable.fakeAdditionalDataState
@@ -25,13 +26,12 @@ class DataSelectorRefreshFailedTest {
     }
 
     private val dataSelector = DataSelector(
-        param = Unit,
-        dataStateManager = object : DataStateManager<Unit> {
-            override fun load(param: Unit): DataState {
+        dataStateManager = object : DataStateManager {
+            override fun load(): DataState {
                 return dataState
             }
 
-            override fun save(param: Unit, state: DataState) {
+            override fun save(state: DataState) {
                 dataState = state
             }
         },
@@ -63,6 +63,23 @@ class DataSelectorRefreshFailedTest {
 
             override suspend fun fetchPrev(prevKey: String): InternalFetched<TestData> {
                 fail()
+            }
+        },
+        requestKeyManager = object : RequestKeyManager {
+            override suspend fun loadNext(): String? {
+                fail()
+            }
+
+            override suspend fun saveNext(requestKey: String?) {
+                // do nothing.
+            }
+
+            override suspend fun loadPrev(): String? {
+                fail()
+            }
+
+            override suspend fun savePrev(requestKey: String?) {
+                // do nothing.
             }
         },
         needRefresh = { it.needRefresh },
