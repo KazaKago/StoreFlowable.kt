@@ -63,6 +63,13 @@ public fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
     )
 }
 
+/**
+ * Create [StoreFlowable] class from [Cacher] & [Fetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.Cacher
+ * @see com.kazakago.storeflowable.fetcher.Fetcher
+ */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
     fetcher: Fetcher<PARAM, DATA>,
     cacher: Cacher<PARAM, DATA>,
@@ -99,7 +106,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: DATA?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
+                cacher.saveDataCachedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: DATA, newData: DATA) {
@@ -140,6 +147,13 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
     )
 }
 
+/**
+ * Create [StoreFlowable] class from [PaginationCacher] & [PaginationFetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.PaginationCacher
+ * @see com.kazakago.storeflowable.fetcher.PaginationFetcher
+ */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
     fetcher: PaginationFetcher<PARAM, DATA>,
     cacher: PaginationCacher<PARAM, DATA>,
@@ -176,7 +190,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: List<DATA>?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
+                cacher.saveDataCachedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: List<DATA>, newData: List<DATA>) {
@@ -218,6 +232,13 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
     )
 }
 
+/**
+ * Create [StoreFlowable] class from [TwoWayPaginationCacher] & [TwoWayPaginationFetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.TwoWayPaginationCacher
+ * @see com.kazakago.storeflowable.fetcher.TwoWayPaginationFetcher
+ */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
     fetcher: TwoWayPaginationFetcher<PARAM, DATA>,
     cacher: TwoWayPaginationCacher<PARAM, DATA>,
@@ -254,7 +275,7 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 
             override suspend fun save(newData: List<DATA>?) {
                 cacher.saveData(newData, param)
-                cacher.saveDataCreatedAt(Clock.System.now().epochSeconds, param)
+                cacher.saveDataCachedAt(Clock.System.now().epochSeconds, param)
             }
 
             override suspend fun saveNext(cachedData: List<DATA>, newData: List<DATA>) {
