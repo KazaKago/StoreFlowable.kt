@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * @return Created [PaginationStoreFlowable].
  */
+@Deprecated("use Cacher class & Fetcher class")
 public fun <PARAM, DATA> PaginationStoreFlowableFactory<PARAM, DATA>.create(
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
