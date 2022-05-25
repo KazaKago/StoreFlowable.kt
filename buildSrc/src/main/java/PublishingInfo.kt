@@ -1,5 +1,5 @@
 internal object PublishingInfo {
-    const val versionName = "5.3.0"
+    const val versionName = "5.4.0-SNAPSHOT"
     const val groupId = "com.kazakago.storeflowable"
 
     const val projectName = "StoreFlowable.kt"
