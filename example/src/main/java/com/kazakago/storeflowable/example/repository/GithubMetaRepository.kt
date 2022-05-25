@@ -10,12 +10,12 @@ import com.kazakago.storeflowable.from
 class GithubMetaRepository {
 
     fun follow(): FlowLoadingState<GithubMeta> {
-        val githubMetaFlowable = StoreFlowable.from(GithubMetaFetcher, GithubMetaCacher, Unit)
+        val githubMetaFlowable = StoreFlowable.from(GithubMetaCacher, GithubMetaFetcher)
         return githubMetaFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubMetaFlowable = StoreFlowable.from(GithubMetaFetcher, GithubMetaCacher, Unit)
+        val githubMetaFlowable = StoreFlowable.from(GithubMetaCacher, GithubMetaFetcher)
         githubMetaFlowable.refresh()
     }
 }

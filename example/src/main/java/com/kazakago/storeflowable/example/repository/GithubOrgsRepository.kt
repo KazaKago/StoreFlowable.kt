@@ -10,17 +10,17 @@ import com.kazakago.storeflowable.from
 class GithubOrgsRepository {
 
     fun follow(): FlowLoadingState<List<GithubOrg>> {
-        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsFetcher, GithubOrgsCacher, Unit)
+        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsCacher, GithubOrgsFetcher)
         return githubOrgsFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsFetcher, GithubOrgsCacher, Unit)
+        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsCacher, GithubOrgsFetcher)
         githubOrgsFlowable.refresh()
     }
 
     suspend fun requestNext(continueWhenError: Boolean) {
-        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsFetcher, GithubOrgsCacher, Unit)
+        val githubOrgsFlowable = StoreFlowable.from(GithubOrgsCacher, GithubOrgsFetcher)
         githubOrgsFlowable.requestNextData(continueWhenError)
     }
 }

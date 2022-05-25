@@ -71,8 +71,8 @@ public fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
  * @see com.kazakago.storeflowable.fetcher.Fetcher
  */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
-    fetcher: Fetcher<PARAM, DATA>,
     cacher: Cacher<PARAM, DATA>,
+    fetcher: Fetcher<PARAM, DATA>,
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
 ): StoreFlowable<DATA> {
@@ -148,6 +148,21 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 }
 
 /**
+ * Create [StoreFlowable] class from [Cacher] & [Fetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.Cacher
+ * @see com.kazakago.storeflowable.fetcher.Fetcher
+ */
+public fun <DATA> StoreFlowable.Companion.from(
+    cacher: Cacher<Unit, DATA>,
+    fetcher: Fetcher<Unit, DATA>,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): StoreFlowable<DATA> {
+    return from(cacher, fetcher, Unit, asyncDispatcher)
+}
+
+/**
  * Create [StoreFlowable] class from [PaginationCacher] & [PaginationFetcher].
  *
  * @return Created StateFlowable.
@@ -155,8 +170,8 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
  * @see com.kazakago.storeflowable.fetcher.PaginationFetcher
  */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
-    fetcher: PaginationFetcher<PARAM, DATA>,
     cacher: PaginationCacher<PARAM, DATA>,
+    fetcher: PaginationFetcher<PARAM, DATA>,
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
 ): PaginationStoreFlowable<List<DATA>> {
@@ -233,6 +248,21 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
 }
 
 /**
+ * Create [StoreFlowable] class from [PaginationCacher] & [PaginationFetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.PaginationCacher
+ * @see com.kazakago.storeflowable.fetcher.PaginationFetcher
+ */
+public fun <DATA> StoreFlowable.Companion.from(
+    cacher: PaginationCacher<Unit, DATA>,
+    fetcher: PaginationFetcher<Unit, DATA>,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): PaginationStoreFlowable<List<DATA>> {
+    return from(cacher, fetcher, Unit, asyncDispatcher)
+}
+
+/**
  * Create [StoreFlowable] class from [TwoWayPaginationCacher] & [TwoWayPaginationFetcher].
  *
  * @return Created StateFlowable.
@@ -240,8 +270,8 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
  * @see com.kazakago.storeflowable.fetcher.TwoWayPaginationFetcher
  */
 public fun <PARAM, DATA> StoreFlowable.Companion.from(
-    fetcher: TwoWayPaginationFetcher<PARAM, DATA>,
     cacher: TwoWayPaginationCacher<PARAM, DATA>,
+    fetcher: TwoWayPaginationFetcher<PARAM, DATA>,
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
 ): TwoWayPaginationStoreFlowable<List<DATA>> {
@@ -316,4 +346,19 @@ public fun <PARAM, DATA> StoreFlowable.Companion.from(
         },
         asyncDispatcher = asyncDispatcher,
     )
+}
+
+/**
+ * Create [StoreFlowable] class from [TwoWayPaginationCacher] & [TwoWayPaginationFetcher].
+ *
+ * @return Created StateFlowable.
+ * @see com.kazakago.storeflowable.cacher.TwoWayPaginationCacher
+ * @see com.kazakago.storeflowable.fetcher.TwoWayPaginationFetcher
+ */
+public fun <DATA> StoreFlowable.Companion.from(
+    cacher: TwoWayPaginationCacher<Unit, DATA>,
+    fetcher: TwoWayPaginationFetcher<Unit, DATA>,
+    asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,
+): TwoWayPaginationStoreFlowable<List<DATA>> {
+    return from(cacher, fetcher, Unit, asyncDispatcher)
 }

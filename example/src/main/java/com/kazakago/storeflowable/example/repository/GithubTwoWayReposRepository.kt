@@ -10,22 +10,22 @@ import com.kazakago.storeflowable.from
 class GithubTwoWayReposRepository {
 
     fun follow(): FlowLoadingState<List<GithubRepo>> {
-        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposFetcher, GithubTwoWayReposCacher, Unit)
+        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposCacher, GithubTwoWayReposFetcher)
         return githubReposFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposFetcher, GithubTwoWayReposCacher, Unit)
+        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposCacher, GithubTwoWayReposFetcher)
         githubReposFlowable.refresh()
     }
 
     suspend fun requestNext(continueWhenError: Boolean) {
-        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposFetcher, GithubTwoWayReposCacher, Unit)
+        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposCacher, GithubTwoWayReposFetcher)
         githubReposFlowable.requestNextData(continueWhenError)
     }
 
     suspend fun requestPrev(continueWhenError: Boolean) {
-        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposFetcher, GithubTwoWayReposCacher, Unit)
+        val githubReposFlowable = StoreFlowable.from(GithubTwoWayReposCacher, GithubTwoWayReposFetcher)
         githubReposFlowable.requestPrevData(continueWhenError)
     }
 

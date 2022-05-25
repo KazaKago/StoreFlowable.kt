@@ -10,17 +10,17 @@ import com.kazakago.storeflowable.from
 class GithubReposRepository {
 
     fun follow(userName: String): FlowLoadingState<List<GithubRepo>> {
-        val githubReposFlowable = StoreFlowable.from(GithubReposFetcher, GithubReposCacher, userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         return githubReposFlowable.publish()
     }
 
     suspend fun refresh(userName: String) {
-        val githubReposFlowable = StoreFlowable.from(GithubReposFetcher, GithubReposCacher, userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         githubReposFlowable.refresh()
     }
 
     suspend fun requestNext(userName: String, continueWhenError: Boolean) {
-        val githubReposFlowable = StoreFlowable.from(GithubReposFetcher, GithubReposCacher, userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         githubReposFlowable.requestNextData(continueWhenError)
     }
 }

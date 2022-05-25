@@ -10,12 +10,12 @@ import com.kazakago.storeflowable.from
 class GithubUserRepository {
 
     fun follow(userName: String): FlowLoadingState<GithubUser> {
-        val githubUserFlowable = StoreFlowable.from(GithubUserFetcher, GithubUserCacher, userName)
+        val githubUserFlowable = StoreFlowable.from(GithubUserCacher, GithubUserFetcher, userName)
         return githubUserFlowable.publish()
     }
 
     suspend fun refresh(userName: String) {
-        val githubUserFlowable = StoreFlowable.from(GithubUserFetcher, GithubUserCacher, userName)
+        val githubUserFlowable = StoreFlowable.from(GithubUserCacher, GithubUserFetcher, userName)
         githubUserFlowable.refresh()
     }
 }
