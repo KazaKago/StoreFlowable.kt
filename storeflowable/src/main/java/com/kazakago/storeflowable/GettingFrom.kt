@@ -6,7 +6,7 @@ package com.kazakago.storeflowable
  * @see StoreFlowable.getData
  * @see StoreFlowable.requireData
  */
-enum class GettingFrom {
+public enum class GettingFrom {
     /**
      * Use both origin and cache.
      * Returns a valid cache if it exists, otherwise try to get it from origin.

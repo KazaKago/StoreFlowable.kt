@@ -6,7 +6,7 @@ package com.kazakago.storeflowable.core
  * @param additionalState2 The second [AdditionalLoadingState] to combine.
  * @return Return [AdditionalLoadingState] containing the combined data.
  */
-fun AdditionalLoadingState.zip(additionalState2: AdditionalLoadingState): AdditionalLoadingState {
+public fun AdditionalLoadingState.zip(additionalState2: AdditionalLoadingState): AdditionalLoadingState {
     return when (this) {
         is AdditionalLoadingState.Fixed -> when (additionalState2) {
             is AdditionalLoadingState.Fixed -> AdditionalLoadingState.Fixed(canRequestAdditionalData = canRequestAdditionalData || additionalState2.canRequestAdditionalData)

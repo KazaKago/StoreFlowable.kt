@@ -1,21 +1,21 @@
 package com.kazakago.storeflowable.example.repository
 
+import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.FlowLoadingState
-import com.kazakago.storeflowable.create
-import com.kazakago.storeflowable.example.flowable.GithubMetaFlowableFactory
+import com.kazakago.storeflowable.example.cacher.GithubMetaCacher
+import com.kazakago.storeflowable.example.fetcher.GithubMetaFetcher
 import com.kazakago.storeflowable.example.model.GithubMeta
-import kotlinx.coroutines.FlowPreview
+import com.kazakago.storeflowable.from
 
 class GithubMetaRepository {
 
-    @OptIn(FlowPreview::class)
     fun follow(): FlowLoadingState<GithubMeta> {
-        val githubMetaFlowable = GithubMetaFlowableFactory().create(Unit)
+        val githubMetaFlowable = StoreFlowable.from(GithubMetaCacher, GithubMetaFetcher)
         return githubMetaFlowable.publish()
     }
 
     suspend fun refresh() {
-        val githubMetaFlowable = GithubMetaFlowableFactory().create(Unit)
+        val githubMetaFlowable = StoreFlowable.from(GithubMetaCacher, GithubMetaFetcher)
         githubMetaFlowable.refresh()
     }
 }

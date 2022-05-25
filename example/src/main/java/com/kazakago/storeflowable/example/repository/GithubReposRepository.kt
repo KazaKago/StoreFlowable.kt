@@ -1,26 +1,26 @@
 package com.kazakago.storeflowable.example.repository
 
+import com.kazakago.storeflowable.StoreFlowable
 import com.kazakago.storeflowable.core.FlowLoadingState
-import com.kazakago.storeflowable.example.flowable.GithubReposFlowableFactory
+import com.kazakago.storeflowable.example.cacher.GithubReposCacher
+import com.kazakago.storeflowable.example.fetcher.GithubReposFetcher
 import com.kazakago.storeflowable.example.model.GithubRepo
-import com.kazakago.storeflowable.pagination.oneway.create
-import kotlinx.coroutines.FlowPreview
+import com.kazakago.storeflowable.from
 
 class GithubReposRepository {
 
-    @OptIn(FlowPreview::class)
     fun follow(userName: String): FlowLoadingState<List<GithubRepo>> {
-        val githubReposFlowable = GithubReposFlowableFactory().create(userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         return githubReposFlowable.publish()
     }
 
     suspend fun refresh(userName: String) {
-        val githubReposFlowable = GithubReposFlowableFactory().create(userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         githubReposFlowable.refresh()
     }
 
     suspend fun requestNext(userName: String, continueWhenError: Boolean) {
-        val githubReposFlowable = GithubReposFlowableFactory().create(userName)
+        val githubReposFlowable = StoreFlowable.from(GithubReposCacher, GithubReposFetcher, userName)
         githubReposFlowable.requestNextData(continueWhenError)
     }
 }

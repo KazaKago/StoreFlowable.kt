@@ -2,8 +2,6 @@ package com.kazakago.storeflowable
 
 import com.kazakago.storeflowable.datastate.AdditionalDataState
 import com.kazakago.storeflowable.datastate.DataState
-import com.kazakago.storeflowable.datastate.DataStateManager
-import com.kazakago.storeflowable.datastate.FlowAccessor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -14,9 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAccessor<PARAM> {
+public abstract class FlowableDataStateManager<PARAM> {
 
     private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
+    private val nextKey = mutableMapOf<PARAM, String?>()
+    private val prevKey = mutableMapOf<PARAM, String?>()
 
     /**
      * Get the data state as [Flow].
@@ -24,7 +24,7 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAc
      * @param param Key to get the specified data.
      * @return Flow for getting data state changes.
      */
-    override fun getFlow(param: PARAM): Flow<DataState> {
+    public open fun getFlow(param: PARAM): Flow<DataState> {
         return dataState.getOrCreate(param)
     }
 
@@ -34,7 +34,7 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAc
      * @param param Key to get the specified data.
      * @return State of saved data.
      */
-    override fun load(param: PARAM): DataState {
+    public open fun load(param: PARAM): DataState {
         return dataState.getOrCreate(param).value
     }
 
@@ -44,25 +44,34 @@ abstract class FlowableDataStateManager<PARAM> : DataStateManager<PARAM>, FlowAc
      * @param param Key to get the specified data.
      * @param state State of saved data.
      */
-    override fun save(param: PARAM, state: DataState) {
+    public open fun save(param: PARAM, state: DataState) {
         dataState.getOrCreate(param).value = state
     }
 
     /**
      * Clear all data state in this manager.
      */
-    fun clearAll() {
+    public fun clearAll() {
         dataState.clear()
     }
 
+    public open suspend fun loadNext(param: PARAM): String? {
+        return nextKey[param]
+    }
+
+    public open suspend fun saveNext(param: PARAM, requestKey: String?) {
+        nextKey[param] = requestKey
+    }
+
+    public open suspend fun loadPrev(param: PARAM): String? {
+        return prevKey[param]
+    }
+
+    public open suspend fun savePrev(param: PARAM, requestKey: String?) {
+        prevKey[param] = requestKey
+    }
+
     private fun <KEY> MutableMap<KEY, MutableStateFlow<DataState>>.getOrCreate(key: KEY): MutableStateFlow<DataState> {
-        return getOrPut(key) {
-            MutableStateFlow(
-                DataState.Fixed(
-                    nextDataState = AdditionalDataState.FixedWithNoMoreAdditionalData(),
-                    prevDataState = AdditionalDataState.FixedWithNoMoreAdditionalData()
-                )
-            )
-        }
+        return getOrPut(key) { MutableStateFlow(DataState.Fixed(AdditionalDataState.Fixed(), AdditionalDataState.Fixed())) }
     }
 }

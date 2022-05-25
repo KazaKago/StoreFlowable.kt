@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.Flow
  *
  * @param DATA Specify the type of data to be handled.
  */
-interface StoreFlowable<DATA> {
+public interface StoreFlowable<DATA> {
+
+    public companion object
 
     /**
      * Returns a [FlowLoadingState] that can continuously receive changes in the state of the data.
@@ -26,7 +28,7 @@ interface StoreFlowable<DATA> {
      * @return Returns a [Flow] containing the state of the data.
      */
     @FlowPreview
-    fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
+    public fun publish(forceRefresh: Boolean = false): FlowLoadingState<DATA>
 
     /**
      * Returns valid data only once.
@@ -41,7 +43,7 @@ interface StoreFlowable<DATA> {
      * @see GettingFrom
      * @see requireData
      */
-    suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
+    public suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
 
     /**
      * Returns valid data only once.
@@ -55,7 +57,7 @@ interface StoreFlowable<DATA> {
      * @see GettingFrom
      * @see getData
      */
-    suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
+    public suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 
     /**
      * Checks if the published data is valid.
@@ -63,13 +65,13 @@ interface StoreFlowable<DATA> {
      * If it is invalid, it will be reacquired from origin.
      * and the new data will be notified.
      */
-    suspend fun validate()
+    public suspend fun validate()
 
     /**
      * Forces a data refresh.
      * and the new data will be notified.
      */
-    suspend fun refresh()
+    public suspend fun refresh()
 
     /**
      * Treat the passed data as the latest acquired data.
@@ -79,5 +81,11 @@ interface StoreFlowable<DATA> {
      *
      * @param newData Latest data.
      */
-    suspend fun update(newData: DATA?)
+    public suspend fun update(newData: DATA?)
+
+    /**
+     * Clear data managed by StoreFlowable.
+     * and this event will be notified.
+     */
+    public suspend fun clear()
 }

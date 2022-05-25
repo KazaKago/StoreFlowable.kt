@@ -8,4 +8,4 @@ package com.kazakago.storeflowable.exception
  * @see com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable.requestNextData
  * @see com.kazakago.storeflowable.pagination.twoway.TwoWayPaginationStoreFlowable.requestPrevData
  */
-class AdditionalRequestOnErrorStateException : IllegalStateException()
+public class AdditionalRequestOnErrorStateException : IllegalStateException()

@@ -5,7 +5,7 @@ package com.kazakago.storeflowable.pagination.twoway
  *
  * @param DATA Specify the type of data to be handled.
  */
-data class FetchedNext<DATA>(
+public data class FetchedNext<DATA>(
     /**
      * Set the acquired raw data.
      */

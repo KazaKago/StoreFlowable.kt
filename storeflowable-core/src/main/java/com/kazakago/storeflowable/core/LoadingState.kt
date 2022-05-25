@@ -12,14 +12,14 @@ import com.kazakago.storeflowable.core.LoadingState.*
  *
  * @param T Types of data to be included.
  */
-sealed class LoadingState<out T> {
+public sealed class LoadingState<out T> {
 
     /**
      * when data fetch is processing.
      *
      * @param content Indicates the existing or not existing of data.
      */
-    data class Loading<out T>(val content: T?) : LoadingState<T>()
+    public data class Loading<out T>(val content: T?) : LoadingState<T>()
 
     /**
      * When data fetch is successful.
@@ -28,14 +28,14 @@ sealed class LoadingState<out T> {
      * @param next next pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
      * @param prev prev pagination state of the data. If not pagination, Always returned [AdditionalLoadingState.Fixed] state.
      */
-    data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>()
+    public data class Completed<out T>(val content: T, val next: AdditionalLoadingState, val prev: AdditionalLoadingState) : LoadingState<T>()
 
     /**
      * when data fetch is failure.
      *
      * @param exception Occurred exception.
      */
-    data class Error<out T>(val exception: Exception) : LoadingState<T>()
+    public data class Error<out T>(val exception: Exception) : LoadingState<T>()
 
     /**
      * Provides state-specific callbacks.
@@ -46,7 +46,7 @@ sealed class LoadingState<out T> {
      * @param onError Callback for [Error].
      * @return Can return a value of any type.
      */
-    inline fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
+    public inline fun <V> doAction(onLoading: ((content: T?) -> V), onCompleted: ((content: T, next: AdditionalLoadingState, prev: AdditionalLoadingState) -> V), onError: ((exception: Exception) -> V)): V {
         return when (this) {
             is Loading -> onLoading(content)
             is Completed -> onCompleted(content, next, prev)
