@@ -83,33 +83,15 @@ public abstract class Cacher<PARAM, DATA> {
         }
     }
 
-    /**
-     * Get the data state as [Flow].
-     *
-     * @param param Key to get the specified data.
-     * @return Flow for getting data state changes.
-     */
-    public open fun getStateFlow(param: PARAM): Flow<DataState> {
+    internal fun getStateFlow(param: PARAM): Flow<DataState> {
         return dataStateMap.getOrCreate(param)
     }
 
-    /**
-     * Get the current data state.
-     *
-     * @param param Key to get the specified data.
-     * @return State of saved data.
-     */
-    public open fun loadState(param: PARAM): DataState {
+    internal fun loadState(param: PARAM): DataState {
         return dataStateMap.getOrCreate(param).value
     }
 
-    /**
-     * Save the data state.
-     *
-     * @param param Key to get the specified data.
-     * @param state State of saved data.
-     */
-    public open fun saveState(param: PARAM, state: DataState) {
+    internal fun saveState(param: PARAM, state: DataState) {
         dataStateMap.getOrCreate(param).value = state
     }
 

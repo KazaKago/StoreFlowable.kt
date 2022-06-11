@@ -35,7 +35,7 @@ public interface TwoWayPaginationFetcher<PARAM, DATA> {
      *
      * @param DATA Specify the type of data to be handled.
      */
-    public sealed interface Result<DATA> {
+    public interface Result<DATA> {
         /**
          * Set the acquired raw data.
          */
