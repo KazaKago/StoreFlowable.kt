@@ -107,11 +107,15 @@ class DataSelectorRequestNextAndPrevFailedTest {
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnNullException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
 
         dataSelector.requestPrevData(continueWhenError = true)
         dataState.shouldBeTypeOf<DataState.Error>()
         (dataState as DataState.Error).exception.shouldBeTypeOf<AdditionalRequestOnErrorStateException>()
         dataCache shouldBe null
+        nextRequestKey shouldBe "INITIAL_KEY"
+        prevRequestKey shouldBe "INITIAL_KEY"
     }
 
     @Test
