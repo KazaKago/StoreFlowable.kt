@@ -43,6 +43,7 @@ public interface StoreFlowable<DATA> {
      * @see GettingFrom
      * @see requireData
      */
+    @FlowPreview
     public suspend fun getData(from: GettingFrom = GettingFrom.Both): DATA?
 
     /**
@@ -57,6 +58,7 @@ public interface StoreFlowable<DATA> {
      * @see GettingFrom
      * @see getData
      */
+    @FlowPreview
     public suspend fun requireData(from: GettingFrom = GettingFrom.Both): DATA
 
     /**

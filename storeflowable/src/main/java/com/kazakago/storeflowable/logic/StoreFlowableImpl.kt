@@ -38,10 +38,11 @@ internal class StoreFlowableImpl<DATA>(
     override fun publish(forceRefresh: Boolean): FlowLoadingState<DATA> {
         return flow {
             if (forceRefresh) {
-                emit(dataSelector.refreshAsync(clearCacheBeforeFetching = true))
+                dataSelector.refreshAsync(clearCacheBeforeFetching = true)
             } else {
-                emit(dataSelector.validateAsync())
+                dataSelector.validateAsync()
             }
+            emit(Unit)
         }.flatMapConcat {
             dataStateFlowAccessor.getFlow()
         }.map { dataState ->
@@ -53,28 +54,30 @@ internal class StoreFlowableImpl<DATA>(
         }
     }
 
+    @FlowPreview
     override suspend fun getData(from: GettingFrom): DATA? {
         return runCatching { requireData(from) }.getOrNull()
     }
 
+    @FlowPreview
     override suspend fun requireData(from: GettingFrom): DATA {
-        return dataStateFlowAccessor.getFlow()
-            .onStart {
-                when (from) {
-                    GettingFrom.Both -> dataSelector.validate()
-                    GettingFrom.Origin -> dataSelector.refresh(clearCacheBeforeFetching = true)
-                    GettingFrom.Cache -> Unit
-                }
+        return flow {
+            when (from) {
+                GettingFrom.Both -> dataSelector.validate()
+                GettingFrom.Origin -> dataSelector.refresh(clearCacheBeforeFetching = true)
+                GettingFrom.Cache -> Unit
             }
-            .mapNotNull { dataState ->
-                val data = dataSelector.loadValidCacheOrNull()
-                when (dataState) {
-                    is DataState.Fixed -> data ?: throw NoSuchElementException()
-                    is DataState.Loading -> null
-                    is DataState.Error -> data ?: throw dataState.exception
-                }
+            emit(Unit)
+        }.flatMapConcat {
+            dataStateFlowAccessor.getFlow()
+        }.mapNotNull { dataState ->
+            val data = dataSelector.loadValidCacheOrNull()
+            when (dataState) {
+                is DataState.Fixed -> data ?: throw NoSuchElementException()
+                is DataState.Loading -> null
+                is DataState.Error -> data ?: throw dataState.exception
             }
-            .first()
+        }.first()
     }
 
     override suspend fun validate() {
