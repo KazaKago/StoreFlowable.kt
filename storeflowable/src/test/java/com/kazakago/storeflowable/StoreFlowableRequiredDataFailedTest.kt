@@ -1,5 +1,7 @@
 package com.kazakago.storeflowable
 
+import com.kazakago.storeflowable.cacher.Cacher
+import com.kazakago.storeflowable.fetcher.Fetcher
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,20 +17,13 @@ class StoreFlowableRequiredDataFailedTest {
         FetchedData(false),
     }
 
-    private class TestFlowableFactory(private var dataCache: TestData?) : StoreFlowableFactory<Unit, TestData> {
-
-        override val flowableDataStateManager: FlowableDataStateManager<Unit> = object : FlowableDataStateManager<Unit>() {}
-
-        override suspend fun loadDataFromCache(param: Unit): TestData? {
-            return dataCache
+    private class TestCacher(private var cache: TestData?) : Cacher<Unit, TestData>() {
+        override suspend fun loadData(param: Unit): TestData? {
+            return cache
         }
 
-        override suspend fun saveDataToCache(newData: TestData?, param: Unit) {
-            dataCache = newData
-        }
-
-        override suspend fun fetchDataFromOrigin(param: Unit): TestData {
-            throw NoSuchElementException()
+        override suspend fun saveData(data: TestData?, param: Unit) {
+            cache = data
         }
 
         override suspend fun needRefresh(cachedData: TestData, param: Unit): Boolean {
@@ -36,57 +31,63 @@ class StoreFlowableRequiredDataFailedTest {
         }
     }
 
+    private class TestFetcher : Fetcher<Unit, TestData> {
+        override suspend fun fetch(param: Unit): TestData {
+            throw NoSuchElementException()
+        }
+    }
+
     @Test
     fun requiredData_Both_NoCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = null), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Both) }
     }
 
     @Test
     fun requiredData_Both_ValidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.ValidData), TestFetcher())
         storeFlowable.requireData(GettingFrom.Both) shouldBe TestData.ValidData
     }
 
     @Test
     fun requiredData_Both_InvalidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.InvalidData), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Both) }
     }
 
     @Test
     fun requiredData_Cache_NoCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = null), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Cache) }
     }
 
     @Test
     fun requiredData_Cache_ValidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.ValidData), TestFetcher())
         storeFlowable.requireData(GettingFrom.Cache) shouldBe TestData.ValidData
     }
 
     @Test
     fun requiredData_Cache_InvalidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.InvalidData), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Cache) }
     }
 
     @Test
     fun requiredData_Origin_NoCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = null).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = null), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Origin) }
     }
 
     @Test
     fun requiredData_Origin_ValidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.ValidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.ValidData), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Origin) }
     }
 
     @Test
     fun requiredData_Origin_InvalidCache() = runTest {
-        val storeFlowable = TestFlowableFactory(dataCache = TestData.InvalidData).create(Unit)
+        val storeFlowable = StoreFlowable.from(TestCacher(cache = TestData.InvalidData), TestFetcher())
         shouldThrow<NoSuchElementException> { storeFlowable.requireData(GettingFrom.Origin) }
     }
 }
