@@ -44,7 +44,7 @@ Optional: if you use [`LoadingState`](storeflowable-core/src/main/java/com/kazak
 implementation("com.kazakago.storeflowable:storeflowable-core:x.x.x")
 ```
 
-## Basic Usage
+## Get started
 
 There are only 2 things you have to implement:
 
@@ -94,11 +94,6 @@ fun getUserDataFlow(userId: UserId): FlowLoadingState<UserData> {
     val userFlowable: StoreFlowable<UserData> = StoreFlowable.from(userCacher, userFetcher, userId)
     return userFlowable.publish()
 }
-
-suspend fun updateUserData(userData: UserData) {
-    val userFlowable: StoreFlowable<UserData> = StoreFlowable.from(userCacher, userFetcher, userData.userId)
-    userFlowable.update(userData)
-}
 ```
 
 You can get the data in the form of [`FlowLoadingState<DATA>`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
@@ -136,51 +131,7 @@ See [GithubMetaCacher](example/src/main/java/com/kazakago/storeflowable/example/
 
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).
 
-## Advanced Usage
-
-### Manage cache expire time
-
-You can easily set the cache expiration time. Override expireSeconds variable in your [`Cacher<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/cacher/Cacher.kt) class.
-The default value is `Long.MAX_VALUE` (= will NOT expire).
-
-```kotlin
-object UserCacher : Cacher<UserId, UserData>() {
-    override val expireSeconds = 60 * 30 // expiration time is 30 minutes.
-}
-```
-
-### Persist data
-
-If you want to make the cached data persistent, override the method of your [`Cacher<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/cacher/Cacher.kt) class.
-
-```kotlin
-object UserCacher : Cacher<UserId, UserData>() {
-
-    override val expireSeconds = 60 * 30 // expiration time is 30 minutes.
-
-    // Save the data for each parameter in any store.
-    override suspend fun saveData(data: UserData?, param: UserId) {
-        ...
-    }
-
-    // Get the data from the store for each parameter.
-    override suspend fun loadData(param: UserId): UserData? {
-        ...
-    }
-
-    // Save the epoch time for each parameter to manage the expiration time.
-    // If there is no expiration time, no override is needed.
-    override suspend fun saveDataCachedAt(epochSeconds: Long, param: UserId) {
-        ...
-    }
-
-    // Get the date for managing the expiration time for each parameter.
-    // If there is no expiration time, no override is needed.
-    override suspend fun loadDataCachedAt(param: UserId): Long? {
-        ...
-    }
-}
-```
+## Other usage of `StoreFlowable<T>` class
 
 ### Get data without [LoadingState](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class
 
@@ -249,6 +200,77 @@ If you want to update the local cache, use the [`update()`](storeflowable/src/ma
 ```kotlin
 interface StoreFlowable<DATA> {
     suspend fun update(newData: DATA?)
+}
+```
+
+## `FlowLoadingState<T>` operators
+
+### Map `FlowLoadingState<T>`
+
+Use [`mapContent(transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateMapper.kt) to transform content in `FlowLoadingStates<T>`.
+
+```kotlin
+val state: FlowLoadingState<Int> = ...
+val mappedState: FlowLoadingState<String> = state.mapContent { value: Int ->
+    value.toString()
+}
+```
+
+### Combine multiple `FlowLoadingState<T>`
+
+Use [`combineState(state, transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateCombiner.kt) to combine multiple `FlowLoadingStates<T>`.
+
+```kotlin
+val state1: FlowLoadingState<Int> = ...
+val state2: FlowLoadingState<Int> = ...
+val combinedState: FlowLoadingState<Int> = state1.combineState(state2) { value1: Int, value2: Int ->
+    value1 + value2
+}
+```
+
+## Manage Cache
+
+### Manage cache expire time
+
+You can easily set the cache expiration time. Override expireSeconds variable in your [`Cacher<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/cacher/Cacher.kt) class.
+The default value is `Long.MAX_VALUE` (= will NOT expire).
+
+```kotlin
+object UserCacher : Cacher<UserId, UserData>() {
+    override val expireSeconds = 60 * 30 // expiration time is 30 minutes.
+}
+```
+
+### Persist data
+
+If you want to make the cached data persistent, override the method of your [`Cacher<PARAM, DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/cacher/Cacher.kt) class.
+
+```kotlin
+object UserCacher : Cacher<UserId, UserData>() {
+
+    override val expireSeconds = 60 * 30 // expiration time is 30 minutes.
+
+    // Save the data for each parameter in any store.
+    override suspend fun saveData(data: UserData?, param: UserId) {
+        ...
+    }
+
+    // Get the data from the store for each parameter.
+    override suspend fun loadData(param: UserId): UserData? {
+        ...
+    }
+
+    // Save the epoch time for each parameter to manage the expiration time.
+    // If there is no expiration time, no override is needed.
+    override suspend fun saveDataCachedAt(epochSeconds: Long, param: UserId) {
+        ...
+    }
+
+    // Get the date for managing the expiration time for each parameter.
+    // If there is no expiration time, no override is needed.
+    override suspend fun loadDataCachedAt(param: UserId): Long? {
+        ...
+    }
 }
 ```
 
