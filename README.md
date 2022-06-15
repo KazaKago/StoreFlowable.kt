@@ -8,6 +8,11 @@
 [Repository pattern](https://msdn.microsoft.com/en-us/library/ff649690.aspx) support library for Kotlin with Coroutines &amp; Flow.  
 Available for Android or any Kotlin/JVM projects.
 
+## Related projects
+
+- [StoreFlowable.swift](https://github.com/KazaKago/StoreFlowable.swift)
+- [StoreFlowable.dart](https://github.com/KazaKago/StoreFlowable.dart)
+
 ## Overview
 
 This library provides remote and local cache abstraction and observation with [Kotlin Coroutines Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
