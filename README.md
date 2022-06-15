@@ -90,10 +90,8 @@ After that, you can get the [`StoreFlowable<DATA>`](storeflowable/src/main/java/
 Be sure to go through the created [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.
 
 ```kotlin
-fun getUserDataFlow(userId: UserId): FlowLoadingState<UserData> {
-    val userFlowable: StoreFlowable<UserData> = StoreFlowable.from(userCacher, userFetcher, userId)
-    return userFlowable.publish()
-}
+val userFlowable: StoreFlowable<UserData> = StoreFlowable.from(userCacher, userFetcher, userId)
+val userStateFlow: FlowLoadingState<UserData> = userFlowable.publish()
 ```
 
 You can get the data in the form of [`FlowLoadingState<DATA>`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingState.kt) (Same as `Flow<LoadingState<DATA>>`) by using the [`publish()`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) method.  
@@ -105,20 +103,18 @@ You can observe the data by collecting [`Flow`](https://kotlin.github.io/kotlinx
 and branch the data state with [`doAction()`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) method or `when` statement.
 
 ```kotlin
-suspend fun subscribe(userId: UserId) {
-    getUserDataFlow(userId).collect {
-        it.doAction(
-            onLoading = { content: UserData? ->
-                ...
-            },
-            onCompleted = { content: UserData, _, _ ->
-                ...
-            },
-            onError = { exception: Exception ->
-                ...
-            }
-        )
-    }
+userStateFlow.collect { userState ->
+    userState.doAction(
+        onLoading = { content: UserData? ->
+            ...
+        },
+        onCompleted = { content: UserData, _, _ ->
+            ...
+        },
+        onError = { exception: Exception ->
+            ...
+        }
+    )
 }
 ```
 
@@ -306,7 +302,7 @@ You need to additionally implements [`fetchNext(nextKey: String, param: PARAM)`]
 And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.
 
 ```kotlin
-val userFlowable: PaginationStoreFlowable<Unit, UserData> = ...
+val userFlowable = StoreFlowable.from(userListCacher, userListFetcher)
 userFlowable.publish().collect {
     it.doAction(
         onLoading = { contents: List<UserData>? ->
