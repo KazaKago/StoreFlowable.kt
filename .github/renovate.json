@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "ignorePaths": [
-    "example/**"
-  ]
+  "extends": ["config:base"],
+  "baseBranches": ["develop"],
+  "ignorePaths": ["example/**"]
 }
