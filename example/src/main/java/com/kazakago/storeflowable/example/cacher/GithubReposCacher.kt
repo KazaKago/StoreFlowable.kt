@@ -5,5 +5,5 @@ import com.kazakago.storeflowable.example.model.GithubRepo
 import kotlin.time.Duration.Companion.minutes
 
 object GithubReposCacher : PaginationCacher<String, GithubRepo>() {
-    override val expireSeconds = 30.minutes.inWholeSeconds
+    override val expireSeconds = 1.minutes.inWholeSeconds
 }
