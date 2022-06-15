@@ -10,7 +10,7 @@ Available for Android or any Kotlin/JVM projects.
 
 ## Overview
 
-This library provides remote and local data abstraction and observation with [Kotlin Coroutines Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
+This library provides remote and local cache abstraction and observation with [Kotlin Coroutines Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/).  
 Created according to the following 5 policies.
 
 - **Repository pattern**
@@ -82,11 +82,11 @@ class UserFetcher : Fetcher<UserId, UserData> {
 ```
 
 You need to prepare the API access class.  
-In this case, `UserApi` classe.
+In this case, `UserApi` class.
 
 ### 3. Build StoreFlowable from Cacher & Fetcher class
 
-After that, you can get the [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowable<PARAM, DATA>.from(Cacher, Fetcher, PARAM)`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method, and use it to build the Repository class.  
+After that, you can get the [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class from the [`StoreFlowable<PARAM, DATA>.from(Cacher, Fetcher, PARAM)`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowableExtension.kt) method.  
 Be sure to go through the created [`StoreFlowable<DATA>`](storeflowable/src/main/java/com/kazakago/storeflowable/StoreFlowable.kt) class when getting / updating data.
 
 ```kotlin
@@ -131,7 +131,7 @@ See [GithubMetaCacher](example/src/main/java/com/kazakago/storeflowable/example/
 
 This example accesses the [Github API](https://docs.github.com/en/free-pro-team@latest/rest).
 
-## Other usage of `StoreFlowable<T>` class
+## Other usage of `StoreFlowable<DATA>` class
 
 ### Get data without [LoadingState](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class
 
@@ -152,10 +152,8 @@ interface StoreFlowable<DATA> {
 enum class GettingFrom {
     // Gets a combination of valid cache and remote. (Default behavior)
     Both,
-
     // Gets only remotely.
     Origin,
-
     // Gets only locally.
     Cache,
 }
@@ -203,11 +201,11 @@ interface StoreFlowable<DATA> {
 }
 ```
 
-## `FlowLoadingState<T>` operators
+## `FlowLoadingState<DATA>` operators
 
-### Map `FlowLoadingState<T>`
+### Map `FlowLoadingState<DATA>`
 
-Use [`mapContent(transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateMapper.kt) to transform content in `FlowLoadingStates<T>`.
+Use [`mapContent(transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateMapper.kt) to transform content in `FlowLoadingStates<DATA>`.
 
 ```kotlin
 val state: FlowLoadingState<Int> = ...
@@ -216,9 +214,9 @@ val mappedState: FlowLoadingState<String> = state.mapContent { value: Int ->
 }
 ```
 
-### Combine multiple `FlowLoadingState<T>`
+### Combine multiple `FlowLoadingState<DATA>`
 
-Use [`combineState(state, transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateCombiner.kt) to combine multiple `FlowLoadingStates<T>`.
+Use [`combineState(state, transform)`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/FlowLoadingStateCombiner.kt) to combine multiple `FlowLoadingStates<DATA>`.
 
 ```kotlin
 val state1: FlowLoadingState<Int> = ...
@@ -287,7 +285,7 @@ An example is shown below.
 ```kotlin
 object UserListCacher : PaginationCacher<Unit, UserData>()
 
-class GithubOrgsFetcher : PaginationFetcher<Unit, UserData> {
+class UserListFetcher : PaginationFetcher<Unit, UserData> {
 
     private val userListApi = UserListApi()
 
@@ -303,12 +301,12 @@ class GithubOrgsFetcher : PaginationFetcher<Unit, UserData> {
 }
 ```
 
-You need to additionally implements [`fetchNext(nextKey: String, param: Unit)`](storeflowable/src/main/java/com/kazakago/storeflowable/fetcher/PaginationFetcher.kt).  
+You need to additionally implements [`fetchNext(nextKey: String, param: PARAM)`](storeflowable/src/main/java/com/kazakago/storeflowable/fetcher/PaginationFetcher.kt).  
 
 And then, You can get the state of additional loading from the `next` parameter of `onCompleted {}`.
 
 ```kotlin
-val userFlowable = UserFlowableFactory().create(userId)
+val userFlowable: PaginationStoreFlowable<Unit, UserData> = ...
 userFlowable.publish().collect {
     it.doAction(
         onLoading = { contents: List<UserData>? ->
