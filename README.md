@@ -8,10 +8,10 @@
 [Repository pattern](https://msdn.microsoft.com/en-us/library/ff649690.aspx) support library for Kotlin with Coroutines &amp; Flow.  
 Available for Android or any Kotlin/JVM projects.
 
-## Related projects
+### Related projects
 
-- [StoreFlowable.swift](https://github.com/KazaKago/StoreFlowable.swift)
-- [StoreFlowable.dart](https://github.com/KazaKago/StoreFlowable.dart)
+- [StoreFlowable.swift (for Swift)](https://github.com/KazaKago/StoreFlowable.swift)
+- [StoreFlowable.dart (for Dart)](https://github.com/KazaKago/StoreFlowable.dart)
 
 ## Overview
 
