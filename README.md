@@ -37,10 +37,10 @@ The following is an example of screen display using [`LoadingState`](storeflowab
 
 ## Install
 
-Add the following gradle dependency exchanging x.x.x for the latest release.
+Add the following gradle dependency exchanging `*.*.*` for the latest release. [![Maven Central](https://img.shields.io/maven-central/v/com.kazakago.storeflowable/storeflowable.svg)](https://search.maven.org/artifact/com.kazakago.storeflowable/storeflowable)  
 
 ```kotlin
-implementation("com.kazakago.storeflowable:storeflowable:x.x.x")
+implementation("com.kazakago.storeflowable:storeflowable:*.*.*")
 ```
 
 Optional: if you use [`LoadingState`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class and related functions only.
