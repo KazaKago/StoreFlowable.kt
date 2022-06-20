@@ -46,7 +46,7 @@ implementation("com.kazakago.storeflowable:storeflowable:*.*.*")
 Optional: if you use [`LoadingState`](storeflowable-core/src/main/java/com/kazakago/storeflowable/core/LoadingState.kt) class and related functions only.
 
 ```kotlin
-implementation("com.kazakago.storeflowable:storeflowable-core:x.x.x")
+implementation("com.kazakago.storeflowable:storeflowable-core:*.*.*")
 ```
 
 ## Get started
