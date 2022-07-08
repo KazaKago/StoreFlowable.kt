@@ -8,7 +8,6 @@ package com.kazakago.storeflowable
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-@Deprecated("use Cacher class & Fetcher class")
 public interface StoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**

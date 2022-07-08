@@ -11,7 +11,6 @@ import com.kazakago.storeflowable.pagination.oneway.Fetched
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  * @param DATA Specify the type of data to be handled.
  */
-@Deprecated("use Cacher class & Fetcher class")
 public interface TwoWayPaginationStoreFlowableFactory<PARAM, DATA> : BaseStoreFlowableFactory<PARAM, DATA> {
 
     /**

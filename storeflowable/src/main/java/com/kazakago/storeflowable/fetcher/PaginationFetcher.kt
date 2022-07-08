@@ -1,5 +1,7 @@
 package com.kazakago.storeflowable.fetcher
 
+import com.kazakago.storeflowable.pagination.oneway.Fetched
+
 /**
  * A Fetcher class that supports pagination in one direction.
  *
@@ -10,14 +12,14 @@ public interface PaginationFetcher<PARAM, DATA> {
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [Result] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
     public suspend fun fetch(param: PARAM): Result<DATA>
 
     /**
      * The latest data acquisition process from origin.
      *
-     * @return [Result] class including the acquired data.
+     * @return [Fetched] class including the acquired data.
      */
     public suspend fun fetchNext(nextKey: String, param: PARAM): Result<DATA>
 

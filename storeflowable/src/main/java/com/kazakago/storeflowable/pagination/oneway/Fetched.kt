@@ -5,7 +5,6 @@ package com.kazakago.storeflowable.pagination.oneway
  *
  * @param DATA Specify the type of data to be handled.
  */
-@Deprecated("use Cacher class & Fetcher class")
 public data class Fetched<DATA>(
     /**
      * Set the acquired raw data.

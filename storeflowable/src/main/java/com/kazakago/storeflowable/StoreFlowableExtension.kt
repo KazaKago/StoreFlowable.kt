@@ -25,7 +25,6 @@ import kotlinx.datetime.Clock
  *
  * @return Created StateFlowable.
  */
-@Deprecated("use Cacher class & Fetcher class")
 public fun <PARAM, DATA> StoreFlowableFactory<PARAM, DATA>.create(
     param: PARAM,
     asyncDispatcher: CoroutineDispatcher = defaultAsyncDispatcher,

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
  *
  * @param PARAM Specify the type that is the key to retrieve the data. If there is only one data to handle, specify the [Unit] type.
  */
-@Deprecated("use Cacher class & Fetcher class")
 public abstract class FlowableDataStateManager<PARAM> {
 
     private val dataState = mutableMapOf<PARAM, MutableStateFlow<DataState>>()
