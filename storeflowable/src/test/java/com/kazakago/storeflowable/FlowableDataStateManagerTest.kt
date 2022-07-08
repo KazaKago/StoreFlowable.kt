@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-@Deprecated("Deprecated class test")
 @ExperimentalCoroutinesApi
 class FlowableDataStateManagerTest {
 
